@@ -4,7 +4,7 @@
 </script>
 
 <template>
-  Front End Seed
+  <router-view></router-view>
 </template>
 
 <style>

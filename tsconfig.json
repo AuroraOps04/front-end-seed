@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es2015",
     "useDefineForClassFields": true,
     "module": "esnext",
     "moduleResolution": "node",
@@ -11,8 +11,24 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": "./",
+    // 这里需要配置
+    "paths": {
+      "@/*": ["./src/*"]
+      // 这里需要配置
+    }
+    // 如果baseUrl设置为'src',那paths就应该配置为{"@/*": "./*"},如下：
+    // "baseUrl": "src",
+    // "paths": {
+    //  "@/*": ["./*"]
+    // }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "exclude": ["node_modules"],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }
