@@ -17,5 +17,12 @@ export default defineConfig({
     port: 4000, // 服务端口号
     open: true, // 服务启动时是否自动打开浏览器
     cors: true // 允许跨域
+  },
+  proxy: {
+    '/api': {
+      target: 'http://localhost:8080',
+      changeOrigin: true,
+      rewrite: path => path.replace(/^\/api/, '')
+    }
   }
 })
