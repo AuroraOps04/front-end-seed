@@ -217,7 +217,7 @@
 import { getCurrentInstance, onMounted } from 'vue'
 import arrow from '../../assets/arrow.png'
 
-// 通过 internalInstance.appContext.config.globalProperties 获取全局属性或方法
+// 通过 internalInstance.appContext.config.globalProperties 获取全局属性或者方法
 let internalInstance = getCurrentInstance()
 let echarts = internalInstance!.appContext.config.globalProperties.$echarts
 
