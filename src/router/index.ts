@@ -11,6 +11,10 @@ const routes: Array<RouteRecordRaw> = [
     redirect: {
       name: 'Home'
     }
+  },  {
+    path: '/account',
+    name: 'Account',
+    component: () => import('@/views/accountAnalysis/Account.vue')
   }
 ]
 
