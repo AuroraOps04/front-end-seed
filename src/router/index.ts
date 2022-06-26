@@ -7,6 +7,12 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/home/Home.vue')
   },
   {
+    path: '/Leaderboard',
+    name: 'Leaderboard',
+    component: () => import('@/views/Leaderboard/Leaderboard.vue')
+  },
+
+  {
     path: '/',
     redirect: {
       name: 'Home'
