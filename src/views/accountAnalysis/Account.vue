@@ -1,225 +1,19 @@
-<template>
-
-
-  <div>
-
-
-    <el-card class='box-card' shadow='always'>
-
-      <el-row :gutter='1'>
-        <el-col :span='3'>
-          <div class='profile_picture'>
-            <el-avatar src='https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' :size='100' />
-
-            <div style='padding: 30px'>
-              <el-button type='warning' plain class='button'>收藏</el-button>
-            </div>
-
-
-          </div>
-        </el-col>
-
-        <el-col :span='16'>
-          <div class='acc_body1'>
-            <text class='account_name'>账号名称</text>
-          </div>
-          <div class='acc_body2'>
-            <text class='text_brief'>账号名称：</text>
-            <text class>XXXXXXX</text>
-
-          </div>
-          <div class='acc_body3'>
-            <text class='text_brief'>个人简介：</text>
-            <text class>XXXXXXX</text>
-
-          </div>
-          <div class='acc_body4'>
-
-            <el-row :gutter='1'>
-              <el-col :span='7'>
-                <div class='profile_info'>
-                  <text class='text_brief'>分类</text>
-                  <text class='text_brief_info'>两岸</text>
-                </div>
-              </el-col>
-
-              <el-col :span='7'>
-                <div class='profile_info'>
-                  <text class='text_brief'>地区</text>
-                  <text class='text_brief_info'>大陆</text>
-                </div>
-              </el-col>
-              <el-col :span='7'>
-                <div class='profile_info'>
-                  <text class='text_brief'>粉丝数</text>
-                  <text class='text_brief_info'>100万+</text>
-
-                </div>
-              </el-col>
-
-
-            </el-row>
-
-
-          </div>
-        </el-col>
-
-
-        <el-col :span=4>
-          <div class='score_body'>
-            <text class='text_exponential'>888.8</text>
-
-            <text class='text_exponential'> 分</text>
-            <text class='text_num'> /周潮汐指数</text>
-
-          </div>
-
-          <div class='rank_body'>
-            <text class='rank'>NO.</text>
-            <text class='rank'>1</text>
-          </div>
-        </el-col>
-      </el-row>
-
-
-    </el-card>
-
-
-  </div>
-  <div>
-
-
-    <el-card class='box-card2' shadow='always'>
-
-      <el-row :gutter='1'>
-        <el-col :span='3'>
-          <div>
-            <h2 class='text text_first_label'>账号数据</h2>
-
-          </div>
-        </el-col>
-        <el-col :span='18'>
-          <div class='data_body'>
-            <h5 class='text_date'>更新于{{currentDate}}</h5>
-          </div>
-        </el-col>
-
-        <el-col :span='3'>
-          <div style='padding-right: 10px'>
-            <el-button-group>
-              <el-button plain type='warning' round>日榜</el-button>
-              <el-button plain round>周榜</el-button>
-            </el-button-group>
-
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter='1'>
-        <el-col :span='4'>
-          <div style='display: flex;align-items: center'>
-            <text class='text text_second_label'>榜单排行</text>
-            <img :src='arrowpng' class='img_arrow' />
-
-          </div>
-        </el-col>
-
-      </el-row>
-
-      <el-row :gutter='1' style='margin-bottom: 80px'>
-        <el-col :span=6>
-          <div class='score_body2'>
-            <text class='text_exponential2'>888.8</text>
-
-            <text class='text_exponential2'> 分</text>
-            <text class='text_num'> /周潮汐指数</text>
-
-          </div>
-
-          <div class='rank_body2'>
-            <text class='rank'>NO.</text>
-            <text class='rank'>1</text>
-          </div>
-        </el-col>
-
-      </el-row>
-
-
-      <el-row :gutter='1' style='margin-bottom: 80px'>
-        <el-col :span='4'>
-          <div style='display: flex;align-items: center'>
-            <text class='text text_second_label'>互动数据</text>
-            <img :src='arrowpng' class='img_arrow' />
-
-          </div>
-        </el-col>
-
-      </el-row>
-
-      <el-row :gutter='1' style='margin-bottom: 80px'>
-        <el-col :span='6' class='info_icon'>
-
-          <h4>发文数</h4>
-        </el-col>
-        <el-col :span='6' class='info_icon'>
-
-          <h4>点赞数</h4>
-        </el-col>
-        <el-col :span='6' class='info_icon'>
-
-          <h4> 评论数</h4>
-        </el-col>
-        <el-col :span='6' class='info_icon'>
-
-          <h4>转发数</h4>
-        </el-col>
-      </el-row>
-
-
-      <el-row :gutter='1'>
-        <el-col :span='4'>
-          <div style='display: flex;align-items: center'>
-            <text class='text text_second_label'>数据趋势</text>
-            <img :src='arrowpng' class='img_arrow' />
-
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter='1'>
-        <el-col :span='8'>
-          <div class='button_body'>
-
-            <el-button class='button_1' round type='warning'>发文数</el-button>
-            <el-button class='button_1' round>点赞数</el-button>
-            <el-button class='button_1' round>评论数</el-button>
-            <el-button class='button_1' round>转发数</el-button>
-
-          </div>
-        </el-col>
-
-        <el-col :span='12'>
-          <div
-            ref='myChart'
-            id='myChart'
-            :style="{ width: '700px', height: '350px' }"
-          ></div>
-        </el-col>
-
-      </el-row>
-    </el-card>
-
-
-  </div>
-</template>
-
 <script lang='ts' setup>
 import { getCurrentInstance, onMounted } from 'vue'
 import arrow from '../../assets/arrow.png'
+import up from '../../assets/up.png'
+import comment from '../../assets/comment.png'
+import forward from '../../assets/forward.png'
+import write from '../../assets/write.png'
+import bg from '../../assets/bg.png'
+
+import { NButton,NCard,NAvatar,NGrid,NGi,NDivider,NIcon } from 'naive-ui'
+
 
 // 通过 internalInstance.appContext.config.globalProperties 获取全局属性或者方法
 let internalInstance = getCurrentInstance()
 let echarts = internalInstance!.appContext.config.globalProperties.$echarts
+
 
 onMounted(() => {
   const dom = document.getElementById('myChart')
@@ -255,13 +49,315 @@ const getDate = () => {
 // 设置实例参数
 const currentDate = getDate()
 const arrowpng = arrow
+const writePng = write
+const commentPng = comment
+const forwardPng = forward
+const upPng = up
+const bgPng = bg
 
 
 </script>
 
+<template>
 
-<style scoped>
-.text {
+  <div>
+
+<!--    页面上半部分-->
+    <div class='box-card' >
+      <n-grid x-gap="24" :cols="4">
+        <n-gi>
+          <div class='profile_picture'>
+
+            <n-avatar
+              round
+              :size="220"
+              src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            />
+
+            <div style='padding: 30px'>
+              <N-button type='warning' ghost class='button_collection'>
+                <template #icon>
+                  <n-icon><log-in-icon /></n-icon>
+                </template>
+                收藏</N-button>
+            </div>
+
+
+          </div>
+        </n-gi>
+        <n-gi span="2">
+          <div class='acc_body1'>
+            <text class='account_name'>账号名称</text>
+          </div>
+          <div class='acc_body2'>
+            <text class='text_brief_color'>账号名称：</text>
+            <text class>XXXXXXX</text>
+
+          </div>
+          <div class='acc_body3'>
+            <text class='text_brief_color'>个人简介：</text>
+            <text class>XXXXXXX</text>
+
+          </div>
+          <n-divider />
+          <div class='acc_body4'>
+            <n-grid x-gap="24" :cols="3">
+
+              <n-gi>
+                <div class='profile_info'>
+                  <text class='text_brief_color'>分类</text>
+                  <text class='text_brief_info'>两岸</text>
+                </div>
+              </n-gi>
+
+              <n-gi>
+                <div class='profile_info'>
+                  <text class='text_brief_color'>地区</text>
+                  <text class='text_brief_info'>大陆</text>
+                </div>
+              </n-gi>
+
+              <n-gi >
+                <div class='profile_info'>
+                  <text class='text_brief_color'>粉丝数</text>
+                  <text class='text_brief_info'>100万+</text>
+
+                </div>
+              </n-gi>
+            </n-grid>
+
+
+
+
+
+
+          </div>
+        </n-gi>
+
+        <n-gi >
+          <div class='score_body'>
+            <text class='text_exponential'>888.8</text>
+
+            <text class='text_exponential'> 分</text>
+            <text class='text_num'> /周潮汐指数</text>
+
+          </div>
+
+          <div class='rank_body'>
+            <text class='rank'>NO.</text>
+            <text class='rank'>1</text>
+            <text class='rank_area'>两岸>周榜</text>
+          </div>
+        </n-gi>
+      </n-grid>
+
+
+    </div>
+
+  </div>
+
+  <div>
+
+<!--    页面下半部分-->
+    <div class='box-card' >
+
+
+<!--      账号数据标题-->
+      <n-grid x-gap="24" :cols="6">
+          <n-gi>
+            <div>
+              <h2 class='text_italic text_first_label'>账号数据</h2>
+              <img :src='bgPng' class='img_bg'>
+            </div>
+          </n-gi>
+          <n-gi span='4'>
+            <div class='data_body'>
+              <h5 class='text_date'>更新于{{currentDate}}</h5>
+            </div>
+          </n-gi>
+
+
+        <n-gi>
+          <div class='center'>
+
+            <n-button-group>
+              <n-button plain type='warning' round>日榜</n-button>
+              <n-button plain round>周榜</n-button>
+            </n-button-group>
+
+          </div>
+        </n-gi>
+        </n-grid>
+
+
+<!--      榜单排行-->
+      <n-grid x-gap="24" :cols="5" style='margin-bottom: 20px'>
+        <n-gi>
+          <div style='display: flex;align-items: center'>
+            <text class='text_italic text_second_label'>榜单排行</text>
+            <img :src='arrowpng' class='img_arrow' />
+
+          </div>
+        </n-gi>
+
+      </n-grid>
+
+      <n-grid x-gap="24" :cols="2" style='margin-bottom: 80px'>
+        <n-gi>
+          <div class='score_body2'>
+            <text class='text_exponential2'>888.8</text>
+
+            <text class='text_exponential2'> 分</text>
+            <text class='text_num'> /周潮汐指数</text>
+
+          </div>
+          <div class='rank_body2'>
+            <text class='rank'>NO.</text>
+            <text class='rank'>1</text>
+            <text class='rank_area'>两岸>周榜</text>
+          </div>
+        </n-gi>
+
+        <n-gi>
+
+        </n-gi>
+
+      </n-grid>
+
+      <n-divider />
+
+
+
+<!--      互动数据-->
+      <n-grid x-gap="24" :cols="5" style='margin-bottom: 80px'>
+        <n-gi>
+          <div style='display: flex;align-items: center'>
+            <text class='text_italic text_second_label'>互动数据</text>
+            <img :src='arrowpng' class='img_arrow' />
+
+          </div>
+        </n-gi>
+
+      </n-grid>
+
+      <n-grid x-gap="24" :cols="4" style='margin-bottom: 80px'>
+        <n-gi class='body_center'>
+          <div>
+            <text class='text_info1'>20</text>
+            <text class='text_info2'>/324</text>
+          </div>
+          <div>
+            <img :src='writePng' class='img_arrow' />
+            <text class='text_info'>发文数</text>
+          </div>
+
+        </n-gi>
+        <n-gi class='body_center'>
+          <div>
+            <text class='text_info1'>600</text>
+            <text  class='text_info2'>/25W</text>
+          </div>
+          <div>
+            <img :src='upPng' class='img_arrow' />
+            <text class='text_info'>点赞数</text>
+          </div>
+
+        </n-gi>
+        <n-gi class='body_center'>
+          <div>
+            <text class='text_info1'>2000</text>
+            <text  class='text_info2'>/10万+</text>
+          </div>
+          <div>
+            <img :src='commentPng' class='img_arrow' />
+            <text class='text_info'>评论数</text>
+          </div>
+
+        </n-gi>
+        <n-gi class='body_center'>
+          <div >
+            <text class='text_info1'>300</text>
+            <text  class='text_info2'>/10万+</text>
+          </div>
+          <div>
+            <img :src='forwardPng' class='img_arrow' />
+            <text class='text_info'>转发数</text>
+          </div>
+
+        </n-gi>
+
+      </n-grid >
+
+      <n-divider />
+
+
+
+<!--      数据趋势-->
+      <n-grid x-gap="24" :cols="5">
+        <n-gi>
+          <div style='display: flex;align-items: center'>
+            <text class='text_italic text_second_label'>数据趋势</text>
+            <img :src='arrowpng' class='img_arrow' />
+
+          </div>
+        </n-gi>
+      </n-grid>
+
+      <n-grid x-gap="24" :cols="3">
+        <n-gi>
+          <div class='button_body '>
+
+            <n-button class='button_1' round type='warning'>发文数</n-button>
+            <n-button class='button_1' round>点赞数</n-button>
+            <n-button class='button_1' round>评论数</n-button>
+            <n-button class='button_1' round>转发数</n-button>
+
+          </div>
+        </n-gi>
+        <n-gi>
+          <div
+            ref='myChart'
+            id='myChart'
+            :style="{ width: '700px', height: '350px' }"
+          ></div>
+        </n-gi>
+        <n-gi>
+
+        </n-gi>
+      </n-grid>
+
+    </div>
+
+
+  </div>
+</template>
+
+
+<style  lang="scss" scoped>
+
+.box-card {
+  width: 86%;
+  margin: 5%;
+  padding: 2%;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+
+}
+
+
+.rank_area {
+  margin: 10px;
+  color: #BDC7DF;
+  font-size: 15px;
+}
+
+.body_center{
+  text-align: center;
+  justify-content: center;
+}
+
+.text_italic {
   font-style: italic;
 
 }
@@ -278,16 +374,34 @@ const arrowpng = arrow
   font-weight: 600;
 
 
+
 }
 
-.img_arrow {
-  width: 20px;
-  height: 20px;
-  margin-top: 10px
+
+
+.text_info {
+  color: #8C8D90;
+  font-size: 15px;
+  margin-left: 5px;
 }
 
-.info_icon {
-  text-align: center;
+.text_info1 {
+  color: #3F3F46;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.text_info2 {
+  color: #BDC7DF;
+  font-size: 20px;
+  margin-left: 5px;
+}
+
+
+.text_num {
+  font-size: 8px;
+  font-weight: 600;
+
 }
 
 .text_date {
@@ -298,20 +412,10 @@ const arrowpng = arrow
   font-family: SourceHanSansSC-medium;
 }
 
-.data_body {
-  margin-top: 40px;
-  margin-left: 20px;
-}
-
-.text_num {
-  font-size: 8px;
-  font-weight: 600;
-
-}
 
 .text_exponential {
   color: rgba(17, 54, 145, 58);
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
 
 }
@@ -323,8 +427,8 @@ const arrowpng = arrow
 
 }
 
-.text_brief {
-  color: #6A6969;
+.text_brief_color {
+  color: #BBBABA;
 
 }
 
@@ -332,9 +436,31 @@ const arrowpng = arrow
   font-size: 20px;
 }
 
+.data_body {
+  margin-top: 40px;
+  margin-left: -70px;
+}
+
+.button_collection {
+  margin-left: 15%;
+}
+
 .button_1 {
   width: 120px;
   margin: 10px;
+}
+
+.button_body {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 50px;
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-top: 80px;
+
+  text-align: center;
+  justify-content: center;
+
 }
 
 .acc_body1 {
@@ -356,33 +482,9 @@ const arrowpng = arrow
 
 }
 
-.button_body {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 50px;
-  margin-left: 50px;
-  margin-right: 50px;
-  margin-top: 80px;
 
-  text-align: center;
-  justify-content: center;
-
-}
-
-.item {
-  padding: 18px 0;
-}
-
-.button {
-  padding-left: 1%;
-}
-
-.box-card {
-  width: 90%;
-  margin: 5%;
-  border-radius: 20px
-
-
+.text_info_title{
+  color: #BBD1E9;
 }
 
 .profile_info {
@@ -393,18 +495,13 @@ const arrowpng = arrow
 
 }
 
-.score_body {
-  margin-top: 50px;
+.rank {
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .rank_body {
   margin-top: 20px;
-}
-
-.score_body2 {
-  margin-top: 40px;
-  margin-left: 40px;
-  margin-right: 40px;
 }
 
 .rank_body2 {
@@ -413,21 +510,42 @@ const arrowpng = arrow
   margin-right: 40px;
 }
 
-.rank {
-  font-size: 20px;
-  font-weight: 700;
+.score_body {
+  margin-top: 50px;
+}
+
+.score_body2 {
+  margin-top: 40px;
+  margin-left: 40px;
+  margin-right: 40px;
 }
 
 .account_name {
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 600;
+
 }
 
-.box-card2 {
-  width: 90%;
-  margin: 5%;
-  height: auto;
-  border-radius: 20px
+.center{
+  justify-content: center;
+  text-align: center;
 }
+
+.img_bg{
+  height: 14px;
+  width: 144px;
+  position:absolute;
+  left:117px;
+  top:610px;
+}
+
+.img_arrow {
+  width: 20px;
+  height: 20px;
+  margin-top: 10px
+}
+
 </style>
+
+
 
