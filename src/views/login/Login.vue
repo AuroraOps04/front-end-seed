@@ -1,3 +1,12 @@
+<script lang="ts" setup>
+import {useRouter} from "vue-router";
+
+const router = useRouter();
+const handleLogin = () => {
+  router.push("/home")
+}
+</script>
+
 <template>
   <div class="bg">
     <div class="login">
@@ -13,25 +22,7 @@
   </div>
 </template>
 
-<script lang="ts">
-import {defineComponent} from "vue";
-
-export default {
-  components: {}
-}
-
-const Login = defineComponent({
-  setup() {
-    return;
-  },
-  components: {},
-  handleLogin() {
-    this.$router.push("/home")
-  }
-})
-</script>
-
-<style>
+<style lang="scss">
 .bg {
   width: 100%;
   height: 100%;
@@ -40,96 +31,98 @@ const Login = defineComponent({
   flex-direction: row;
   align-items: center;
   justify-content: center;
+
+  .login {
+    width: 874px;
+    height: 464px;
+    background: url("@/assets/login.png") no-repeat;
+    background-size: 874px 464px;
+    position: relative;
+
+    .login-username {
+      background: none;
+      outline: none;
+      border: none;
+      width: 293px;
+      height: 48px;
+      position: absolute;
+      left: 426px;
+      top: 157px;
+      border-radius: 24px;
+      background-color: #EAEEFE;
+      padding: 0 15px;
+      font-size: 15px;
+    }
+
+    .login-password {
+      background: none;
+      outline: none;
+      border: none;
+      width: 293px;
+      height: 48px;
+      position: absolute;
+      left: 426px;
+      top: 237px;
+      border-radius: 24px;
+      background-color: #EAEEFE;
+      padding: 0 15px;
+      font-size: 15px;
+    }
+
+    .login-verify {
+      color: #719CF5;
+      cursor: pointer;
+      position: absolute;
+      left: 650px;
+      top: 250px;
+    }
+
+    .login-verify:hover {
+      opacity: 0.7;
+    }
+
+    .login-btn {
+      color: white;
+      cursor: pointer;
+      position: absolute;
+      left: 430px;
+      top: 320px;
+      background-color: rgba(62, 106, 213, 100);
+      height: 46px;
+      line-height: 46px;
+      text-align: center;
+      width: 318px;
+      border: none;
+      border-radius: 23px;
+      font-size: 18px;
+      box-shadow: 0 2px 16px 0 rgba(62, 106, 213, 63);
+    }
+
+    .login-btn:hover {
+      opacity: 0.7;
+    }
+
+    .login-agree {
+      position: absolute;
+      left: 430px;
+      top: 380px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+
+      .login-agree-check {
+        zoom: 120%;
+        border: 1px solid gray;
+      }
+
+      .login-agree-text {
+
+      }
+    }
+  }
+
 }
 
-.login {
-  width: 874px;
-  height: 464px;
-  background: url("@/assets/login.png") no-repeat;
-  background-size: 874px 464px;
-  position: relative;
-}
 
-.login-username {
-  background: none;
-  outline: none;
-  border: none;
-  width: 293px;
-  height: 48px;
-  position: absolute;
-  left: 426px;
-  top: 157px;
-  border-radius: 24px;
-  background-color: #EAEEFE;
-  padding: 0 15px;
-  font-size: 15px;
-}
-
-.login-password {
-  background: none;
-  outline: none;
-  border: none;
-  width: 293px;
-  height: 48px;
-  position: absolute;
-  left: 426px;
-  top: 237px;
-  border-radius: 24px;
-  background-color: #EAEEFE;
-  padding: 0 15px;
-  font-size: 15px;
-}
-
-.login-verify {
-  color: #719CF5;
-  cursor: pointer;
-  position: absolute;
-  left: 650px;
-  top: 250px;
-}
-
-.login-verify:hover {
-  opacity: 0.7;
-}
-
-.login-btn {
-  color: white;
-  cursor: pointer;
-  position: absolute;
-  left: 430px;
-  top: 320px;
-  background-color: rgba(62, 106, 213, 100);
-  height: 46px;
-  line-height: 46px;
-  text-align: center;
-  width: 318px;
-  border: none;
-  border-radius: 23px;
-  font-size: 18px;
-  box-shadow: 0px 2px 16px 0px rgba(62, 106, 213, 63);
-  font-family: Roboto;
-}
-
-.login-btn:hover {
-  opacity: 0.7;
-}
-
-.login-agree {
-  position: absolute;
-  left: 430px;
-  top: 380px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-}
-
-.login-agree-check {
-  zoom: 120%;
-  border: 1px solid gray;
-}
-
-.login-agree-text {
-
-}
 </style>

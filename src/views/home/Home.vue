@@ -1,4 +1,21 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import rankingPng from "@/assets/ranking.png"
+import analysisPng from "@/assets/analysis.png"
+import rightPng from "@/assets/right.png"
+import twitterPng from "@/assets/twitter.png"
+import youtubePng from "@/assets/youtube.png"
+import instagramsPng from "@/assets/instagrams.png"
+import facebookPng from "@/assets/facebook.png"
+import fastPng from "@/assets/fast.png"
+import professionalPng from "@/assets/professional.png"
+import authoritativePng from "@/assets/authoritative.png"
+import stablePng from "@/assets/stable.png"
+import NAvatar from "naive-ui";
+import {ref} from "vue";
+
+const avatar = ref("头像")
+</script>
+
 <template>
   <div>
     <div class="home-top">
@@ -6,7 +23,7 @@
       <div class="home-top-menu">
         <!-- logo -->
         <div class="home-top-menu-logo">
-          <img src="@/assets/logo.png" style="width: 40px;height: 40px">
+          <img src="@/assets/logo.png" style="width: 40px;height: 40px" alt="logo">
           <span style="width: 20px"></span>
           <div class="home-title">
             <span>潮汐</span>
@@ -20,14 +37,19 @@
         </div>
         <!-- 头像 -->
         <div class="home-top-menu-avatar">
-          <el-avatar :size="50" :src="circleUrl">头像</el-avatar>
+          <n-avatar round>
+            {{ avatar }}
+          </n-avatar>
         </div>
       </div>
 
       <div class="home-top-main">
         <div class="main-content">
-          <div class="title1" v-html="title1"></div>
-          <div class="title2" v-html="title2"></div>
+          <div class="title1">新媒体平台榜单定制服务</div>
+          <div class="title2">基于网络公开数据、融媒体及舆论大数据人工智能，<br/>
+            制定系统化的新媒体大数据评价体系和影响力标准，<br/>
+            提供舆论分析报告、融媒体平台解决方案、一站式行业大数据解决方案以及软件开发等服务。
+          </div>
         </div>
       </div>
 
@@ -35,10 +57,15 @@
 
     <div class="home-main">
       <div class="main-detail1">
-        <div class="detail-box" v-for="item in detail">
-          <img :src="item.url">
-          <div class="box-title1">{{ item.title1 }}</div>
-          <div class="box-title2" v-html="item.title2"></div>
+        <div class="detail-box">
+          <img :src="rankingPng" alt="榜单查询">
+          <div class="box-title1">平台榜单查询</div>
+          <div class="box-title2">独家优先形式联合发布数据榜单<br>构筑全平台内容数据价值评估体系</div>
+        </div>
+        <div class="detail-box">
+          <img :src="analysisPng" alt="数据分析">
+          <div class="box-title1">账号数据分析</div>
+          <div class="box-title2">针对账号进行全面的数据监测分析</div>
         </div>
       </div>
 
@@ -51,24 +78,24 @@
       <div class="main-detail3">
         <span class="detail3-title">查看详情</span>
         <span style="width: 10px"></span>
-        <img :src="rightPng">
+        <img :src="rightPng" alt="箭头">
       </div>
 
       <div class="main-detail4">
         <div class="detail4-box">
-          <img :src="facebookPng">
+          <img :src="facebookPng" alt="facebook">
           <span>Facebook指数</span>
         </div>
         <div class="detail4-box">
-          <img :src="youtubePng">
+          <img :src="youtubePng" alt="youtube">
           <span>YouTube指数</span>
         </div>
         <div class="detail4-box">
-          <img :src="twitterPng">
+          <img :src="twitterPng" alt="twitter">
           <span>Twitter指数</span>
         </div>
         <div class="detail4-box">
-          <img :src="instagramsPng">
+          <img :src="instagramsPng" alt="instagrams">
           <span>Instagrams指数</span>
         </div>
       </div>
@@ -81,22 +108,22 @@
 
       <div class="main-detail6">
         <div class="detail6-box">
-          <img :src="professionalPng">
+          <img :src="professionalPng" alt="专业">
           <div class="box-title1">专业</div>
           <div class="box-title2">具备专业的技术开发团队<br/>针对不同用户提供定制化服务</div>
         </div>
         <div class="detail6-box">
-          <img :src="authoritativePng">
+          <img :src="authoritativePng" alt="权威">
           <div class="box-title1">权威</div>
           <div class="box-title2">具备专业的技术开发团队<br/>针对不同用户提供定制化服务</div>
         </div>
         <div class="detail6-box">
-          <img :src="fastPng">
+          <img :src="fastPng" alt="极速">
           <div class="box-title1">极速</div>
           <div class="box-title2">具备专业的技术开发团队<br/>针对不同用户提供定制化服务</div>
         </div>
         <div class="detail6-box">
-          <img :src="stablePng">
+          <img :src="stablePng" alt="稳定">
           <div class="box-title1">稳定</div>
           <div class="box-title2">具备专业的技术开发团队<br/>针对不同用户提供定制化服务</div>
         </div>
@@ -116,38 +143,6 @@
 
   </div>
 </template>
-<<<<<<< HEAD
-
-<script lang="ts" setup>
-import {ref, reactive} from "vue";
-import rankingPng from "@/assets/ranking.png"
-import analysisPng from "@/assets/analysis.png"
-import rightPng from "@/assets/right.png"
-import twitterPng from "@/assets/twitter.png"
-import youtubePng from "@/assets/youtube.png"
-import instagramsPng from "@/assets/instagrams.png"
-import facebookPng from "@/assets/facebook.png"
-import fastPng from "@/assets/fast.png"
-import professionalPng from "@/assets/professional.png"
-import authoritativePng from "@/assets/authoritative.png"
-import stablePng from "@/assets/stable.png"
-
-
-const title1 = ref('新媒体平台榜单定制服务')
-const title2 = ref(`基于网络公开数据、融媒体及舆论大数据人工智能，<br/>
-制定系统化的新媒体大数据评价体系和影响力标准，<br/>
-提供舆论分析报告、融媒体平台解决方案、一站式行业大数据解决方案以及软件开发等服务。`)
-const detail = reactive([{
-  url: rankingPng,
-  title1: "平台榜单查询",
-  title2: `独家优先形式联合发布数据榜单<br>构筑全平台内容数据价值评估体系`
-}, {
-  url: analysisPng,
-  title1: "账号数据分析",
-  title2: `针对账号进行全面的数据监测分析`
-}])
-
-</script>
 
 <style lang="scss">
 
@@ -186,7 +181,6 @@ const detail = reactive([{
         font-weight: bold;
         letter-spacing: 2px;
         text-align: left;
-        font-family: SourceHanSansSC-regular;
       }
     }
 
@@ -264,8 +258,7 @@ const detail = reactive([{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    background: url("@/assets/home_bg2.png");
-    background-repeat: no-repeat;
+    background: url("@/assets/home_bg2.png") no-repeat;
     background-size: 100% 272px;
     margin-top: 108px;
 
@@ -278,11 +271,9 @@ const detail = reactive([{
       color: rgba(16, 16, 16, 100);
       font-size: 14px;
       text-align: center;
-      box-shadow: 0px 2px 30px 0px rgba(68, 120, 249, 0.28);
-      font-family: Roboto;
+      box-shadow: 0 2px 30px 0 rgba(68, 120, 249, 0.28);
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
       justify-content: space-around;
       margin: 0 100px 0 100px;
@@ -345,11 +336,9 @@ const detail = reactive([{
     color: rgba(16, 16, 16, 100);
     font-size: 14px;
     text-align: center;
-    box-shadow: 0px 2px 30px 0px rgba(68, 120, 249, 0.28);
-    font-family: Roboto;
+    box-shadow: 0 2px 30px 0 rgba(68, 120, 249, 0.28);
     display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
     justify-content: space-around;
 
@@ -485,6 +474,3 @@ const detail = reactive([{
 
 }
 </style>
-=======
-<style lang="scss"></style>
->>>>>>> 76864ae1fb36f5d55d0484c60e886e2f8c048cd7
