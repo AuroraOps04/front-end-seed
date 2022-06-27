@@ -1,3 +1,4 @@
+<script lang="ts" setup></script>
 <template>
   <div>
     <div class="home-top">
@@ -115,6 +116,7 @@
 
   </div>
 </template>
+<<<<<<< HEAD
 
 <script lang="ts" setup>
 import {ref, reactive} from "vue";
@@ -483,3 +485,6 @@ const detail = reactive([{
 
 }
 </style>
+=======
+<style lang="scss"></style>
+>>>>>>> 76864ae1fb36f5d55d0484c60e886e2f8c048cd7

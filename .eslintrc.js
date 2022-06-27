@@ -2,7 +2,10 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
-    node: true,
+    node: true
+  },
+  globals: {
+    API: 'readonly'
   },
   extends: [
     'plugin:vue/essential',
@@ -12,12 +15,12 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     parser: '@typescript-eslint/parser',
-    sourceType: 'module',
+    sourceType: 'module'
   },
-  plugins: [
-    'vue',
-    '@typescript-eslint',
-  ],
+  plugins: ['vue', '@typescript-eslint'],
   rules: {
-  },
-};
+    'vue/multi-word-component-names': 0,
+    'import/extensions': 0,
+    'import/no-unresolved': 0
+  }
+}
