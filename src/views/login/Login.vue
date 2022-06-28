@@ -1,9 +1,18 @@
 <script lang="ts" setup>
 import {useRouter} from "vue-router";
+import {NCountdown, NSpace} from "naive-ui";
+import {ref} from "vue";
 
+const active = ref(false);
 const router = useRouter();
 const handleLogin = () => {
   router.push("/home")
+}
+const handleVerify = () => {
+  active.value = true;
+}
+const handleFinish = () => {
+  active.value = false;
 }
 </script>
 
@@ -12,8 +21,13 @@ const handleLogin = () => {
     <div class="login">
       <input type="text" class="login-username" placeholder="使用手机号码登录/注册"/>
       <input type="text" class="login-password" placeholder="请输入验证码"/>
-      <span class="login-verify">获取验证码</span>
-      <button class="login-btn" @click="handleLogin()">登陆</button>
+      <span class="login-verify" @click="handleVerify" v-if="!active">获取验证码</span>
+      <n-space class="login-verify" style="color: gray;" v-else>
+        <span>
+          <n-countdown :duration="60000" :active="active" :on-finish="handleFinish"/>
+        </span>
+      </n-space>
+      <button class="login-btn" @click="handleLogin">登陆</button>
       <div class="login-agree">
         <input type="checkbox" class="login-agree-check">
         <span class="login-agree-text">&nbsp;&nbsp;我已阅读并接受《注册申明》《版权声明》《隐私政策》</span>
@@ -26,7 +40,8 @@ const handleLogin = () => {
 .bg {
   width: 100%;
   height: 100%;
-  background: url("@/assets/bg.png") no-repeat 100%;
+  background: url("@/assets/bg.png") no-repeat;
+  background-size: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -74,7 +89,7 @@ const handleLogin = () => {
       cursor: pointer;
       position: absolute;
       left: 650px;
-      top: 250px;
+      top: 252px;
     }
 
     .login-verify:hover {
