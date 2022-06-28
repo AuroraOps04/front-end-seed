@@ -4,6 +4,7 @@ import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+
   plugins: [vue()],
   resolve: {
     // 配置别名
@@ -16,6 +17,13 @@ export default defineConfig({
   server: {
     port: 4000, // 服务端口号
     open: true, // 服务启动时是否自动打开浏览器
-    cors: true // 允许跨域
+    cors: true, // 允许跨域
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, '')
+      }
+    }
   }
 })
