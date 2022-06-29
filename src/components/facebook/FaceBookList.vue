@@ -19,16 +19,30 @@
     <vxe-toolbar>
       <template #buttons>
         <div class="radioLeft">
-          <vxe-radio-group v-model="tideData.listData">
+          <vxe-radio-group v-model="dateList">
             <vxe-radio-button label="1" content="日榜"></vxe-radio-button>
             <vxe-radio-button label="2" content="周榜"></vxe-radio-button>
-            <vxe-radio-button label="3" content="年榜"></vxe-radio-button>
+            <vxe-radio-button label="3" content="月榜"></vxe-radio-button>
           </vxe-radio-group>
         </div>
         <div style="margin-left:25px">
-          <p>
-            <vxe-select v-model="tideData.currentDate" placeholder="默认尺寸" @change="changeDate($event)">
-              <vxe-option v-for="daily in tideData.dailyList" :key="daily.id" :value="daily.dateTime" :label="daily.date"></vxe-option>
+          <!--日榜-->
+          <p v-if="dateList == 1">
+            <vxe-select v-model="optionDateTime.defaultDailyTime.date" placeholder="选择时间" @change="changeDate($event)">
+              <vxe-option v-for="daily in tideData.dailyList" :key="daily.id" :value="daily" :label="daily.date"></vxe-option>
+            </vxe-select>
+          </p>
+          <!--周榜-->
+          <p v-if="dateList == 2">
+            <vxe-select v-model="optionDateTime.defaultWeeklyTime.date" placeholder="选择时间" @change="changeDate($event)">
+              <vxe-option v-for="weekly in tideData.weeklyList" :key="weekly.id" :value="weekly" :label="weekly.date"></vxe-option>
+            </vxe-select>
+          </p>
+          <!--月榜-->
+          <p v-if="dateList == 3">
+            <vxe-select v-model="tideData.monthlyList.date" placeholder="选择时间" filterable="true"
+                        :filter-method="regionDropDown(1, 2, 3)" @change="changeDate($event)">
+              <vxe-option v-for="monthly in tideData.monthlyList" :key="monthly.id" :value="monthly" :label="monthly.date"></vxe-option>
             </vxe-select>
           </p>
         </div>
@@ -103,7 +117,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import {onMounted, reactive, ref} from 'vue'
+  import {onMounted, reactive, ref,watch} from 'vue'
   import {VxeButtonEvents, VxePagerEvents, VxeTableInstance} from 'vxe-table'
   import { NButton }  from 'naive-ui'
   import {listAccountByPageApi,findAllCategoryApi,findAreaApi} from '@/service/account'
@@ -115,6 +129,8 @@
     findAllCategory()
     findAllArea()
     getNearly7Day()
+    getWeekDate()
+    getMonthDate()
   })
   // type TideDataType = {
   //   tableData: API.Dict[],
@@ -123,24 +139,93 @@
   //   },
   //   // dailyList: string[]
   // }
+  //日榜类
+  class dateObject{
+    id: number | undefined;
+    startTime: string | undefined;
+    endTime: string | undefined;
+    date: string | undefined;
+    constructor(id:number,startTime:string,endTime:string,date:string){
+      this.id = id
+      this.startTime = startTime
+      this.endTime = endTime
+      this.date = date
+    }
+  }
+  //周榜类
+  class weekDateObject{
+    id: number | undefined;
+    startTime: string | undefined;
+    endTime: string |undefined;
+    date:string | undefined;
+    constructor(id:number,startTime:string,endTime:string,date:string){
+      this.id = id
+      this.startTime = startTime
+      this.endTime = endTime
+      this.date = date
+    }
+  }
+  //月榜类
+  class monthDateObject{
+    id: number | undefined;
+    startTime: string | undefined;
+    endTime: string |undefined;
+    date:string | undefined;
+    constructor(id:number,startTime:string,endTime:string,date:string){
+      this.id = id
+      this.startTime = startTime
+      this.endTime = endTime
+      this.date = date
+    }
+  }
+
+  //日榜周榜月榜选项 1：日榜 2：周榜 3：月榜
+  const dateList = ref<number>(1);
+  //TODO
+  const dateChangeTable = ref<number>(1);
+  watch(dateList,(newValue,oldValue)=>{
+    if (newValue == 1){
+      dateChangeTable.value = 1
+    }else if (newValue == 2){
+      dateChangeTable.value = 2
+    }else {
+      dateChangeTable.value = 3
+    }
+  })
   const tideData = reactive({
+    //表格数据
     tableData: [],
+    //分页数据
     tablePage: {
       total: 0,
       currentPage: 1,
       pageSize: 10
     },
-    listData: null,
+    //分类列表
     cateGory:[],
+    //地区列表
     area:[],
     currentDate: '',
+    //地区分类选项绑定
     option:{
       category: '',
       area: '',
     },
-    dailyList:[]
+    //日榜列表
+    dailyList:[],
+    //周榜列表
+    weeklyList:[],
+    //月榜列表
+    monthlyList:[]
+  })
+  //默认时间榜单
+  const optionDateTime = reactive({
+    defaultDailyTime:[],
+    defaultWeeklyTime:[],
+    defaultMonthlyTime:[],
   })
 
+  //查询数据的条件参数
   const params = reactive<API.AccountParams & API.PageParams>({
     pageSize: tideData.tablePage.pageSize,
     page: tideData.tablePage.currentPage,
@@ -155,7 +240,6 @@
   //分页查询所有数据
   const findAccountSelectPage = async (accountName:string) => {
     params.accountName = accountName
-    debugger
     const res = await listAccountByPageApi(params)
     tideData.tableData = res.data as any
     tideData.tablePage.total = res.count as any
@@ -175,9 +259,8 @@
 
   //下拉时间选项
   function changeDate(event:any){
-    debugger
-    params.startTime = event.value
-    debugger
+    params.startTime = event.value.startTime
+    params.endTime = event.value.endTime
     findAccountSelectPage('')
   }
 
@@ -200,23 +283,68 @@
     let day = myDate.getDate().toString().padStart(2, '0')
     tideData.currentDate = myDate.getFullYear() + '年' + month + '月' + day + '日'
   }
-  class dateObject{
-    id: number | undefined;
-    dateTime: string | undefined;
-    date: string | undefined;
-    constructor(id:number,dateTime:string,date:string){
-      this.id = id
-      this.dateTime = dateTime
-      this.date = date
-    }
 
+  //获取最近3个月的时间
+  const getMonthDate = async() =>{
+    let date = new Date()
+    for(let i =0;i<=2;i++){
+      const nowMonthFirst = getNowMonthFirst(date);
+      const nowMonthLast = getNowMonthLast(date);
+      let monthDateTime = date.getTime()
+      let startDateTime = new Date(monthDateTime)
+      let y = startDateTime.getFullYear() //获取年份
+      let m = startDateTime.getMonth() + 1 //获取月份js月份从0开始，需要+1
+      m = addDate0(m)
+      let dateTime = y + '年' + m + '月'
+      let monthlyList = new monthDateObject(i,moment(nowMonthFirst.getTime()).format("YYYY-MM-DD"),moment(nowMonthLast.getTime()).format("YYYY-MM-DD"),dateTime)
+      tideData.monthlyList.push(monthlyList as never)
+      date.setMonth(date.getMonth() - 1)
+    }
+  }
+  //获取本月第一天
+  const getNowMonthFirst = (date:any) => {
+    date.setDate(1)
+    return date
   }
 
+  //获取本月最后一天
+  const getNowMonthLast = (date:any) => {
+    const endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0)
+    return endDate
+  }
+
+  //获取周榜
+  const getWeekDate = async() =>{
+    let date = new Date()
+    for(let i =0;i<3;i++){
+      //当前时间
+      let startTimeItem = new Date(date.getTime());
+      let endTimeItem = new Date(startTimeItem.getTime() - 24*60*60*1000*7 );
+      date = endTimeItem
+      let ey = endTimeItem.getFullYear() //获取年份
+      let em = endTimeItem.getMonth() + 1 //获取月份js月份从0开始，需要+1
+      let ed = endTimeItem.getDate() //获取日期
+      let sy = startTimeItem.getFullYear() //获取年份
+      let sm = startTimeItem.getMonth() + 1 //获取月份js月份从0开始，需要+1
+      let sd = startTimeItem.getDate() //获取日期
+      em = addDate0(em) //给为单数的月份补零
+      ed = addDate0(ed) //给为单数的日期补零
+      sm = addDate0(sm) //给为单数的月份补零
+      sd = addDate0(sd) //给为单数的日期补零
+      let dateTime = ey + '年' + em + '月' + ed + '日' + '-' + sy + '年' + sm + '月' + sd + '日'
+      let weeklyList = new weekDateObject(i,moment(endTimeItem).format("YYYY-MM-DD"),moment(startTimeItem).format("YYYY-MM-DD"),dateTime)
+      tideData.weeklyList.push(weeklyList as never)
+    }
+    // optionDateTime.defaultWeeklyTime = tideData.dailyList[0]
+  }
+
+  //获取最近7天的时间
   const getNearly7Day = async () =>  {
     let date = new Date()
     for (let i = 0; i <= 24 * 6; i += 24) {
       //今天加上前6天
       let dateItem = new Date(date.getTime() - i * 60 * 60 * 1000) //使用当天时间戳减去以前的时间毫秒（小时*分*秒*毫秒）
+      let endDateItem = new Date(date.getTime() - i * 60 * 60 * 1000 + 60 * 60 * 24 * 1000) //使用当天时间戳减去以前的时间毫秒（小时*分*秒*毫秒）
       let y = dateItem.getFullYear() //获取年份
       let m = dateItem.getMonth() + 1 //获取月份js月份从0开始，需要+1
       let d = dateItem.getDate() //获取日期
@@ -227,22 +355,21 @@
       d = addDate0(d) //给为单数的日期补零
       let valueItem = y + '年' + m + '月' + d + '日' //组合
       let dateTime = y + '-' + m + '-' + d + ''+ h + ':' + dm + ':' + s  //组合
-      let dateList = new dateObject(i,moment(dateItem).format("YYYY-MM-DD hh:mm:ss"),valueItem);
+      let dateList = new dateObject(i,moment(dateItem).format("YYYY-MM-DD"),moment(endDateItem).format("YYYY-MM-DD"),valueItem);
       tideData.dailyList.push(dateList as never)
     }
-    //给日期加0
-    function addDate0(time:any) {
-      if (time.toString().length == 1) {
-        time = '0' + time.toString()
-      }
-      return time
-    }
-    debugger
+    optionDateTime.defaultDailyTime = tideData.dailyList[0]
   }
 
+  //给日期加0
+  function addDate0(time:any) {
+    if (time.toString().length == 1) {
+      time = '0' + time.toString()
+    }
+    return time
+  }
 
-
-  //下拉
+  //下拉过滤TODO
   function regionDropDown(searchValue: any, option: any, group: any) {
   }
   //分页
@@ -252,6 +379,7 @@
     findAccountSelectPage('')
   }
 
+  //表格数据
   const xTable: any = ref<VxeTableInstance>()
 
   // 导出当前页
@@ -339,8 +467,9 @@
 
   .faceBookBackground-border {
     margin: 10px;
-    border-radius: 4px;
+    border-radius: 12px;
     box-shadow: 0px 2px 10px 1px rgba(17, 54, 145, 30);
+    padding: 0 20px 20px;
   }
 
   .faceBookBackgroundLeft {
