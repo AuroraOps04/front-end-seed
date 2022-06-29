@@ -28,5 +28,17 @@ declare namespace API {
     sort: number
   } & Model
 
+
+  type Account = {
+    area: string;
+    category: string;
+    platform: string;
+    accountName: string;
+    startTime:string;
+    endTime:string;
+  } & Model
+
   type DictParams = Partial<Dict>
+  type AccountParams = Partial<Account>
+
 }

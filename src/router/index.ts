@@ -20,6 +20,12 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
+    path: '/Leaderboard',
+    name: 'Leaderboard',
+    component: () => import('@/views/Leaderboard/Leaderboard.vue')
+  },
+
+  {
     path: '/',
     component: () => import("@/layout/index.vue"),
     redirect: {
