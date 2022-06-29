@@ -1,18 +1,20 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
 
 // @ts-ignore
 import router from '@/router/index'
 // @ts-ignore
 import store from '@/store/index'
+
 // 引入 vxe-table组件
 // 网址连接 :https://vxetable.cn/#/table/start/install
 import 'xe-utils'
 import VXETable from 'vxe-table'
 import 'vxe-table/lib/style.css'
 
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
+import 'normalize.css/normalize.css'
+
+
 
 // @ts-ignore
 function useTable (app: App) {
@@ -25,4 +27,4 @@ function useTable (app: App) {
     // app.config.globalProperties.$XReadFile = VXETable.readFile
 }
 
-createApp(App).use(router).use(store).use(useTable).use(ElementPlus).mount('#app')
+createApp(App).use(router).use(store).use(useTable).mount('#app')

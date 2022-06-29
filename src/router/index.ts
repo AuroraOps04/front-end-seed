@@ -2,9 +2,22 @@ import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/home',
-    name: 'Home',
-    component: () => import('@/views/home/Home.vue')
+    path: '/admin',
+    name: 'Admin',
+    component: () => import('@/layout/admin/index.vue'),
+    redirect: '/admin/index',
+    children: [
+      {
+        path: '/admin/index',
+        name: 'Dashboard',
+        component: () => import('@/views/admin/index/index.vue')
+      },
+      {
+        path: '/admin/dict',
+        name: 'Dict',
+        component: () => import('@/views/admin/dict/index.vue')
+      }
+    ]
   },
   {
     path: '/Leaderboard',
@@ -14,9 +27,22 @@ const routes: Array<RouteRecordRaw> = [
 
   {
     path: '/',
+    component: () => import("@/layout/index.vue"),
     redirect: {
       name: 'Home'
-    }
+    },
+    children: [
+      {
+        path: '/login',
+        name: 'Login',
+        component: () => import('@/views/login/Login.vue')
+      },
+      {
+        path: '/home',
+        component: () => import("@/views/home/Home.vue"),
+        name: 'Home'
+      }
+    ]
   }
 ]
 

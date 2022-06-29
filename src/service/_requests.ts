@@ -1,3 +1,4 @@
+
 import Axios, {AxiosRequestConfig, AxiosResponse} from "axios"
 // @ts-ignore
 import nProgress from "nProgress"
@@ -35,6 +36,7 @@ const request = (url: string, params: {
         ...params.config
       })
     case 'POST':
+
       return _instance.post(url, params.data, {
         params: params.params,
         ...params.config

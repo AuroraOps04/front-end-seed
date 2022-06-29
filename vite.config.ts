@@ -10,19 +10,21 @@ export default defineConfig({
     // 配置别名
     alias: {
       '@': resolve(__dirname, 'src'),
-      '@c': resolve(__dirname, 'src/components')
+      '@components': resolve(__dirname, 'src/components'),
+      '@service': resolve(__dirname, 'src/service')
     }
   },
   base: './', // 打包路径
   server: {
     port: 4000, // 服务端口号
     open: true, // 服务启动时是否自动打开浏览器
-    cors: true, // 允许跨域
+
+    // cors: true // 允许跨域
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
+      '^/api': {
+        target: 'http://localhost:8080/',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/api/, '')
+        rewrite: (path: string) => path.replace(/^\/api/, '')
       }
     }
   }
