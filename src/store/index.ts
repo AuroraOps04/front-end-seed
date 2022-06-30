@@ -1,27 +1,39 @@
+import { getCurrentApi } from '@/service/user'
 import { createStore } from 'vuex'
 
-const defaultState = {
-  count: 0
+export type RootState = {
+    user?: any
 }
 
-// Create a new store instance.
-export default createStore({
-  state() {
-    return defaultState
-  },
-  mutations: {
-    increment(state: typeof defaultState) {
-      state.count += 1
+export default createStore<RootState>({
+    state: {
+        user: {
+            name: '456'
+        }
+    },
+ mutations: {
+    ['SET_USER'](state, payload){
+        state.user = payload
     }
-  },
-  actions: {
-    increment(context) {
-      context.commit('increment')
+ },
+ actions: {
+    /**
+ * 获取当前用户信息
+ * 如果拿不到就清空当前的用户信息
+ * 拿到了就设置当前的用户信息
+ */
+    async fetchCurrentUser({commit}){
+        try{
+            const res = await getCurrentApi()
+           commit("SET_USER", res.data)
+          }catch(e){
+            commit("SET_USER", undefined)
+          }
     }
-  },
-  getters: {
-    double(state: typeof defaultState) {
-      return 2 * state.count
+ },
+ getters: {
+    currentUser(state){
+        return state.user
     }
-  }
+ }
 })
