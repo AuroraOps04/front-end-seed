@@ -1,0 +1,2 @@
+安装vxe-table
+ npm install xe-utils vxe-table@next
