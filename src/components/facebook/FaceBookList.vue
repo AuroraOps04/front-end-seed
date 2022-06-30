@@ -1,130 +1,12 @@
-<template>
-  <div class="faceBookBackground-border">
-    <!--    图片显示器-->
-    <vxe-toolbar>
-      <template #buttons>
-        <div class="faceBookBackgroundLeft">
-          <div class="faceBookBackground">
-            <p>
-              FaceBook&nbsp;榜&nbsp;单
-            </p>
-          </div>
-          <div class="tideDataTime">
-            <span>截止日期:{{tideData.currentDate}}</span>
-          </div>
-        </div>
-      </template>
-    </vxe-toolbar>
-    <!--    工具框-->
-    <vxe-toolbar>
-      <template #buttons>
-        <div class="radioLeft">
-          <vxe-radio-group v-model="dateList">
-            <vxe-radio-button label="1" content="日榜"></vxe-radio-button>
-            <vxe-radio-button label="2" content="周榜"></vxe-radio-button>
-            <vxe-radio-button label="3" content="月榜"></vxe-radio-button>
-          </vxe-radio-group>
-        </div>
-        <div style="margin-left:25px">
-          <!--日榜-->
-          <p v-if="dateList == 1">
-            <vxe-select v-model="optionDateTime.defaultDailyTime.date" placeholder="选择时间" @change="changeDate($event)">
-              <vxe-option v-for="daily in tideData.dailyList" :key="daily.id" :value="daily" :label="daily.date"></vxe-option>
-            </vxe-select>
-          </p>
-          <!--周榜-->
-          <p v-if="dateList == 2">
-            <vxe-select v-model="optionDateTime.defaultWeeklyTime.date" placeholder="选择时间" @change="changeDate($event)">
-              <vxe-option v-for="weekly in tideData.weeklyList" :key="weekly.id" :value="weekly" :label="weekly.date"></vxe-option>
-            </vxe-select>
-          </p>
-          <!--月榜-->
-          <p v-if="dateList == 3">
-            <vxe-select v-model="tideData.monthlyList.date" placeholder="选择时间" filterable="true"
-                        :filter-method="regionDropDown(1, 2, 3)" @change="changeDate($event)">
-              <vxe-option v-for="monthly in tideData.monthlyList" :key="monthly.id" :value="monthly" :label="monthly.date"></vxe-option>
-            </vxe-select>
-          </p>
-        </div>
-        <div style="margin-left:80px">
-          <span style="padding-right: 20px; ">地区</span>
-          <vxe-select v-model="tideData.option.area" placeholder="选择区域" filterable="true"
-                      :filter-method="regionDropDown(1, 2, 3)" @change="changeArea($event)">
-            <vxe-option v-for="area in tideData.area" :key="area.areaId" :value="area.areaName" :label="area.areaName"></vxe-option>
-          </vxe-select>
-        </div>
-        <div style="margin-left:80px">
-          <span style="padding-right: 20px; ">分类</span>
-          <vxe-select v-model="tideData.option.category" placeholder="全部" filterable="true"
-                      :filter-method="regionDropDown(1, 2, 3)" @change="changeCategory($event)">
-            <vxe-option v-for="cateGory in tideData.cateGory" :key="cateGory.categoryId" :value="cateGory.categoryName" :label="cateGory.categoryName"></vxe-option>
-          </vxe-select>
-        </div>
-      </template>
-      <template #tools>
-        <n-button type="warning" @click="exportCurrentPage" dashed>
-          导出
-        </n-button>
-      </template>
-    </vxe-toolbar>
-    <!--    table内容-->
-    <vxe-table
-      border
-      round="true"
-      ref="xTable"
-      height="400"
-      width="500"
-      :column-config="{resizable: true}"
-      :data="tideData.tableData"
-    >
-      <vxe-column field="accountId" title="排名" align="center" sortable="true">
-
-      </vxe-column>
-      <vxe-column field="accountName" title="账号" align="center">
-        <template #default="{ row }">
-          <a href="https://github.com/x-extends/vxe-table" target="_black">{{ row.accountName }}</a>
-        </template>
-      </vxe-column>
-
-      <vxe-column field="recordFan" title="粉丝数" align="center">
-
-      </vxe-column>
-      <vxe-column field="recordArticle" title="发文数" align="center">
-
-      </vxe-column>
-      <vxe-column field="recordLike" title="点赞数" align="center">
-
-      </vxe-column>
-      <vxe-column field="recordComment" title="评论数" align="center">
-
-      </vxe-column>
-      <vxe-column field="recordForward" title="转发数" align="center">
-
-      </vxe-column>
-      <vxe-column field="sex" title="潮汐指数" align="center">
-
-      </vxe-column>
-    </vxe-table>
-    <!--    table分页-->
-    <vxe-pager
-      perfect
-      v-model:current-page="tideData.tablePage.currentPage"
-      v-model:page-size="tideData.tablePage.pageSize"
-      :total="tideData.tablePage.total"
-      @page-change="handlePageChange"
-      :layouts="['PrevJump', 'PrevPage', 'Number', 'NextPage', 'NextJump', 'Sizes', 'FullJump', 'Total']">
-    </vxe-pager>
-  </div>
-</template>
 <script lang="ts" setup>
-  import {onMounted, reactive, ref,watch} from 'vue'
+  import {onMounted, reactive, ref,watch,defineExpose} from 'vue'
   import {VxeButtonEvents, VxePagerEvents, VxeTableInstance} from 'vxe-table'
-  import { NButton }  from 'naive-ui'
+  // import { NButton,NAvatar }  from 'naive-ui'
   import {listAccountByPageApi,findAllCategoryApi,findAreaApi} from '@/service/account'
   import moment from 'moment';
   import 'moment/locale/pt-br';
   onMounted(()=>{
-    findAccountSelectPage('')
+    findAccountSelectPage(accountName.value)
     getTime()
     findAllCategory()
     findAllArea()
@@ -132,6 +14,7 @@
     getWeekDate()
     getMonthDate()
   })
+
   // type TideDataType = {
   //   tableData: API.Dict[],
   //   tablePage: {
@@ -139,6 +22,7 @@
   //   },
   //   // dailyList: string[]
   // }
+
   //日榜类
   class dateObject{
     id: number | undefined;
@@ -180,10 +64,12 @@
   }
 
   //日榜周榜月榜选项 1：日榜 2：周榜 3：月榜
-  const dateList = ref<number>(1);
+  const dateList = ref<number>(1)
+  //搜索账号条件
+  const accountName = ref<string>('')
   //TODO
   const dateChangeTable = ref<number>(1);
-  watch(dateList,(newValue,oldValue)=>{
+  watch(dateList,(newValue: number, oldValue: any)=>{
     if (newValue == 1){
       dateChangeTable.value = 1
     }else if (newValue == 2){
@@ -192,6 +78,7 @@
       dateChangeTable.value = 3
     }
   })
+
   const tideData = reactive({
     //表格数据
     tableData: [],
@@ -241,39 +128,40 @@
   const findAccountSelectPage = async (accountName:string) => {
     params.accountName = accountName
     const res = await listAccountByPageApi(params)
-    tideData.tableData = res.data as any
-    tideData.tablePage.total = res.count as any
+    // tideData.tableData = (res.data! as any).data
+    tideData.tableData = res.data! as any
+    tideData.tablePage.total = res.count! as any
   }
 
   //查询所有地区
   const findAllArea = async()=>{
     const res = await findAreaApi(null);
-    tideData.area = res as any
+    tideData.area = res.data as any
   }
 
   //查询所有分类
   const findAllCategory = async () => {
     const res = await findAllCategoryApi(null)
-    tideData.cateGory = res as any
+    tideData.cateGory = res.data as any
   }
 
   //下拉时间选项
   function changeDate(event:any){
     params.startTime = event.value.startTime
     params.endTime = event.value.endTime
-    findAccountSelectPage('')
+    findAccountSelectPage(accountName.value)
   }
 
   //地区下拉选项
   function changeArea(event:any){
     params.area = event.value
-    findAccountSelectPage('')
+    findAccountSelectPage(accountName.value)
   }
 
   //分类下拉选项
   function changeCategory(event:any){
     params.category = event.value
-    findAccountSelectPage('')
+    findAccountSelectPage(accountName.value)
   }
 
   // 获取时间接口
@@ -358,7 +246,7 @@
       let dateList = new dateObject(i,moment(dateItem).format("YYYY-MM-DD"),moment(endDateItem).format("YYYY-MM-DD"),valueItem);
       tideData.dailyList.push(dateList as never)
     }
-    optionDateTime.defaultDailyTime = tideData.dailyList[0]
+    // optionDateTime.defaultDailyTime = tideData.dailyList[0]
   }
 
   //给日期加0
@@ -376,7 +264,7 @@
   const handlePageChange: VxePagerEvents.PageChange = ({ currentPage, pageSize }) => {
     params.page = currentPage
     params.pageSize = pageSize
-    findAccountSelectPage('')
+    findAccountSelectPage(accountName.value)
   }
 
   //表格数据
@@ -393,8 +281,142 @@
     })
   }
 
-  defineExpose({findAccountSelectPage})
+  function receiveParametersMethods(accountNameProp:string){
+    accountName.value = accountNameProp
+    findAccountSelectPage(accountName.value)
+
+  }
+
+  defineExpose({receiveParametersMethods})
 </script>
+<template>
+  <div class="faceBookBackground-border">
+    <!--    图片显示器-->
+    <vxe-toolbar>
+      <template #buttons>
+        <div class="faceBookBackgroundLeft">
+          <div class="faceBookBackground">
+            <p>
+              FaceBook&nbsp;榜&nbsp;单
+            </p>
+          </div>
+          <div class="tideDataTime">
+            <span>截止日期:{{tideData.currentDate}}</span>
+          </div>
+        </div>
+      </template>
+    </vxe-toolbar>
+    <!--    工具框-->
+    <vxe-toolbar>
+      <template #buttons>
+        <div class="radioLeft">
+          <vxe-radio-group v-model="dateList">
+            <vxe-radio-button label="1" content="日榜"></vxe-radio-button>
+            <vxe-radio-button label="2" content="周榜"></vxe-radio-button>
+            <vxe-radio-button label="3" content="月榜"></vxe-radio-button>
+          </vxe-radio-group>
+        </div>
+        <div style="margin-left:25px">
+          <!--日榜-->
+          <p v-if="dateList == 1">
+            <vxe-select v-model="optionDateTime.defaultDailyTime.date" placeholder="选择时间" @change="changeDate($event)" filterable>
+              <vxe-option v-for="daily in tideData.dailyList" :key="daily.id" :value="daily" :label="daily.date"></vxe-option>
+            </vxe-select>
+          </p>
+          <!--周榜-->
+          <p v-if="dateList == 2">
+            <vxe-select v-model="optionDateTime.defaultWeeklyTime.date" placeholder="选择时间" @change="changeDate($event)" filterable>
+              <vxe-option v-for="weekly in tideData.weeklyList" :key="weekly.id" :value="weekly" :label="weekly.date"></vxe-option>
+            </vxe-select>
+          </p>
+          <!--月榜-->
+          <p v-if="dateList == 3">
+            <vxe-select v-model="tideData.monthlyList.date" placeholder="选择时间" filterable
+                        :filter-method="regionDropDown(1, 2, 3)" @change="changeDate($event)">
+              <vxe-option v-for="monthly in tideData.monthlyList" :key="monthly.id" :value="monthly" :label="monthly.date"></vxe-option>
+            </vxe-select>
+          </p>
+        </div>
+        <div style="margin-left:80px">
+          <span style="padding-right: 20px; ">地区</span>
+          <vxe-select v-model="tideData.option.area" placeholder="选择区域" filterable
+                      :filter-method="regionDropDown(1, 2, 3)" @change="changeArea($event)">
+            <vxe-option v-for="area in tideData.area" :key="area.areaId" :value="area.areaName" :label="area.areaName"></vxe-option>
+          </vxe-select>
+        </div>
+        <div style="margin-left:80px">
+          <span style="padding-right: 20px; ">分类</span>
+          <vxe-select v-model="tideData.option.category" placeholder="全部" filterable
+                      :filter-method="regionDropDown(1, 2, 3)" @change="changeCategory($event)">
+            <vxe-option v-for="cateGory in tideData.cateGory" :key="cateGory.categoryId" :value="cateGory.categoryName" :label="cateGory.categoryName"></vxe-option>
+          </vxe-select>
+        </div>
+      </template>
+      <template #tools>
+        <vxe-button status="warning" icon="vxe-icon--download" @click="exportCurrentPage" content="导出"></vxe-button>
+      </template>
+    </vxe-toolbar>
+    <!--    table内容-->
+    <vxe-table
+      border
+      round
+      ref="xTable"
+      height="400"
+      width="500"
+      :column-config="{resizable: true}"
+      :data="tideData.tableData"
+    >
+      <vxe-column field="accountId" title="排名" align="center" sortable>
+
+      </vxe-column>
+
+      <vxe-colgroup title="属性" align="center">
+        <vxe-column field="accountName" title="头像" align="center">
+          <template #default="{ row }">
+            <n-avatar
+              round
+              size="small"
+              src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            />
+          </template>
+        </vxe-column>
+        <vxe-column field="accountName"  align="center" title="账号">
+          <template #default="{ row }">
+            <a href="https://github.com/x-extends/vxe-table" target="_black">{{ row.accountName }}</a>
+          </template>
+        </vxe-column>
+      </vxe-colgroup>
+
+      <vxe-column field="recordFan" title="粉丝数" align="center">
+
+      </vxe-column>
+      <vxe-column field="recordArticle" title="发文数" align="center">
+
+      </vxe-column>
+      <vxe-column field="recordLike" title="点赞数" align="center">
+
+      </vxe-column>
+      <vxe-column field="recordComment" title="评论数" align="center">
+
+      </vxe-column>
+      <vxe-column field="recordForward" title="转发数" align="center">
+
+      </vxe-column>
+      <vxe-column field="sex" title="潮汐指数" align="center">
+
+      </vxe-column>
+    </vxe-table>
+    <!--    table分页-->
+    <vxe-pager
+      perfect
+      v-model:current-page="tideData.tablePage.currentPage"
+      v-model:page-size="tideData.tablePage.pageSize"
+      :total="tideData.tablePage.total"
+      @page-change="handlePageChange"
+      :layouts="['PrevJump', 'PrevPage', 'Number', 'NextPage', 'NextJump', 'Sizes', 'FullJump', 'Total']">
+    </vxe-pager>
+  </div>
+</template>
 <style>
   .tideDataTime {
     float: left;

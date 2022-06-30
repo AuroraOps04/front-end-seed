@@ -1,3 +1,15 @@
+<script lang="ts" setup>
+  import {ref} from 'vue'
+  import NavigationBar from '../../components/facebook/NavigationBar.vue'
+  import { NButton,NInput,NInputGroup } from 'naive-ui'
+  const accountName = ref<string>('')
+  const navigationBarRef = ref<any>();
+  //调用findAccountSelectPage方法
+  const getNavigationBar = () => {
+    navigationBarRef.value.NavigationBarMethod(accountName.value);
+  }
+
+</script>
 <template>
   <div class="leaderBoardBak">
     <Header></Header>
@@ -10,9 +22,9 @@
           <div class="rightTide">
             <div>
               <n-input-group>
-                <n-input :style="{ width: '40%' }" v-model:value="accountName"/>
+                <n-input :style="{ width: '40%'}" v-model:value="accountName"/>
                 <n-button type="primary" ghost @click="getNavigationBar">
-                  搜索
+                  搜索账号
                 </n-button>
               </n-input-group>
             </div>
@@ -25,26 +37,11 @@
     </div>
   </div>
 </template>
-<script lang="ts" setup>
-  import { ref} from 'vue'
-  import NavigationBar from '../../components/facebook/NavigationBar.vue'
-  import { NButton,NInput } from 'naive-ui'
-  import Header from "@/components/Header.vue"
-
-  const accountName = ref(null)
-  const navigationBarRef = ref<any>();
-  //调用findAccountSelectPage方法
-  const getNavigationBar = () => {
-    navigationBarRef.value.NavigationBarMethod(accountName.value);
-  }
-
-</script>
 <style scoped>
   .tideBackground {
     background-image: url("@/assets/home_bg.png");
     background-size: 100% 626px;
     background-repeat: no-repeat;
-    position: relative;
     height: 250px;
   }
 
@@ -78,4 +75,5 @@
   .tide {
     padding-top: calc(8%);
   }
+
 </style>

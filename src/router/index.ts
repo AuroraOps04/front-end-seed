@@ -21,6 +21,7 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
+
     path: '/',
     component: () => import('@/layout/index.vue'),
     redirect: {
