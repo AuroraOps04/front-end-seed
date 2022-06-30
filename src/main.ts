@@ -1,9 +1,7 @@
 import {createApp} from 'vue'
 import App from './App.vue'
 
-// @ts-ignore
 import router from '@/router/index'
-// @ts-ignore
 import store from '@/store/index'
 
 // 引入 vxe-table组件

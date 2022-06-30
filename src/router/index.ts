@@ -1,4 +1,5 @@
-import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
+import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
+import store from "@/store"
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -20,35 +21,61 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
-    path: '/Leaderboard',
-    name: 'Leaderboard',
-    component: () => import('@/views/leaderboard/Leaderboard.vue')
-  },
 
-  {
     path: '/',
-    component: () => import("@/layout/admin/index.vue"),
+    component: () => import('@/layout/index.vue'),
     redirect: {
       name: 'Home'
     },
     children: [
+      {
+        path: '/home',
+        component: () => import('@/views/home/Home.vue'),
+        name: 'Home'
+      },
       {
         path: '/login',
         name: 'Login',
         component: () => import('@/views/login/Login.vue')
       },
       {
-        path: '/home',
-        component: () => import("@/views/home/Home.vue"),
-        name: 'Home'
-      }
+        path: '/person',
+        component: () => import("@/views/person/Person.vue"),
+        name: 'Person'
+      },
+      {
+        path: '/header',
+        component: () => import("@/components/Header.vue"),
+        name: 'Header'
+      },
+      {
+        path: '/Leaderboard',
+        name: 'Leaderboard',
+        component: () => import('@/views/Leaderboard/Leaderboard.vue')
+      },
     ]
   }
 ]
 
+export const history = createWebHistory()
 const router = createRouter({
-  history: createWebHashHistory(),
+  history,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requireAuth) {
+    if (store.state.user) {
+      next()
+      return
+    }
+    next({
+      name: "Login"
+    })
+    return
+  }
+  next()
+
 })
 
 export default router

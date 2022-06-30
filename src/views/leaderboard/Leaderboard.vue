@@ -12,6 +12,7 @@
 </script>
 <template>
   <div class="leaderBoardBak">
+    <Header></Header>
     <div class="tideBackground">
       <div class="searchHeader">
         <div class="tide">
@@ -36,7 +37,7 @@
     </div>
   </div>
 </template>
-<style scoped lang="scss">
+<style scoped>
   .tideBackground {
     background-image: url("@/assets/home_bg.png");
     background-size: 100% 626px;
