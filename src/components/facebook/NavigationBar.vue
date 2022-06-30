@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { defineComponent } from 'vue'
+  import { defineComponent, defineExpose } from 'vue'
   import { NCard,NTabs,NTabPane }  from 'naive-ui'
   import {ref} from 'vue'
   import FaceBookList from './FaceBookList.vue'

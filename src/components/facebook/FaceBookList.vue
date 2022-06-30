@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-  import {onMounted, reactive, ref,watch} from 'vue'
+  import {onMounted, reactive, ref,watch,defineExpose} from 'vue'
   import {VxeButtonEvents, VxePagerEvents, VxeTableInstance} from 'vxe-table'
-  import { NButton,NAvatar }  from 'naive-ui'
+  // import { NButton,NAvatar }  from 'naive-ui'
   import {listAccountByPageApi,findAllCategoryApi,findAreaApi} from '@/service/account'
   import moment from 'moment';
   import 'moment/locale/pt-br';
@@ -14,6 +14,7 @@
     getWeekDate()
     getMonthDate()
   })
+
   // type TideDataType = {
   //   tableData: API.Dict[],
   //   tablePage: {
@@ -68,7 +69,7 @@
   const accountName = ref<string>('')
   //TODO
   const dateChangeTable = ref<number>(1);
-  watch(dateList,(newValue,oldValue)=>{
+  watch(dateList,(newValue: number, oldValue: any)=>{
     if (newValue == 1){
       dateChangeTable.value = 1
     }else if (newValue == 2){
@@ -77,6 +78,7 @@
       dateChangeTable.value = 3
     }
   })
+
   const tideData = reactive({
     //表格数据
     tableData: [],
@@ -126,20 +128,21 @@
   const findAccountSelectPage = async (accountName:string) => {
     params.accountName = accountName
     const res = await listAccountByPageApi(params)
-    tideData.tableData = res.data as any
-    tideData.tablePage.total = res.count as any
+    // tideData.tableData = (res.data! as any).data
+    tideData.tableData = res.data! as any
+    tideData.tablePage.total = res.count! as any
   }
 
   //查询所有地区
   const findAllArea = async()=>{
     const res = await findAreaApi(null);
-    tideData.area = res as any
+    tideData.area = res.data as any
   }
 
   //查询所有分类
   const findAllCategory = async () => {
     const res = await findAllCategoryApi(null)
-    tideData.cateGory = res as any
+    tideData.cateGory = res.data as any
   }
 
   //下拉时间选项

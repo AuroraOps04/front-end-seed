@@ -41,7 +41,6 @@
     background-image: url("@/assets/home_bg.png");
     background-size: 100% 626px;
     background-repeat: no-repeat;
-    possion: relative;
     height: 250px;
   }
 
