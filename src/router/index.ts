@@ -1,5 +1,5 @@
-import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
-
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import store from "@/store"
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/admin',
@@ -20,20 +20,25 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
+    path: '/Leaderboard',
+    name: 'Leaderboard',
+    component: () => import('@/views/Leaderboard/Leaderboard.vue')
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/login/Login.vue')
+  },
+  {
     path: '/',
-    component: () => import("@/layout/index.vue"),
+    component: () => import('@/layout/index.vue'),
     redirect: {
       name: 'Home'
     },
     children: [
       {
-        path: '/login',
-        name: 'Login',
-        component: () => import('@/views/login/Login.vue')
-      },
-      {
         path: '/home',
-        component: () => import("@/views/home/Home.vue"),
+        component: () => import('@/views/home/Home.vue'),
         name: 'Home'
       },
       {
@@ -50,9 +55,25 @@ const routes: Array<RouteRecordRaw> = [
   }
 ]
 
+export const history = createWebHistory()
 const router = createRouter({
-  history: createWebHashHistory(),
+  history,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if(to.meta.requireAuth){
+    if(store.state.user){
+      next()
+      return
+    }
+    next({
+      name: "Login"
+    })
+    return
+  }
+  next()
+
 })
 
 export default router

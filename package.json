@@ -9,15 +9,20 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "js-cookie": "^3.0.1",
+    "moment": "^2.29.3",
     "naive-ui": "^2.30.6",
     "normalize.css": "^8.0.1",
     "nprogress": "^0.2.0",
     "vue": "^3.2.25",
     "vue-router": "^4.0.16",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "vxe-table": "^4.2.8",
+    "xe-utils": "^3.5.4"
   },
   "devDependencies": {
     "@types/es6-promise": "^3.3.0",
+    "@types/js-cookie": "^3.0.1",
     "@types/node": "^18.0.0",
     "@types/nprogress": "^0.2.0",
     "@typescript-eslint/eslint-plugin": "^5.29.0",

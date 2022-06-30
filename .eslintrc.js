@@ -21,6 +21,8 @@ module.exports = {
   rules: {
     'vue/multi-word-component-names': 0,
     'import/extensions': 0,
-    'import/no-unresolved': 0
+    'import/no-unresolved': 0,
+    'vue/no-v-model-argument': 0,
+    'no-console': 0
   }
 }
