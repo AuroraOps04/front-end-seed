@@ -1,3 +1,15 @@
+<script lang="ts" setup>
+  import { defineComponent } from 'vue'
+  import { NCard,NTabs,NTabPane }  from 'naive-ui'
+  import {ref} from 'vue'
+  import FaceBookList from './FaceBookList.vue'
+
+  const faceBookListRef = ref<any>();
+  function NavigationBarMethod(accountName:string){
+    faceBookListRef.value.receiveParametersMethods(accountName)
+  }
+  defineExpose({NavigationBarMethod})
+</script>
 <template>
   <div class="navigationBarStyleTop">
     <n-tabs type="segment">
@@ -17,19 +29,6 @@
     </n-tabs>
   </div>
 </template>
-<script lang="ts" setup>
-  import { defineComponent } from 'vue'
-  import { NCard,NTabs,NTabPane }  from 'naive-ui'
-  import {ref} from 'vue'
-  import FaceBookList from './FaceBookList.vue'
-
-  const faceBookListRef = ref<any>();
-  const navigationBarName = ref<any>();
-  function NavigationBarMethod(accountName:string){
-    faceBookListRef.value.findAccountSelectPage(accountName)
-  }
-  defineExpose({NavigationBarMethod})
-</script>
 <style lang="scss">
   .navigationBarStyleTop {
     margin-top:-20px;
