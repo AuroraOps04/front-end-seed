@@ -12,7 +12,11 @@ import 'vxe-table/lib/style.css'
 
 import 'normalize.css/normalize.css'
 
-
+// // 引入 echarts
+// import * as echarts from 'echarts'
+// const app = createApp(App)
+// // 全局挂载 echarts
+// app.config.globalProperties.$echarts = echarts
 
 // @ts-ignore
 function useTable (app: App) {
@@ -24,5 +28,7 @@ function useTable (app: App) {
     // app.config.globalProperties.$XSaveFile = VXETable.saveFile
     // app.config.globalProperties.$XReadFile = VXETable.readFile
 }
+
+
 
 createApp(App).use(router).use(store).use(useTable).mount('#app')

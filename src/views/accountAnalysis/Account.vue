@@ -5,7 +5,7 @@ import up from '../../assets/up.png'
 import comment from '../../assets/comment.png'
 import forward from '../../assets/forward.png'
 import write from '../../assets/write.png'
-import bg from '../../assets/bg.png'
+import text_bg from '../../assets/text_bg.png'
 
 import { NButton,NCard,NAvatar,NGrid,NGi,NDivider,NIcon } from 'naive-ui'
 
@@ -53,7 +53,7 @@ const writePng = write
 const commentPng = comment
 const forwardPng = forward
 const upPng = up
-const bgPng = bg
+const text_bgPng = text_bg
 
 
 </script>
@@ -167,7 +167,7 @@ const bgPng = bg
           <n-gi>
             <div>
               <h2 class='text_italic text_first_label'>账号数据</h2>
-              <img :src='bgPng' class='img_bg'>
+              <img :src='text_bgPng' class='img_bg'>
             </div>
           </n-gi>
           <n-gi span='4'>
