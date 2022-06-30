@@ -1,5 +1,6 @@
 <template>
   <div class="leaderBoardBak">
+    <Header></Header>
     <div class="tideBackground">
       <div class="searchHeader">
         <div class="tide">
@@ -25,9 +26,11 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import {defineComponent, ref, reactive, onMounted} from 'vue'
+  import { ref} from 'vue'
   import NavigationBar from '../../components/facebook/NavigationBar.vue'
   import { NButton,NInput } from 'naive-ui'
+  import Header from "@/components/Header.vue"
+
   const accountName = ref(null)
   const navigationBarRef = ref<any>();
   //调用findAccountSelectPage方法
@@ -41,7 +44,7 @@
     background-image: url("@/assets/home_bg.png");
     background-size: 100% 626px;
     background-repeat: no-repeat;
-    possion: relative;
+    position: relative;
     height: 250px;
   }
 

@@ -2,8 +2,10 @@
 import {NAvatar} from "naive-ui";
 import {reactive, ref} from "vue";
 import {useRouter} from "vue-router";
+import {useStore} from "vuex";
 
 const router = useRouter();
+const store = useStore();
 const avatar = ref("头像")
 const menuArr = reactive([
   {
@@ -13,15 +15,13 @@ const menuArr = reactive([
   },
   {
     name: "排行榜",
-    code: "ranking",
+    code: "Leaderboard",
     isSelect: false
   }
 ])
 const handleTo = (e: string) => {
-  menuArr.forEach(item => {
-    item.isSelect = item.code === e;
-  })
-  router.push(e);
+  store.commit('SET_MENU', e);
+  router.push("/"+e);
 }
 </script>
 
@@ -29,7 +29,7 @@ const handleTo = (e: string) => {
   <div class="header-bg">
     <div class="title">
       <template v-for="item in menuArr">
-        <span @click="handleTo(item.code)" :style="{backgroundColor:item.isSelect?'#113691':'black'}">{{
+        <span @click="handleTo(item.code)" :style="{backgroundColor:item.code===store.state.menu?'#113691':'black'}">{{
             item.name
           }}</span>
       </template>

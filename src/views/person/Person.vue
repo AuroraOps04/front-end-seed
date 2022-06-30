@@ -29,7 +29,7 @@ const menuArr = reactive([
   },
   {
     name: "我的榜单",
-    code: "ranking",
+    code: "Leaderboard",
     isSelect: false
   }, {
     name: "收藏账号",
@@ -77,7 +77,7 @@ const handleClick = (e: string) => {
             <div class="list-content" v-for="item in menuArr">
               <n-icon size="25" v-if="item.code==='person'" :component="PersonOutline"
                       :color="item.isSelect?'#F78B32':'black'" @click="handleClick(item.code)"/>
-              <n-icon size="25" v-else-if="item.code==='ranking'" :component="BarChartOutline"
+              <n-icon size="25" v-else-if="item.code==='Leaderboard'" :component="BarChartOutline"
                       :color="item.isSelect?'#F78B32':'black'" @click="handleClick(item.code)"/>
               <n-icon size="25" v-else-if="item.code==='collect'" :component="StarOutline"
                       :color="item.isSelect?'#F78B32':'black'" @click="handleClick(item.code)"/>
@@ -141,7 +141,7 @@ const handleClick = (e: string) => {
                 <div class="list-controller">更换号码</div>
               </div>
             </div>
-            <div v-else-if="item.code==='ranking'&&item.isSelect" class="content-ranking">
+            <div v-else-if="item.code==='Leaderboard'&&item.isSelect" class="content-ranking">
               <img :src="rankingBgPng" style="width: 400px" alt="排行榜">
             </div>
             <div v-else-if="item.code==='collect'&&item.isSelect" class="content-collect">
