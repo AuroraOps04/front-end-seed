@@ -10,9 +10,17 @@ import fastPng from "@/assets/fast.png"
 import professionalPng from "@/assets/professional.png"
 import authoritativePng from "@/assets/authoritative.png"
 import stablePng from "@/assets/stable.png"
-import NAvatar from "naive-ui";
+import {NAvatar} from "naive-ui";
 import {ref} from "vue";
+import {useRouter} from "vue-router";
+import {useStore} from "vuex";
 
+const router = useRouter();
+const store = useStore();
+const handleTo = (e: string) => {
+  store.commit('SET_MENU', e);
+  router.push("/" + e)
+}
 const avatar = ref("头像")
 </script>
 
@@ -32,14 +40,16 @@ const avatar = ref("头像")
         </div>
         <!-- 菜单栏 -->
         <div class="home-top-menu-list">
-          <div class="menu-hover">首页</div>
-          <div>排行榜</div>
+          <div class="menu-hover" @click="handleTo('home')">首页</div>
+          <div @click="handleTo('Leaderboard')">排行榜</div>
         </div>
         <!-- 头像 -->
         <div class="home-top-menu-avatar">
-          <n-avatar round>
+          <n-avatar round :size="40" @click="handleTo('person')">
             {{ avatar }}
           </n-avatar>
+          <span style="margin: 0 10px" v-if="store.state.user.phone===''" @click="handleTo('login')">登录</span>
+          <span style="margin: 0 10px" v-else @click="handleTo('person')">{{store.state.user.username}}}</span>
         </div>
       </div>
 
@@ -214,6 +224,14 @@ const avatar = ref("头像")
     .home-top-menu-avatar {
       margin-right: 100px;
       cursor: pointer;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+
+      span {
+        color: white;
+      }
     }
 
     .home-top-menu-avatar:hover {
