@@ -10,9 +10,14 @@ import fastPng from "@/assets/fast.png"
 import professionalPng from "@/assets/professional.png"
 import authoritativePng from "@/assets/authoritative.png"
 import stablePng from "@/assets/stable.png"
-import NAvatar from "naive-ui";
+import {NAvatar} from "naive-ui";
 import {ref} from "vue";
+import {useRouter} from "vue-router";
 
+const router = useRouter();
+const handleTo = (e: string) => {
+  router.push("/" + e)
+}
 const avatar = ref("头像")
 </script>
 
@@ -32,12 +37,12 @@ const avatar = ref("头像")
         </div>
         <!-- 菜单栏 -->
         <div class="home-top-menu-list">
-          <div class="menu-hover">首页</div>
+          <div class="menu-hover" @click="handleTo('home')">首页</div>
           <div>排行榜</div>
         </div>
         <!-- 头像 -->
         <div class="home-top-menu-avatar">
-          <n-avatar round>
+          <n-avatar round :size="40" @click="handleTo('person')">
             {{ avatar }}
           </n-avatar>
         </div>
