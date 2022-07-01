@@ -15,13 +15,25 @@
     getMonthDate()
   })
 
-  // type TideDataType = {
-  //   tableData: API.Dict[],
-  //   tablePage: {
-  //     total: number
-  //   },
-  //   // dailyList: string[]
-  // }
+  type TideDataType = {
+    tableData: {
+      accountId:number,
+      accountName:string,
+      recordFan:number,
+      recordArticle:number,
+      accountPictureUrl:string,
+      recordLike:number,
+      recordComment:number,
+      recordForward:number,
+      createdAt:string,
+      updatedAt:string,
+      deletedAt:number,
+    },
+    tablePage: {
+      total: number
+    },
+    // dailyList: string[]
+  }
 
   //日榜类
   class dateObject{
@@ -232,7 +244,7 @@
     for (let i = 0; i <= 24 * 6; i += 24) {
       //今天加上前6天
       let dateItem = new Date(date.getTime() - i * 60 * 60 * 1000) //使用当天时间戳减去以前的时间毫秒（小时*分*秒*毫秒）
-      let endDateItem = new Date(date.getTime() - i * 60 * 60 * 1000 + 60 * 60 * 24 * 1000) //使用当天时间戳减去以前的时间毫秒（小时*分*秒*毫秒）
+      let endDateItem = new Date(date.getTime() - i * 60 * 60 * 1000) //使用当天时间戳减去以前的时间毫秒（小时*分*秒*毫秒）
       let y = dateItem.getFullYear() //获取年份
       let m = dateItem.getMonth() + 1 //获取月份js月份从0开始，需要+1
       let d = dateItem.getDate() //获取日期
