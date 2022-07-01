@@ -79,12 +79,12 @@ const request = (
       })
     case 'DELETE':
       return _instance.delete(url, {
-        params,
+        params: params.params,
         ...params.config
       })
     case 'PUT':
       return _instance.put(url, params.data, {
-        params,
+        params: params.params,
         ...params.config
       })
   }

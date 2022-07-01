@@ -122,7 +122,7 @@ const getSmsCode = async () => {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-
+       
   .login {
     width: 874px;
     height: 464px;
