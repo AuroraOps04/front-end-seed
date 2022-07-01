@@ -49,7 +49,7 @@ const avatar = ref("头像")
             {{ avatar }}
           </n-avatar>
           <span style="margin: 0 10px" v-if="store.state.user.phone===''" @click="handleTo('login')">登录</span>
-          <span style="margin: 0 10px" v-else @click="handleTo('person')">{{store.state.user.username}}}</span>
+          <span style="margin: 0 10px" v-else @click="handleTo('person')">{{store.state.user.username}}</span>
         </div>
       </div>
 

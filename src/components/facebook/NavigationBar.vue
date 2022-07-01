@@ -2,7 +2,7 @@
   import { defineComponent, defineExpose } from 'vue'
   import { NCard,NTabs,NTabPane }  from 'naive-ui'
   import {ref} from 'vue'
-  import FaceBookList from './FaceBookList.vue'
+  import FaceBookList from '@/components/facebook/FaceBookList.vue'
 
   const faceBookListRef = ref<any>();
   function NavigationBarMethod(accountName:string){

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import {ref} from 'vue'
-  import NavigationBar from '../../components/facebook/NavigationBar.vue'
+  import NavigationBar from '@/components/facebook/NavigationBar.vue'
   import { NButton,NInput,NInputGroup } from 'naive-ui'
   const accountName = ref<string>('')
   const navigationBarRef = ref<any>();
