@@ -35,7 +35,7 @@ const handleTo = (e: string) => {
       </template>
     </div>
     <div class="avatar" @click="handleTo('person')">
-      <n-avatar round :size="35">{{ avatar }}</n-avatar>
+      <n-avatar round :size="35" :src="store.getters.currentPictureUrl"></n-avatar>
       <span style="margin: 0 5px;">个人中心</span>
     </div>
   </div>

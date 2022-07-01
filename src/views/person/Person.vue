@@ -5,7 +5,7 @@ import personIcon2Png from "@/assets/person_icon2.png"
 import personIcon3Png from "@/assets/person_icon3.png"
 import personGradePng from "@/assets/person_grade.png"
 import rankingBgPng from "@/assets/ranking_bg.png"
-import {NAvatar, NIcon} from "naive-ui";
+import {NAvatar, NIcon, NPopselect, NButton, NInput, NUpload, NModal, useMessage,UploadFileInfo } from "naive-ui";
 import {ref, reactive} from "vue";
 import {
   PersonOutline,
@@ -13,14 +13,19 @@ import {
   BarChartOutline,
   PersonCircleOutline,
   IdCardSharp,
-  LockClosed,
   PhonePortraitOutline
 } from "@vicons/ionicons5";
 import Header from "@/components/Header.vue"
+import {useStore} from "vuex";
+import {updatePhoneApi, updateUsernameApi} from "@service/person";
+import {useRouter} from "vue-router";
 
+const router = useRouter();
+const message = useMessage()
+const store = useStore();
 const avatar = ref("头像")
-const username = ref("账号名称")
-const phoneNumber = ref("131****8768")
+const username = ref<string>('')
+const phone = ref<string>('')
 const menuArr = reactive([
   {
     name: "我的资料",
@@ -41,6 +46,86 @@ const handleClick = (e: string) => {
   menuArr.forEach(item => {
     item.isSelect = item.code === e;
   })
+}
+const showModal = ref(false)
+const showModalUsername = ref(false)
+const validatePhone = (): boolean => {
+  if (phone.value === '') {
+    message.error('请输入手机号')
+    return false
+  }
+  if (!phone.value.match(/^1[3-9]\d{9}$/)) {
+    message.error('手机号码格式不正确')
+    return false
+  }
+  return true
+}
+const validateUsername = (): boolean => {
+  if (username.value === '') {
+    message.error('请输入新的昵称')
+    return false
+  }
+  return true
+}
+const handleUpdatePhone = async () => {
+  // 校验手机号码
+  if (!validatePhone()) {
+    return
+  }
+
+  try {
+    const res = await updatePhoneApi(phone.value)
+    console.log(res)
+    message.success('修改成功')
+    showModal.value = false
+    router.go(0)
+  } catch (e) {
+    console.log(e)
+  }
+}
+const handleUpdateUsername = async () => {
+  // 校验昵称输入
+  if (!validateUsername()) {
+    return
+  }
+
+  try {
+    const res = await updateUsernameApi(username.value)
+    console.log(res)
+    message.success('修改成功')
+    showModalUsername.value = false
+    router.go(0)
+  } catch (e) {
+    console.log(e)
+  }
+}
+const  beforeUpload = async (data: {
+  file: UploadFileInfo
+  fileList: UploadFileInfo[]
+})=> {
+  if (data.file.file?.type !== 'image/png') {
+    message.error('只能上传png格式的图片文件，请重新上传')
+    return false
+  }
+  return true
+}
+const handleFinish = ({
+                        file,
+                        event
+                      }: {
+  file: UploadFileInfo
+  event?: ProgressEvent
+}) => {
+  console.log(event)
+  console.log(2222)
+    if (event?.isTrusted){
+      router.go(0)
+    }
+  // message.success((event?.target as XMLHttpRequest).response)
+  // const ext = file.name.split('.')[1]
+  // file.name = `更名.${ext}`
+  // file.url = '__HTTPS__://www.mocky.io/v2/5e4bafc63100007100d8b70f'
+  return file
 }
 </script>
 
@@ -63,11 +148,10 @@ const handleClick = (e: string) => {
       <div class="main">
         <div class="main-menu">
           <div class="menu-avatar">
-            <n-avatar round :size="80">
-              {{ avatar }}
+            <n-avatar round :size="80" :src="store.getters.currentPictureUrl">
             </n-avatar>
           </div>
-          <span class="menu-username">账号名称</span>
+          <span class="menu-username">{{ store.getters.currentUsername }}</span>
           <div class="menu-identification">
             <img :src="personGradePng" style="width: 30px;height: 30px;margin-right: 10px" alt="用户等级">
             <div class="identification-grade">用户等级</div>
@@ -101,11 +185,23 @@ const handleClick = (e: string) => {
                   <span>头像</span>
                 </div>
                 <div class="list-info">
-                  <n-avatar round :size="48">
-                    {{ avatar }}
+                  <n-avatar round :size="48" :src="store.getters.currentPictureUrl">
                   </n-avatar>
                 </div>
-                <div class="list-controller">更换头像</div>
+                <div class="list-controller">
+                  <n-popselect trigger="click">
+                    <span>更换头像</span>
+                    <template #empty>
+                      <n-upload
+                        action="https://class.auni.top/api/user/updatePictrue"
+                        @before-upload="beforeUpload"
+                        @finish="handleFinish"
+                      >
+                        <n-button>上传图片</n-button>
+                      </n-upload>
+                    </template>
+                  </n-popselect>
+                </div>
               </div>
 
               <div class="person-list">
@@ -114,21 +210,37 @@ const handleClick = (e: string) => {
                   <span>账号</span>
                 </div>
                 <div class="list-info">
-                  {{ username }}
+                  {{ store.getters.currentUsername }}
                 </div>
-                <div class="list-controller">修改名称</div>
+
+                <div class="list-controller">
+                  <span  @click="showModalUsername=true;username=''">修改名称</span>
+                </div>
+                <n-modal v-model:show="showModalUsername" :mask-closable="false"
+                         preset="dialog" title="Dialog">
+                  <template #header>
+                    <span>修改名称</span>
+                  </template>
+                  <div>
+                    <n-input v-model:value="username" placeholder="请输入新的名称"></n-input>
+                  </div>
+                  <template #action>
+                    <n-button @click="handleUpdateUsername" type="primary">确认</n-button>
+                    <n-button @click="showModalUsername=false;username=''">取消</n-button>
+                  </template>
+                </n-modal>
               </div>
 
-              <div class="person-list">
-                <div class="list-title">
-                  <n-icon size="40" :component="LockClosed" color="black" :depth="3"/>
-                  <span>密码</span>
-                </div>
-                <div class="list-info">
-                  ************
-                </div>
-                <div class="list-controller">修改密码</div>
-              </div>
+              <!--              <div class="person-list">-->
+              <!--                <div class="list-title">-->
+              <!--                  <n-icon size="40" :component="LockClosed" color="black" :depth="3"/>-->
+              <!--                  <span>密码</span>-->
+              <!--                </div>-->
+              <!--                <div class="list-info">-->
+              <!--                  ************-->
+              <!--                </div>-->
+              <!--                <div class="list-controller">修改密码</div>-->
+              <!--              </div>-->
 
               <div class="person-list">
                 <div class="list-title">
@@ -136,10 +248,26 @@ const handleClick = (e: string) => {
                   <span>绑定手机号</span>
                 </div>
                 <div class="list-info">
-                  {{ phoneNumber }}
+                  {{ store.getters.currentPhone }}
                 </div>
-                <div class="list-controller">更换号码</div>
+                <div class="list-controller">
+                  <span @click="showModal=true;phone=''">更换号码</span>
+                </div>
+                <n-modal v-model:show="showModal" :mask-closable="false"
+                         preset="dialog" title="Dialog">
+                  <template #header>
+                    <div>更换号码</div>
+                  </template>
+                  <div>
+                    <n-input v-model:value="phone" placeholder="请输入新的电话号码"></n-input>
+                  </div>
+                  <template #action>
+                    <n-button @click="handleUpdatePhone" type="primary">确认</n-button>
+                    <n-button @click="showModal=false;phone=''">取消</n-button>
+                  </template>
+                </n-modal>
               </div>
+
             </div>
             <div v-else-if="item.code==='Leaderboard'&&item.isSelect" class="content-ranking">
               <img :src="rankingBgPng" style="width: 400px" alt="排行榜">
