@@ -1,10 +1,13 @@
 <script lang="ts" setup>
   import {onMounted, reactive, ref,watch,defineExpose} from 'vue'
+  import {NAvatar } from 'naive-ui'
   import {VxeButtonEvents, VxePagerEvents, VxeTableInstance} from 'vxe-table'
   // import { NButton,NAvatar }  from 'naive-ui'
   import {listAccountByPageApi,findAllCategoryApi,findAreaApi} from '@/service/account'
   import moment from 'moment';
   import 'moment/locale/pt-br';
+  import {useRouter} from "vue-router";
+  const router = useRouter()
   onMounted(()=>{
     findAccountSelectPage(accountName.value)
     getTime()
@@ -14,26 +17,6 @@
     getWeekDate()
     getMonthDate()
   })
-
-  type TideDataType = {
-    tableData: {
-      accountId:number,
-      accountName:string,
-      recordFan:number,
-      recordArticle:number,
-      accountPictureUrl:string,
-      recordLike:number,
-      recordComment:number,
-      recordForward:number,
-      createdAt:string,
-      updatedAt:string,
-      deletedAt:number,
-    },
-    tablePage: {
-      total: number
-    },
-    // dailyList: string[]
-  }
 
   //日榜类
   class dateObject{
@@ -74,6 +57,35 @@
       this.date = date
     }
   }
+  //地区对象
+  class areaObject{
+    areaId:number | undefined;
+    areaName:string | undefined;
+    areaCode:string | undefined ;
+    areaDescription:string | undefined ;
+    createdAt:string | undefined ;
+    updatedAt:string | undefined ;
+    createdBy:string | undefined ;
+    deletedAt:number|undefined
+    constructor(areaId:number,areaName:string,areaCode:string,areaDescription:string,createdAt:string,updatedAt:string,createdBy:string,deletedAt:number){
+       this.areaId = areaId
+       this.areaName = areaName
+       this.areaCode = areaCode
+       this.areaDescription = areaDescription
+       this.createdAt = createdAt
+       this.updatedAt = updatedAt
+       this.createdBy = createdBy
+       this.deletedAt = deletedAt
+    }
+  }
+
+  //单击行实现信息跳转
+  function cellClickTable(row:any){
+    let rowData = row.data[row.rowIndex]
+    router.push({
+      path:`/Account/${rowData.accountId}`
+    })
+  }
 
   //日榜周榜月榜选项 1：日榜 2：周榜 3：月榜
   const dateList = ref<number>(1)
@@ -92,6 +104,7 @@
   })
 
   const tideData = reactive({
+    // areaTemp:[],
     //表格数据
     tableData: [],
     //分页数据
@@ -103,7 +116,7 @@
     //分类列表
     cateGory:[],
     //地区列表
-    area:[],
+    area:[areaObject],
     currentDate: '',
     //地区分类选项绑定
     option:{
@@ -148,7 +161,10 @@
   //查询所有地区
   const findAllArea = async()=>{
     const res = await findAreaApi(null);
-    tideData.area = res.data as any
+    let area = new areaObject(0,"全部","","","","","",0)
+    tideData.area = res.data as never
+    // debugger
+    // tideData.area.push(area as never)
   }
 
   //查询所有分类
@@ -377,19 +393,17 @@
       width="500"
       :column-config="{resizable: true}"
       :data="tideData.tableData"
+      @cell-click="cellClickTable"
     >
+      <vxe-column type="seq" width="60" title="序号" align="center"></vxe-column>
       <vxe-column field="accountId" title="排名" align="center" sortable>
 
       </vxe-column>
 
       <vxe-colgroup title="属性" align="center">
-        <vxe-column field="accountName" title="头像" align="center">
+        <vxe-column field="accountPictureUrl" title="头像" align="center">
           <template #default="{ row }">
-            <n-avatar
-              round
-              size="small"
-              src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-            />
+            <n-avatar round :size="35">{{ row.accountPictureUrl }}</n-avatar>
           </template>
         </vxe-column>
         <vxe-column field="accountName"  align="center" title="账号">

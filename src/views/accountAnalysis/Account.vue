@@ -1,57 +1,100 @@
 <script lang='ts' setup>
-import {onMounted, ref} from 'vue'
+import {getCurrentInstance, onMounted,ref,reactive} from 'vue'
 import arrow from '@/assets/arrow.png'
 import up from '@/assets/up.png'
 import comment from '@/assets/comment.png'
 import forward from '@/assets/forward.png'
 import write from '@/assets/write.png'
 import text_bg from '@/assets/text_bg.png'
-import {useRouter} from "vue-router"
-import {NButton, NAvatar, NGrid, NGi, NDivider, NIcon} from 'naive-ui'
-import * as echarts from "echarts";
-
-const main = ref() // 使用ref创建虚拟DOM引用，使用时用main.value
-onMounted(
-  () => {
-    init()
-  }
-)
-const xAxisData = ref(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'])
-const seriesData = ref([820, 932, 901, 934, 1290, 1330, 1320])
-
-function init() {
-  // 基于准备好的dom，初始化echarts实例
-  var myChart = echarts.init(main.value);
-  // 指定图表的配置项和数据
-  var option = {
-    xAxis: {
-      type: 'category',
-      data: xAxisData.value
-    },
-    yAxis: {
-      type: 'value'
-    },
-    series: [
-      {
-        data: seriesData.value,
-        type: 'line',
-        smooth: true,
-        color: '#F78B32'
-      }
-    ]
-  };
-  // 使用刚指定的配置项和数据显示图表。
-  myChart.setOption(option);
-}
+import {useRouter} from "vue-router";
+import {findAccountByAccountApi,findRecordTotalApi} from '@/service/account'
+import {NButton, NCard, NAvatar, NGrid, NGi, NDivider, NIcon,NButtonGroup} from 'naive-ui'
+import moment from 'moment';
+import 'moment/locale/pt-br';
 
 const router = useRouter();
 // 通过 internalInstance.appContext.config.globalProperties 获取全局属性或者方法
-// let internalInstance = getCurrentInstance()
-// let echarts = internalInstance!.appContext.config.globalProperties.$echarts
+let internalInstance = getCurrentInstance()
+let echarts = internalInstance!.appContext.config.globalProperties.$echarts
 const handleBack = () => {
   router.push("/home")
 }
 
+let date = new Date()
+const accountId = ref<number>()
+
+//日榜周榜切换 1:是日榜，2：是周榜
+const dateList = ref<number>(1)
+
+const dateListButtonStyle = ref<string>("warning")
+
+const weeklyListButtonStyle = ref<string>("tertiary")
+
+type accountObject = {
+  accountId:number,
+  accountName:string | null,
+  accountPictureUrl:string | null,
+  areaName:string | null,
+  categoryName:string | null,
+  createdAt:string | null,
+  deletedAt:number | null,
+  introduction:string | null,
+  platformName:string | null,
+  recordArticle:number | null,
+  recordComment:number | null,
+  recordFan:number | null,
+  recordForward:number | null,
+  recordLike:number | null,
+  updatedAt:string | null
+}
+
+type recordObject = {
+  recordArticleCount:number,
+  recordLikeCount:number,
+  recordCommentCount:number,
+  recordForwardCount:number,
+}
+
+const accountQuery = reactive<API.AccountQueryParams>({
+  accountId: accountId.value,
+  startTime: '',
+  endTime: ''
+})
+
+onMounted(()=>{
+  accountId.value = Number(router.currentRoute.value.params.accountId)
+  findAccountByAccount(1)
+  findRecordTotal()
+})
+
+const accountInfo = reactive({
+  accountDetailInfo:{},
+  recordTotal:{}
+})
+
+//根据账户id获取账户信息
+const findAccountByAccount = async(dateListType:number)=>{
+  debugger
+  let startTimeItem = new Date(date.getTime());
+  let endTimeItem = new Date(startTimeItem.getTime() - 24*60*60*1000*7 );
+  accountQuery.accountId = accountId.value
+  //默认日榜
+  if (dateListType === 1){
+    accountQuery.startTime = moment(startTimeItem).format("YYYY-MM-DD")
+    accountQuery.endTime = moment(startTimeItem).format("YYYY-MM-DD")
+  }else{
+    accountQuery.startTime = moment(endTimeItem).format("YYYY-MM-DD")
+    accountQuery.endTime = moment(startTimeItem).format("YYYY-MM-DD")
+  }
+  const res = await findAccountByAccountApi(accountQuery)
+  accountInfo.accountDetailInfo = res.data as accountObject
+}
+
+const findRecordTotal = async()=>{
+  const res = await findRecordTotalApi();
+  accountInfo.recordTotal = res.data as recordObject
+
+}
 // onMounted(() => {
 //   const dom = document.getElementById('myChart')
 //   const myChart = echarts.init(dom) // 初始化echarts实例
@@ -76,7 +119,7 @@ const handleBack = () => {
 
 const getDate = () => {
   const date = new Date()
-  // let year = date.getFullYear()
+  let year = date.getFullYear()
   let month = (date.getMonth() + 1)
   let day = date.getDate()
 
@@ -91,48 +134,25 @@ const commentPng = comment
 const forwardPng = forward
 const upPng = up
 const text_bgPng = text_bg
-const rankingSelect = ref('day')
-const handleRanking = (type: string) => {
-  if (type === 'day') {
 
+function DateListButtonChange(typeButton:number){
+  if (typeButton === 1){
+    dateListButtonStyle.value = "warning"
+    weeklyListButtonStyle.value = "tertiary"
+    dateList.value = typeButton
+  }else if(typeButton === 2){
+    weeklyListButtonStyle.value = "warning"
+    dateListButtonStyle.value = "tertiary"
+    dateList.value = typeButton
   }
-  if (type === 'week') {
-
-  }
-  rankingSelect.value = type
+  findAccountByAccount(typeButton)
 }
-const echartsSelect = ref('article')
-const handleEcharts = (type: string) => {
-  if (type === 'article') {
-    xAxisData.value = ['Mon1', 'Tue1', 'Wed2', 'Thu3', 'Fri', 'Sat', 'Sun']
-    seriesData.value = [1820, 2932, 3901, 4934, 1290, 1330, 1320]
-  }
-  if (type === 'like') {
-    xAxisData.value = ['Mon1', 'Tue1', 'Wed2', 'Thu3', 'Fri', 'Sat', 'Sun']
-    seriesData.value = [180, 292, 390, 494, 190, 330, 120]
-
-  }
-  if (type === 'comment') {
-    xAxisData.value = ['Mon1', 'Tue1', 'Wed2', 'Thu3', 'Fri', 'Sat', 'Sun']
-    seriesData.value = [10, 232, 391, 34, 190, 330, 10]
-
-  }
-  if (type === 'forward') {
-    xAxisData.value = ['Mon1', 'Tue1', 'Wed2', 'Thu3', 'Fri', 'Sat', 'Sun']
-    seriesData.value = [1, 3, 6, 2, 3, 1, 1]
-  }
-
-  echartsSelect.value = type
-  main.value.removeAttribute('_echarts_instance_')
-  init();
-}
-
 </script>
 
 <template>
 
   <div>
-    <!--    <span class="back" @click="handleBack">返回</span>-->
+<!--    <span class="back" @click="handleBack">返回</span>-->
     <!--    页面上半部分-->
     <div class='box-card'>
       <n-grid x-gap="24" :cols="4">
@@ -142,9 +162,9 @@ const handleEcharts = (type: string) => {
             <n-avatar
               round
               :size="220"
-              src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-            />
-
+            >
+              {{accountInfo.accountDetailInfo.accountPictureUrl}}
+            </n-avatar>
             <div style='padding: 30px'>
               <N-button type='warning' ghost class='button_collection'>
                 <template #icon>
@@ -165,12 +185,12 @@ const handleEcharts = (type: string) => {
           </div>
           <div class='acc_body2'>
             <text class='text_brief_color'>账号名称：</text>
-            <text class>XXXXXXX</text>
+            <text class>{{accountInfo.accountDetailInfo.accountName}}</text>
 
           </div>
           <div class='acc_body3'>
             <text class='text_brief_color'>个人简介：</text>
-            <text class>XXXXXXX</text>
+            <text class>{{accountInfo.accountDetailInfo.introduction}}</text>
 
           </div>
           <n-divider/>
@@ -180,21 +200,21 @@ const handleEcharts = (type: string) => {
               <n-gi>
                 <div class='profile_info'>
                   <text class='text_brief_color'>分类</text>
-                  <text class='text_brief_info'>两岸</text>
+                  <text class='text_brief_info'>{{accountInfo.accountDetailInfo.categoryName}}</text>
                 </div>
               </n-gi>
 
               <n-gi>
                 <div class='profile_info'>
                   <text class='text_brief_color'>地区</text>
-                  <text class='text_brief_info'>大陆</text>
+                  <text class='text_brief_info'>{{accountInfo.accountDetailInfo.areaName}}</text>
                 </div>
               </n-gi>
 
               <n-gi>
                 <div class='profile_info'>
                   <text class='text_brief_color'>粉丝数</text>
-                  <text class='text_brief_info'>100万+</text>
+                  <text class='text_brief_info'>{{accountInfo.accountDetailInfo.recordFan}}</text>
 
                 </div>
               </n-gi>
@@ -237,7 +257,7 @@ const handleEcharts = (type: string) => {
         <n-gi>
           <div>
             <h2 class='text_italic text_first_label'>账号数据</h2>
-            <img :src='text_bgPng' class='img_bg' alt="账号数据">
+            <img :src='text_bgPng' class='img_bg'>
           </div>
         </n-gi>
         <n-gi span='4'>
@@ -251,11 +271,8 @@ const handleEcharts = (type: string) => {
           <div class='center'>
 
             <n-button-group>
-              <n-button plain :type="rankingSelect==='day'?'warning':'default'" @click="handleRanking('day')" round>日榜
-              </n-button>
-              <n-button plain :type="rankingSelect==='week'?'warning':'default'" @click="handleRanking('week')" round>
-                周榜
-              </n-button>
+              <n-button plain :type="dateListButtonStyle" round @click="DateListButtonChange(1)">日榜</n-button>
+              <n-button plain :type="weeklyListButtonStyle" round @click="DateListButtonChange(2)">周榜</n-button>
             </n-button-group>
 
           </div>
@@ -268,7 +285,7 @@ const handleEcharts = (type: string) => {
         <n-gi>
           <div style='display: flex;align-items: center'>
             <text class='text_italic text_second_label'>榜单排行</text>
-            <img :src='arrowpng' class='img_arrow' alt="榜单排行"/>
+            <img :src='arrowpng' class='img_arrow'/>
 
           </div>
         </n-gi>
@@ -305,7 +322,7 @@ const handleEcharts = (type: string) => {
         <n-gi>
           <div style='display: flex;align-items: center'>
             <text class='text_italic text_second_label'>互动数据</text>
-            <img :src='arrowpng' class='img_arrow' alt="互动数据"/>
+            <img :src='arrowpng' class='img_arrow'/>
 
           </div>
         </n-gi>
@@ -315,44 +332,44 @@ const handleEcharts = (type: string) => {
       <n-grid x-gap="24" :cols="4" style='margin-bottom: 80px'>
         <n-gi class='body_center'>
           <div>
-            <text class='text_info1'>20</text>
-            <text class='text_info2'>/324</text>
+            <text class='text_info1'>{{accountInfo.accountDetailInfo.recordArticle === null ? 0 : accountInfo.accountDetailInfo.recordArticle}}</text>
+            <text class='text_info2'>/{{accountInfo.recordTotal.recordArticleCount}}</text>
           </div>
           <div>
-            <img :src='writePng' class='img_arrow' alt="发文数"/>
+            <img :src='writePng' class='img_arrow'/>
             <text class='text_info'>发文数</text>
           </div>
 
         </n-gi>
         <n-gi class='body_center'>
           <div>
-            <text class='text_info1'>600</text>
-            <text class='text_info2'>/25W</text>
+            <text class='text_info1'>{{accountInfo.accountDetailInfo.recordLike === null ? 0:accountInfo.accountDetailInfo.recordLike }}</text>
+            <text class='text_info2'>/{{accountInfo.recordTotal.recordLikeCount}}</text>
           </div>
           <div>
-            <img :src='upPng' class='img_arrow' alt="点赞数"/>
+            <img :src='upPng' class='img_arrow'/>
             <text class='text_info'>点赞数</text>
           </div>
 
         </n-gi>
         <n-gi class='body_center'>
           <div>
-            <text class='text_info1'>2000</text>
-            <text class='text_info2'>/10万+</text>
+            <text class='text_info1'>{{accountInfo.accountDetailInfo.recordComment === null ? 0: accountInfo.accountDetailInfo.recordComment}}</text>
+            <text class='text_info2'>/{{accountInfo.recordTotal.recordCommentCount}}</text>
           </div>
           <div>
-            <img :src='commentPng' class='img_arrow' alt="评论数"/>
+            <img :src='commentPng' class='img_arrow'/>
             <text class='text_info'>评论数</text>
           </div>
 
         </n-gi>
         <n-gi class='body_center'>
           <div>
-            <text class='text_info1'>300</text>
-            <text class='text_info2'>/10万+</text>
+            <text class='text_info1'>{{accountInfo.accountDetailInfo.recordForward === null?0:accountInfo.accountDetailInfo.recordForward}}</text>
+            <text class='text_info2'>/{{accountInfo.recordTotal.recordForwardCount}}</text>
           </div>
           <div>
-            <img :src='forwardPng' class='img_arrow' alt="转发数"/>
+            <img :src='forwardPng' class='img_arrow'/>
             <text class='text_info'>转发数</text>
           </div>
 
@@ -368,7 +385,7 @@ const handleEcharts = (type: string) => {
         <n-gi>
           <div style='display: flex;align-items: center'>
             <text class='text_italic text_second_label'>数据趋势</text>
-            <img :src='arrowpng' class='img_arrow' alt="数据趋势"/>
+            <img :src='arrowpng' class='img_arrow'/>
 
           </div>
         </n-gi>
@@ -378,28 +395,19 @@ const handleEcharts = (type: string) => {
         <n-gi>
           <div class='button_body '>
 
-            <n-button class='button_1' round :type="echartsSelect==='article'?'warning':'default'"
-                      @click="handleEcharts('article')">发文数
-            </n-button>
-            <n-button class='button_1' round :type="echartsSelect==='like'?'warning':'default'"
-                      @click="handleEcharts('like')">点赞数
-            </n-button>
-            <n-button class='button_1' round :type="echartsSelect==='comment'?'warning':'default'"
-                      @click="handleEcharts('comment')">评论数
-            </n-button>
-            <n-button class='button_1' round :type="echartsSelect==='forward'?'warning':'default'"
-                      @click="handleEcharts('forward')">转发数
-            </n-button>
+            <n-button class='button_1' round type='warning'>发文数</n-button>
+            <n-button class='button_1' round>点赞数</n-button>
+            <n-button class='button_1' round>评论数</n-button>
+            <n-button class='button_1' round>转发数</n-button>
 
           </div>
         </n-gi>
         <n-gi>
-          <!--          <div-->
-          <!--            ref='myChart'-->
-          <!--            id='myChart'-->
-          <!--            :style="{ width: '700px', height: '350px' }"-->
-          <!--          ></div>-->
-          <div ref="main" style="width: 700px; height: 350px"></div>
+          <div
+            ref='myChart'
+            id='myChart'
+            :style="{ width: '700px', height: '350px' }"
+          ></div>
         </n-gi>
         <n-gi>
 
@@ -487,6 +495,7 @@ const handleEcharts = (type: string) => {
   color: rgba(17, 54, 145, 58);
   font-size: 8px;
   text-align: left;
+  font-family: SourceHanSansSC-medium;
 }
 
 
@@ -500,7 +509,6 @@ const handleEcharts = (type: string) => {
 .text_exponential2 {
   color: rgba(17, 54, 145, 58);
   font-size: 28px;
-  font-weight: 550;
 
 }
 

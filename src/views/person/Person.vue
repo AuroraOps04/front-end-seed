@@ -131,7 +131,7 @@ const handleFinish = ({
 
 <template>
   <div>
-    <Header></Header>
+    <Header />
     <div class="person-top">
       <!-- logo -->
       <div class="person-top-menu-logo">

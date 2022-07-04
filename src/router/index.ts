@@ -58,6 +58,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Account',
         component: () => import('@/views/accountAnalysis/Account.vue')
       },
+      {
+        path: `/Account/:accountId`,
+        name: 'Account',
+        component: () => import('@/views/accountAnalysis/Account.vue')
+      },
     ]
   }
 ]
