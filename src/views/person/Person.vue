@@ -5,7 +5,7 @@ import personIcon2Png from "@/assets/person_icon2.png"
 import personIcon3Png from "@/assets/person_icon3.png"
 import personGradePng from "@/assets/person_grade.png"
 import rankingBgPng from "@/assets/ranking_bg.png"
-import {NAvatar, NIcon, NPopselect, NButton, NInput, NUpload, NModal, useMessage,UploadFileInfo } from "naive-ui";
+import {NAvatar, NIcon, NPopselect, NButton, NInput, NUpload, NModal, useMessage, UploadFileInfo} from "naive-ui";
 import {ref, reactive} from "vue";
 import {
   PersonOutline,
@@ -99,10 +99,10 @@ const handleUpdateUsername = async () => {
     console.log(e)
   }
 }
-const  beforeUpload = async (data: {
+const beforeUpload = async (data: {
   file: UploadFileInfo
   fileList: UploadFileInfo[]
-})=> {
+}) => {
   if (data.file.file?.type !== 'image/png') {
     message.error('只能上传png格式的图片文件，请重新上传')
     return false
@@ -118,9 +118,9 @@ const handleFinish = ({
 }) => {
   console.log(event)
   console.log(2222)
-    if (event?.isTrusted){
-      router.go(0)
-    }
+  if (event?.isTrusted) {
+    router.go(0)
+  }
   // message.success((event?.target as XMLHttpRequest).response)
   // const ext = file.name.split('.')[1]
   // file.name = `更名.${ext}`
@@ -131,7 +131,7 @@ const handleFinish = ({
 
 <template>
   <div>
-    <Header />
+    <Header/>
     <div class="person-top">
       <!-- logo -->
       <div class="person-top-menu-logo">
@@ -193,7 +193,7 @@ const handleFinish = ({
                     <span>更换头像</span>
                     <template #empty>
                       <n-upload
-                        action="https://class.auni.top/api/user/updatePictrue"
+                        action="http://localhost:4000/api/user/updatePictrue"
                         @before-upload="beforeUpload"
                         @finish="handleFinish"
                       >
@@ -214,7 +214,7 @@ const handleFinish = ({
                 </div>
 
                 <div class="list-controller">
-                  <span  @click="showModalUsername=true;username=''">修改名称</span>
+                  <span @click="showModalUsername=true;username=''">修改名称</span>
                 </div>
                 <n-modal v-model:show="showModalUsername" :mask-closable="false"
                          preset="dialog" title="Dialog">
