@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import {getCurrentInstance, onMounted,ref,reactive} from 'vue'
+import {onMounted,ref,reactive} from 'vue'
 import arrow from '@/assets/arrow.png'
 import up from '@/assets/up.png'
 import comment from '@/assets/comment.png'
@@ -8,17 +8,52 @@ import write from '@/assets/write.png'
 import text_bg from '@/assets/text_bg.png'
 import {useRouter} from "vue-router";
 import {findAccountByAccountApi,findRecordTotalApi} from '@/service/account'
-import {NButton, NCard, NAvatar, NGrid, NGi, NDivider, NIcon,NButtonGroup} from 'naive-ui'
+import {NButton, NAvatar, NGrid, NGi, NDivider, NIcon,NButtonGroup} from 'naive-ui'
 import moment from 'moment';
 import 'moment/locale/pt-br';
+import * as echarts from "echarts";
+
+const main = ref() // 使用ref创建虚拟DOM引用，使用时用main.value
+onMounted(
+  () => {
+    init()
+  }
+)
+const xAxisData = ref(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'])
+const seriesData = ref([820, 932, 901, 934, 1290, 1330, 1320])
+
+function init() {
+  // 基于准备好的dom，初始化echarts实例
+  var myChart = echarts.init(main.value);
+  // 指定图表的配置项和数据
+  var option = {
+    xAxis: {
+      type: 'category',
+      data: xAxisData.value
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        data: seriesData.value,
+        type: 'line',
+        smooth: true,
+        color: '#F78B32'
+      }
+    ]
+  };
+  // 使用刚指定的配置项和数据显示图表。
+  myChart.setOption(option);
+}
 
 const router = useRouter();
 // 通过 internalInstance.appContext.config.globalProperties 获取全局属性或者方法
-let internalInstance = getCurrentInstance()
+/*let internalInstance = getCurrentInstance()
 let echarts = internalInstance!.appContext.config.globalProperties.$echarts
 const handleBack = () => {
   router.push("/home")
-}
+}*/
 
 let date = new Date()
 const accountId = ref<number>()
@@ -119,7 +154,7 @@ const findRecordTotal = async()=>{
 
 const getDate = () => {
   const date = new Date()
-  let year = date.getFullYear()
+  // let year = date.getFullYear()
   let month = (date.getMonth() + 1)
   let day = date.getDate()
 
@@ -146,6 +181,31 @@ function DateListButtonChange(typeButton:number){
     dateList.value = typeButton
   }
   findAccountByAccount(typeButton)
+}
+const echartsSelect = ref('article')
+const handleEcharts = (type: string) => {
+  if (type === 'article') {
+    xAxisData.value = ['Mon1', 'Tue1', 'Wed2', 'Thu3', 'Fri', 'Sat', 'Sun']
+    seriesData.value = [3, 5, 2, 1, 3, 3, 2]
+  }
+  if (type === 'like') {
+    xAxisData.value = ['Mon1', 'Tue1', 'Wed2', 'Thu3', 'Fri', 'Sat', 'Sun']
+    seriesData.value = [3, 6, 2, 6, 12, 3, 8]
+
+  }
+  if (type === 'comment') {
+    xAxisData.value = ['Mon1', 'Tue1', 'Wed2', 'Thu3', 'Fri', 'Sat', 'Sun']
+    seriesData.value = [8, 4, 3, 4, 2, 6, 8]
+
+  }
+  if (type === 'forward') {
+    xAxisData.value = ['Mon1', 'Tue1', 'Wed2', 'Thu3', 'Fri', 'Sat', 'Sun']
+    seriesData.value = [1, 3, 6, 2, 3, 1, 1]
+  }
+
+  echartsSelect.value = type
+  main.value.removeAttribute('_echarts_instance_')
+  init();
 }
 </script>
 
@@ -257,7 +317,7 @@ function DateListButtonChange(typeButton:number){
         <n-gi>
           <div>
             <h2 class='text_italic text_first_label'>账号数据</h2>
-            <img :src='text_bgPng' class='img_bg'>
+            <img :src='text_bgPng' class='img_bg' alt="账号数据">
           </div>
         </n-gi>
         <n-gi span='4'>
@@ -285,7 +345,7 @@ function DateListButtonChange(typeButton:number){
         <n-gi>
           <div style='display: flex;align-items: center'>
             <text class='text_italic text_second_label'>榜单排行</text>
-            <img :src='arrowpng' class='img_arrow'/>
+            <img :src='arrowpng' class='img_arrow' alt="榜单排行"/>
 
           </div>
         </n-gi>
@@ -322,7 +382,7 @@ function DateListButtonChange(typeButton:number){
         <n-gi>
           <div style='display: flex;align-items: center'>
             <text class='text_italic text_second_label'>互动数据</text>
-            <img :src='arrowpng' class='img_arrow'/>
+            <img :src='arrowpng' class='img_arrow' alt="互动数据"/>
 
           </div>
         </n-gi>
@@ -336,7 +396,7 @@ function DateListButtonChange(typeButton:number){
             <text class='text_info2'>/{{accountInfo.recordTotal.recordArticleCount}}</text>
           </div>
           <div>
-            <img :src='writePng' class='img_arrow'/>
+            <img :src='writePng' class='img_arrow' alt="发文数"/>
             <text class='text_info'>发文数</text>
           </div>
 
@@ -347,7 +407,7 @@ function DateListButtonChange(typeButton:number){
             <text class='text_info2'>/{{accountInfo.recordTotal.recordLikeCount}}</text>
           </div>
           <div>
-            <img :src='upPng' class='img_arrow'/>
+            <img :src='upPng' class='img_arrow' alt="点赞数"/>
             <text class='text_info'>点赞数</text>
           </div>
 
@@ -358,7 +418,7 @@ function DateListButtonChange(typeButton:number){
             <text class='text_info2'>/{{accountInfo.recordTotal.recordCommentCount}}</text>
           </div>
           <div>
-            <img :src='commentPng' class='img_arrow'/>
+            <img :src='commentPng' class='img_arrow' alt="评论数"/>
             <text class='text_info'>评论数</text>
           </div>
 
@@ -369,7 +429,7 @@ function DateListButtonChange(typeButton:number){
             <text class='text_info2'>/{{accountInfo.recordTotal.recordForwardCount}}</text>
           </div>
           <div>
-            <img :src='forwardPng' class='img_arrow'/>
+            <img :src='forwardPng' class='img_arrow' alt="转发数"/>
             <text class='text_info'>转发数</text>
           </div>
 
@@ -385,7 +445,7 @@ function DateListButtonChange(typeButton:number){
         <n-gi>
           <div style='display: flex;align-items: center'>
             <text class='text_italic text_second_label'>数据趋势</text>
-            <img :src='arrowpng' class='img_arrow'/>
+            <img :src='arrowpng' class='img_arrow' alt="数据趋势"/>
 
           </div>
         </n-gi>
@@ -395,19 +455,28 @@ function DateListButtonChange(typeButton:number){
         <n-gi>
           <div class='button_body '>
 
-            <n-button class='button_1' round type='warning'>发文数</n-button>
-            <n-button class='button_1' round>点赞数</n-button>
-            <n-button class='button_1' round>评论数</n-button>
-            <n-button class='button_1' round>转发数</n-button>
+            <n-button class='button_1' round :type="echartsSelect==='article'?'warning':'default'"
+                      @click="handleEcharts('article')">发文数
+            </n-button>
+            <n-button class='button_1' round :type="echartsSelect==='like'?'warning':'default'"
+                      @click="handleEcharts('like')">点赞数
+            </n-button>
+            <n-button class='button_1' round :type="echartsSelect==='comment'?'warning':'default'"
+                      @click="handleEcharts('comment')">评论数
+            </n-button>
+            <n-button class='button_1' round :type="echartsSelect==='forward'?'warning':'default'"
+                      @click="handleEcharts('forward')">转发数
+            </n-button>
 
           </div>
         </n-gi>
         <n-gi>
-          <div
-            ref='myChart'
-            id='myChart'
-            :style="{ width: '700px', height: '350px' }"
-          ></div>
+          <!--          <div-->
+          <!--            ref='myChart'-->
+          <!--            id='myChart'-->
+          <!--            :style="{ width: '700px', height: '350px' }"-->
+          <!--          ></div>-->
+          <div ref="main" style="width: 700px; height: 350px"></div>
         </n-gi>
         <n-gi>
 
@@ -495,7 +564,6 @@ function DateListButtonChange(typeButton:number){
   color: rgba(17, 54, 145, 58);
   font-size: 8px;
   text-align: left;
-  font-family: SourceHanSansSC-medium;
 }
 
 
