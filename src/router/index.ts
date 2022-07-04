@@ -21,6 +21,7 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
+
     path: '/',
     component: () => import('@/layout/index.vue'),
     redirect: {
@@ -56,6 +57,11 @@ const routes: Array<RouteRecordRaw> = [
         path: '/Leaderboard',
         name: 'Leaderboard',
         component: () => import('@/views/Leaderboard/Leaderboard.vue')
+      },
+      {
+        path: `/Account/:accountId`,
+        name: 'Account',
+        component: () => import('@/views/accountAnalysis/Account.vue')
       },
     ]
   }
