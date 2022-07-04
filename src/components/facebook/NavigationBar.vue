@@ -1,3 +1,17 @@
+<script lang="ts" setup>
+import {defineComponent, defineExpose} from 'vue'
+import {NCard, NTabs, NTabPane} from 'naive-ui'
+import {ref} from 'vue'
+import FaceBookList from '@/components/facebook/FaceBookList.vue'
+
+const faceBookListRef = ref<any>();
+
+function NavigationBarMethod(accountName: string) {
+  faceBookListRef.value.receiveParametersMethods(accountName)
+}
+
+defineExpose({NavigationBarMethod})
+</script>
 <template>
   <div class="navigationBarStyleTop">
     <n-tabs type="segment">
@@ -17,36 +31,27 @@
     </n-tabs>
   </div>
 </template>
-<script lang="ts" setup>
-  import { defineComponent } from 'vue'
-  import { NCard,NTabs,NTabPane }  from 'naive-ui'
-  import {ref} from 'vue'
-  import FaceBookList from './FaceBookList.vue'
-
-  const faceBookListRef = ref<any>();
-  const navigationBarName = ref<any>();
-  function NavigationBarMethod(accountName:string){
-    faceBookListRef.value.findAccountSelectPage(accountName)
-  }
-  defineExpose({NavigationBarMethod})
-</script>
 <style lang="scss">
-  .navigationBarStyleTop {
-    margin-top:-20px;
-    border-radius:15px;
-    background-color: white;
-  }
-  .n-tabs .n-tabs-nav {
-    line-height: 2.2;
-    border-radius: 10px;
-  }
-  .n-tabs .n-tabs-rail .n-tabs-tab-wrapper .n-tabs-tab{
-    border-radius:15px;
-  }
-  .n-tabs .n-tabs-rail{
-    border-radius:15px;
-  }
-  .card-tabs .n-tabs-nav--bar-type {
-    padding-left: 4px;
-  }
+.navigationBarStyleTop {
+  margin-top: -20px;
+  border-radius: 15px;
+  background-color: white;
+}
+
+.n-tabs .n-tabs-nav {
+  line-height: 2.2;
+  border-radius: 10px;
+}
+
+.n-tabs .n-tabs-rail .n-tabs-tab-wrapper .n-tabs-tab {
+  border-radius: 15px;
+}
+
+.n-tabs .n-tabs-rail {
+  border-radius: 15px;
+}
+
+.card-tabs .n-tabs-nav--bar-type {
+  padding-left: 4px;
+}
 </style>

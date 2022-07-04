@@ -11,7 +11,6 @@ import professionalPng from "@/assets/professional.png"
 import authoritativePng from "@/assets/authoritative.png"
 import stablePng from "@/assets/stable.png"
 import {NAvatar} from "naive-ui";
-import {ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 
@@ -21,7 +20,6 @@ const handleTo = (e: string) => {
   store.commit('SET_MENU', e);
   router.push("/" + e)
 }
-const avatar = ref("头像")
 </script>
 
 <template>
@@ -45,11 +43,10 @@ const avatar = ref("头像")
         </div>
         <!-- 头像 -->
         <div class="home-top-menu-avatar">
-          <n-avatar round :size="40" @click="handleTo('person')">
-            {{ avatar }}
+          <n-avatar round :size="40" @click="handleTo('person')" :src="store.getters.currentPictureUrl">
           </n-avatar>
-          <span style="margin: 0 10px" v-if="store.state.user.phone===''" @click="handleTo('login')">登录</span>
-          <span style="margin: 0 10px" v-else @click="handleTo('person')">{{store.state.user.username}}}</span>
+          <span style="margin: 0 10px" @click="handleTo('login')">登录</span>
+          <span style="margin: 0 10px"  @click="handleTo('person')">个人中心</span>
         </div>
       </div>
 

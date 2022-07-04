@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
+import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
 import store from "@/store"
 
 const routes: Array<RouteRecordRaw> = [
@@ -21,6 +21,7 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
+
     path: '/',
     component: () => import('@/layout/index.vue'),
     redirect: {
@@ -50,13 +51,23 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: '/Leaderboard',
         name: 'Leaderboard',
-        component: () => import('@/views/Leaderboard/Leaderboard.vue')
+        component: () => import('@/views/leaderboard/Leaderboard.vue')
+      },
+      {
+        path: '/Account',
+        name: 'Account',
+        component: () => import('@/views/accountAnalysis/Account.vue')
+      },
+      {
+        path: `/Account/:accountId`,
+        name: 'Account',
+        component: () => import('@/views/accountAnalysis/Account.vue')
       },
     ]
   }
 ]
 
-export const history = createWebHistory()
+export const history = createWebHashHistory()
 const router = createRouter({
   history,
   routes
