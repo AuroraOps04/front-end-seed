@@ -22,9 +22,11 @@
           </div>
           <div class="rightTide">
             <div>
+
               <n-input-group>
-                <n-input :style="{ width: '40%'}" v-model:value="accountName"/>
-                <n-button type="primary" ghost @click="getNavigationBar">
+                <input type="text" class="form_input" v-model="accountName"/>
+<!--                <n-input :style="{ width: '40%'}" v-model:value="accountName"/>-->
+                <n-button type="info" ghost @click="getNavigationBar">
                   搜索账号
                 </n-button>
               </n-input-group>
@@ -71,6 +73,25 @@
   .rightTide {
     float: left;
     width: calc(60%);
+  }
+  input[type="text"],#btn1,#btn2{
+    box-sizing: border-box;
+    text-align:center;
+    font-size:1.4em;
+    height:34px;
+    border-radius:4px;
+    border:1px solid #08327E;
+    color:#6a6f77;
+    -web-kit-appearance:none;
+    -moz-appearance: none;
+    display:block;
+    outline:0;
+    padding:0 1em;
+    text-decoration:none;
+    width:45%;
+  }
+  input[type="text"]:focus{
+    border:1px solid #08327E;
   }
 
   .tide {
