@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { NCountdown, NSpace, FormInst, NButton, useMessage } from 'naive-ui'
-import { reactive, ref } from 'vue'
-import { loginApi, getSmsApi } from '@service/user'
+import {NCountdown, NSpace, NButton, useMessage} from 'naive-ui'
+import {reactive, ref} from 'vue'
+import {loginApi, getSmsApi} from '@service/user'
 import Cookies from "js-cookie"
-import { useRouter } from 'vue-router';
+import {useRouter} from 'vue-router';
 import {useStore} from "vuex"
 
 
@@ -12,7 +12,7 @@ const showSmsCode = ref(false)
 const isSendSmsCode = ref(false)
 const router = useRouter()
 const formData = reactive<API.LoginRequest>({
-  phone: '17777777777',
+  phone: '',
   smsCode: ''
 })
 const message = useMessage()
@@ -98,14 +98,14 @@ const getSmsCode = async () => {
       <span class="login-verify" @click="getSmsCode" v-if="!showSmsCode">获取验证码</span>
       <n-space class="login-verify" style="color: gray" v-else>
         <span>
-          <n-countdown :duration="60000" :active="showSmsCode" @on-finish="showSmsCode = false" />
+          <n-countdown :duration="60000" :active="showSmsCode" @on-finish="showSmsCode = false"/>
         </span>
       </n-space>
       <n-button class="login-btn" @click="handleLogin">登陆</n-button>
       <div class="login-agree">
-        <input type="checkbox" class="login-agree-check" />
+        <input type="checkbox" class="login-agree-check"/>
         <span class="login-agree-text"
-          >&nbsp;&nbsp;我已阅读并接受《注册申明》《版权声明》《隐私政策》</span
+        >&nbsp;&nbsp;我已阅读并接受《注册申明》《版权声明》《隐私政策》</span
         >
       </div>
     </div>

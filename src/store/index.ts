@@ -9,8 +9,10 @@ export type RootState = {
 export default createStore<RootState>({
   state: {
     user: {
+      id: '',
       username: '',
-      phone:'',
+      phone: '',
+      pictureUrl: ''
     },
     menu: 'home'
   },
@@ -40,6 +42,18 @@ export default createStore<RootState>({
   getters: {
     currentUser(state) {
       return state.user
+    },
+    currentId(state) {
+      return state.user?.id
+    },
+    currentUsername(state) {
+      return state.user?.username
+    },
+    currentPictureUrl(state) {
+      return state.user?.pictureUrl
+    },
+    currentPhone(state) {
+      return state.user?.phone
     },
     currentMenu(state) {
       return state.menu
