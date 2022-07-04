@@ -37,8 +37,15 @@ declare namespace API {
     endTime: string
   } & Model
 
+  type AccountQuery = {
+    accountId: number
+    startTime: string
+    endTime: string
+  } & Model
+
   type DictParams = Partial<Dict>
   type AccountParams = Partial<Account>
+  type AccountQueryParams = Partial<AccountQuery>
 
   type LoginRequest = {
     phone: string
