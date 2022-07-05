@@ -89,13 +89,15 @@
     padding:0 1em;
     text-decoration:none;
     width:45%;
+    background-color: #0E1222;
+    opacity: 0.7;
   }
   input[type="text"]:focus{
     border:1px solid #08327E;
   }
 
   .tide {
-    padding-top: calc(8%);
+    padding-top: calc(5%);
   }
 
 </style>

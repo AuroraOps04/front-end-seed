@@ -10,6 +10,6 @@ import Main from './main.vue'
 <style lang="scss" scoped>
 .admin-layout {
   height: 100vh;
-  width: 100vw;
+  width: 100%;
 }
 </style>
