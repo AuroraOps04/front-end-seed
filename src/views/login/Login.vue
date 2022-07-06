@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import {NCountdown, NSpace, NButton, useMessage} from 'naive-ui'
-import {reactive, ref} from 'vue'
-import {loginApi, getSmsApi} from '@service/user'
-import Cookies from "js-cookie"
-import {useRouter} from 'vue-router';
-import {useStore} from "vuex"
-
+import { NCountdown, NSpace, NButton, useMessage } from 'naive-ui'
+import { reactive, ref } from 'vue'
+import { loginApi, getSmsApi } from '@service/user'
+import Cookies from 'js-cookie'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 const store = useStore()
 const showSmsCode = ref(false)
@@ -89,23 +88,25 @@ const getSmsCode = async () => {
         class="login-username"
         placeholder="使用手机号码登录/注册"
       />
-      <input
-        type="text"
-        v-model="formData.smsCode"
-        class="login-password"
-        placeholder="请输入验证码"
-      />
-      <span class="login-verify" @click="getSmsCode" v-if="!showSmsCode">获取验证码</span>
-      <n-space class="login-verify" style="color: gray" v-else>
-        <span>
-          <n-countdown :duration="60000" :active="showSmsCode" @on-finish="showSmsCode = false"/>
-        </span>
-      </n-space>
-      <n-button class="login-btn" @click="handleLogin">登陆</n-button>
+      <div class="login-verify">
+        <input
+          type="text"
+          v-model="formData.smsCode"
+          class="login-verify-password"
+          placeholder="请输入验证码"
+        />
+        <span class="login-verify-code" @click="getSmsCode" v-if="!showSmsCode">获取验证码</span>
+        <NSpace class="login-verify-code" style="color: gray" v-else>
+          <span>
+            <NCountdown :duration="60000" :active="showSmsCode" @on-finish="showSmsCode = false" />
+          </span>
+        </NSpace>
+      </div>
+      <NButton class="login-btn" @click="handleLogin">登陆</NButton>
       <div class="login-agree">
-        <input type="checkbox" class="login-agree-check"/>
+        <input type="checkbox" class="login-agree-check" />
         <span class="login-agree-text"
-        >&nbsp;&nbsp;我已阅读并接受《注册申明》《版权声明》《隐私政策》</span
+          >&nbsp;&nbsp;我已阅读并接受《注册申明》《版权声明》《隐私政策》</span
         >
       </div>
     </div>
@@ -122,13 +123,30 @@ const getSmsCode = async () => {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-       
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    width: 100vw;
+    height: 100%;
+    background-size: auto;
+  }
+
   .login {
     width: 874px;
     height: 464px;
     background: url('@/assets/login.png') no-repeat;
     background-size: 874px 464px;
     position: relative;
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: 96vw;
+      border-radius: 5vw;
+      height: 300px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      position: static;
+      padding: 15vw 0;
+    }
 
     .login-username {
       background: none;
@@ -143,33 +161,62 @@ const getSmsCode = async () => {
       background-color: #eaeefe;
       padding: 0 15px;
       font-size: 15px;
-    }
-
-    .login-password {
-      background: none;
-      outline: none;
-      border: none;
-      width: 293px;
-      height: 48px;
-      position: absolute;
-      left: 426px;
-      top: 237px;
-      border-radius: 24px;
-      background-color: #eaeefe;
-      padding: 0 15px;
-      font-size: 15px;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        position: static;
+        width: 50vw;
+        height: 10vw;
+        font-size: 4vw;
+      }
     }
 
     .login-verify {
-      color: #719cf5;
-      cursor: pointer;
-      position: absolute;
-      left: 650px;
-      top: 252px;
-    }
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        position: static;
+        width: 57vw;
+        height: 10vw;
+        font-size: 4vw;
+      }
 
-    .login-verify:hover {
-      opacity: 0.7;
+      .login-verify-password {
+        background: none;
+        outline: none;
+        border: none;
+        width: 293px;
+        height: 48px;
+        position: absolute;
+        left: 426px;
+        top: 237px;
+        border-radius: 24px;
+        background-color: #eaeefe;
+        padding: 0 15px;
+        font-size: 15px;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          position: static;
+          width: 30vw;
+          height: 10vw;
+          font-size: 4vw;
+        }
+      }
+
+      .login-verify-code {
+        color: #719cf5;
+        cursor: pointer;
+        position: absolute;
+        left: 650px;
+        top: 252px;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          width: 16vw;
+          position: static;
+          font-size: 3vw;
+        }
+      }
+      .login-verify-code:hover {
+        opacity: 0.7;
+      }
     }
 
     .login-btn {
@@ -187,6 +234,12 @@ const getSmsCode = async () => {
       border-radius: 23px;
       font-size: 18px;
       box-shadow: 0 2px 16px 0 rgba(62, 106, 213, 63);
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        position: static;
+        width: 55vw;
+        height: 10vw;
+        line-height: 10vw;
+      }
     }
 
     .login-btn:hover {
@@ -201,6 +254,11 @@ const getSmsCode = async () => {
       justify-content: center;
       align-items: center;
       font-size: 12px;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        position: static;
+        width: 50vw;
+        height: 10vw;
+      }
 
       .login-agree-check {
         zoom: 120%;

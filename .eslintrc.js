@@ -23,6 +23,8 @@ module.exports = {
     'import/extensions': 0,
     'import/no-unresolved': 0,
     'vue/no-v-model-argument': 0,
-    'no-console': 0
+    'no-console': 0,
+    'no-unused-vars': 'off',
+    'import/no-extraneous-dependencies': ['error', { devDependencies: true }]
   }
 }
