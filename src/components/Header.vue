@@ -1,42 +1,44 @@
 <script lang="ts" setup>
-import {NAvatar} from "naive-ui";
-import {reactive, ref} from "vue";
-import {useRouter} from "vue-router";
-import {useStore} from "vuex";
+import { reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+import { NAvatar } from 'naive-ui'
 
-const router = useRouter();
-const store = useStore();
-const avatar = ref("头像")
+const router = useRouter()
+const store = useStore()
 const menuArr = reactive([
   {
-    name: "首页",
-    code: "home",
+    name: '首页',
+    code: 'home',
     isSelect: true
   },
   {
-    name: "排行榜",
-    code: "Leaderboard",
+    name: '排行榜',
+    code: 'Leaderboard',
     isSelect: false
   }
 ])
 const handleTo = (e: string) => {
-  store.commit('SET_MENU', e);
-  router.push("/"+e);
+  store.commit('SET_MENU', e)
+  router.push(`/${e}`)
 }
 </script>
 
 <template>
   <div class="header-bg">
     <div class="title">
-      <template v-for="item in menuArr">
-        <span @click="handleTo(item.code)" :style="{backgroundColor:item.code===store.state.menu?'#113691':'black'}">{{
-            item.name
-          }}</span>
+      <template v-for="(item, index) in menuArr">
+        <span
+          :key="index"
+          @click="handleTo(item.code)"
+          :style="{ backgroundColor: item.code === store.state.menu ? '#113691' : 'black' }"
+          >{{ item.name }}</span
+        >
       </template>
     </div>
     <div class="avatar" @click="handleTo('person')">
-      <n-avatar round :size="35" :src="store.getters.currentPictureUrl"></n-avatar>
-      <span style="margin: 0 5px;">个人中心</span>
+      <NAvatar round :size="35" :src="store.getters.currentPictureUrl"></NAvatar>
+      <span style="margin: 0 5px">个人中心</span>
     </div>
   </div>
 </template>
@@ -50,6 +52,9 @@ const handleTo = (e: string) => {
   flex-direction: row;
   align-items: center;
   justify-content: end;
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    height: 10vw;
+  }
 
   .title {
     display: flex;
@@ -65,6 +70,11 @@ const handleTo = (e: string) => {
       text-align: center;
       line-height: 60px;
       cursor: pointer;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        padding: 0 2vw;
+        margin: 0 2vw;
+        line-height: 10vw;
+      }
     }
 
     span:hover {
@@ -79,6 +89,9 @@ const handleTo = (e: string) => {
     align-items: center;
     justify-content: center;
     width: 150px;
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: 40vw;
+    }
 
     span {
       color: white;
