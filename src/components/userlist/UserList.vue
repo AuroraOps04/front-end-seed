@@ -123,6 +123,7 @@ function changeUserRating(event: any) {
 // 搜索用户名
 function changeUserName(event: any) {
   params.username = event.value
+  // console.log(event.value)
   findUserSelectPage()
 }
 // 页码切换
@@ -148,9 +149,9 @@ const clickEvent = () => {
 const xTable1 = ref<VxeTableInstance>()
 
 const exportSelectEvent: VxeButtonEvents.Click = () => {
-  const $table = xTable1.value
-  $table.exportData({
-    data: $table.getCheckboxRecords()
+  const table = xTable1.value
+  table?.exportData({
+    data: table.getCheckboxRecords()
   })
 }
 
@@ -171,7 +172,7 @@ onMounted(() => {
               <vxe-input
                 placeholder="输入姓名搜索"
                 type="search"
-                @change="changeUserName"
+                @blur="changeUserName"
                 v-model="userData.option.username"
               ></vxe-input>
             </div>
