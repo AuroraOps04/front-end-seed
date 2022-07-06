@@ -27,9 +27,8 @@ const handleTo = (e: string) => {
 <template>
   <div class="header-bg">
     <div class="title">
-      <template v-for="(item, index) in menuArr">
+      <template v-for="item in menuArr">
         <span
-          :key="index"
           @click="handleTo(item.code)"
           :style="{ backgroundColor: item.code === store.state.menu ? '#113691' : 'black' }"
           >{{ item.name }}</span
