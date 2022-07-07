@@ -37,10 +37,27 @@ declare namespace API {
     endTime: string
   } & Model
 
+  type User = {
+    username: string
+    userRating: string
+    category: string
+    area: string
+    gender: string
+    phone: string
+    mail: string
+  } & Model
+
   type AccountQuery = {
     accountId: number
     startTime: string
     endTime: string
+  } & Model
+
+  type UserQuery = {
+    username: string
+    userRating: string
+    category: string
+    area: string
   } & Model
 
   type CharsQuery = {
@@ -52,6 +69,9 @@ declare namespace API {
   type DictParams = Partial<Dict>
   type AccountParams = Partial<Account>
   type AccountQueryParams = Partial<AccountQuery>
+  type UserParams = Partial<User>
+  type UserQueryParams = Partial<UserQuery>
+
   type CharsParams = Partial<CharsQuery>
   type LoginRequest = {
     phone: string

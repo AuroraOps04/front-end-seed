@@ -49,6 +49,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Person'
       },
       {
+        path: '/account',
+        component: () => import("@/views/accountAnalysis/Account.vue"),
+        name: 'Account'
+      },
+      {
         path: '/header',
         component: () => import("@/components/Header.vue"),
         name: 'Header'
