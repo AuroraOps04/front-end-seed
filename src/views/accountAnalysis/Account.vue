@@ -147,6 +147,7 @@ const findRecordCharsData = async (e: number) => {
   eCharDate.dateList = []
   eCharDate.data = []
   params.dateList = e
+  params.accountId = accountId.value
   const res = await findRecordCharsDataApi(params)
   eCharData.data = res.data as eCharsObject[]
   eCharData.data.forEach((item) => {
@@ -253,14 +254,14 @@ onMounted(() => {
       <!--    <span class="back" @click="handleBack">返回</span>-->
       <!--    页面上半部分-->
       <div class="box-card">
-        <NGrid x-gap="24" :cols="4">
+        <NGrid :cols="4" x-gap="24">
           <NGi>
             <div class="profile_picture">
-              <NAvatar round :size="60">
+              <NAvatar :size="60" round>
                 {{ accountInfo.accountDetailInfo.accountPictureUrl }}
               </NAvatar>
               <div class="box-collect">
-                <NButton type="warning" ghost class="button_collection">
+                <NButton class="button_collection" ghost type="warning">
                   <template #icon>
                     <NIcon>
                       <StarOutline />
@@ -285,7 +286,7 @@ onMounted(() => {
             </div>
             <NDivider />
             <div class="acc_body4">
-              <NGrid x-gap="24" :cols="3">
+              <NGrid :cols="3" x-gap="24">
                 <NGi>
                   <div class="profile_info">
                     <text class="text_brief_color">分类</text>
@@ -337,22 +338,22 @@ onMounted(() => {
       <!--    页面下半部分-->
       <div class="box-card">
         <!--      账号数据标题-->
-        <NGrid x-gap="24" :cols="1">
+        <NGrid :cols="1" x-gap="24">
           <NGi>
             <div class="card-content">
               <div class="card-title">
                 <h2 class="text_italic">账号数据</h2>
-                <img :src="textBgPng" class="img_bg" alt="账号数据" />
+                <img :src="textBgPng" alt="账号数据" class="img_bg" />
                 <h5 class="text_date">更新于{{ currentDate }}</h5>
               </div>
               <div class="center">
                 <NButtonGroup>
-                  <NButton plain :type="dateListButtonStyle" round @click="DateListButtonChange(1)"
+                  <NButton :type="dateListButtonStyle" plain round @click="DateListButtonChange(1)"
                     >日榜
                   </NButton>
                   <NButton
-                    plain
                     :type="weeklyListButtonStyle"
+                    plain
                     round
                     @click="DateListButtonChange(2)"
                     >周榜
@@ -364,16 +365,16 @@ onMounted(() => {
         </NGrid>
 
         <!--      榜单排行-->
-        <NGrid x-gap="24" :cols="1" style="margin-bottom: 20px">
+        <NGrid :cols="1" style="margin-bottom: 20px" x-gap="24">
           <NGi>
             <div style="display: flex; align-items: center">
               <text class="text_italic">榜单排行</text>
-              <img :src="arrowpng" class="img_arrow" alt="榜单排行" />
+              <img :src="arrowpng" alt="榜单排行" class="img_arrow" />
             </div>
           </NGi>
         </NGrid>
 
-        <NGrid x-gap="24" :cols="1" style="margin-bottom: 80px">
+        <NGrid :cols="1" style="margin-bottom: 80px" x-gap="24">
           <NGi>
             <div class="card-score">
               <div class="score_body2">
@@ -396,16 +397,16 @@ onMounted(() => {
         <NDivider />
 
         <!--      互动数据-->
-        <NGrid x-gap="24" :cols="1" style="margin-bottom: 80px">
+        <NGrid :cols="1" style="margin-bottom: 80px" x-gap="24">
           <NGi>
             <div style="display: flex; align-items: center">
               <text class="text_italic">互动数据</text>
-              <img :src="arrowpng" class="img_arrow" alt="互动数据" />
+              <img :src="arrowpng" alt="互动数据" class="img_arrow" />
             </div>
           </NGi>
         </NGrid>
 
-        <NGrid x-gap="24" :cols="4" style="margin-bottom: 80px">
+        <NGrid :cols="4" style="margin-bottom: 80px" x-gap="24">
           <NGi class="body_center">
             <div>
               <text class="text_info1">
@@ -418,7 +419,7 @@ onMounted(() => {
               <text class="text_info2">/{{ accountInfo.recordTotal.recordArticleCount }}</text>
             </div>
             <div class="center_detail">
-              <img :src="writePng" class="img_arrow" alt="发文数" />
+              <img :src="writePng" alt="发文数" class="img_arrow" />
               <text class="text_info">发文数</text>
             </div>
           </NGi>
@@ -434,7 +435,7 @@ onMounted(() => {
               <text class="text_info2">/{{ accountInfo.recordTotal.recordLikeCount }}</text>
             </div>
             <div class="center_detail">
-              <img :src="upPng" class="img_arrow" alt="点赞数" />
+              <img :src="upPng" alt="点赞数" class="img_arrow" />
               <text class="text_info">点赞数</text>
             </div>
           </NGi>
@@ -450,7 +451,7 @@ onMounted(() => {
               <text class="text_info2">/{{ accountInfo.recordTotal.recordCommentCount }}</text>
             </div>
             <div class="center_detail">
-              <img :src="commentPng" class="img_arrow" alt="评论数" />
+              <img :src="commentPng" alt="评论数" class="img_arrow" />
               <text class="text_info">评论数</text>
             </div>
           </NGi>
@@ -466,7 +467,7 @@ onMounted(() => {
               <text class="text_info2">/{{ accountInfo.recordTotal.recordForwardCount }}</text>
             </div>
             <div class="center_detail">
-              <img :src="forwardPng" class="img_arrow" alt="转发数" />
+              <img :src="forwardPng" alt="转发数" class="img_arrow" />
               <text class="text_info">转发数</text>
             </div>
           </NGi>
@@ -475,44 +476,44 @@ onMounted(() => {
         <NDivider />
 
         <!--      数据趋势-->
-        <NGrid x-gap="24" :cols="1">
+        <NGrid :cols="1" x-gap="24">
           <NGi>
             <div style="display: flex; align-items: center">
               <text class="text_italic">数据趋势</text>
-              <img :src="arrowpng" class="img_arrow" alt="数据趋势" />
+              <img :src="arrowpng" alt="数据趋势" class="img_arrow" />
             </div>
           </NGi>
         </NGrid>
 
-        <NGrid x-gap="24" :cols="1">
+        <NGrid :cols="1" x-gap="24">
           <NGi>
             <div class="card-echarts">
               <div class="button_body">
                 <NButton
+                  :type="echartsSelect === 'article' ? 'warning' : 'default'"
                   class="button_1"
                   round
-                  :type="echartsSelect === 'article' ? 'warning' : 'default'"
                   @click="handleEcharts('article')"
                   >发文数
                 </NButton>
                 <NButton
+                  :type="echartsSelect === 'like' ? 'warning' : 'default'"
                   class="button_1"
                   round
-                  :type="echartsSelect === 'like' ? 'warning' : 'default'"
                   @click="handleEcharts('like')"
                   >点赞数
                 </NButton>
                 <NButton
+                  :type="echartsSelect === 'comment' ? 'warning' : 'default'"
                   class="button_1"
                   round
-                  :type="echartsSelect === 'comment' ? 'warning' : 'default'"
                   @click="handleEcharts('comment')"
                   >评论数
                 </NButton>
                 <NButton
+                  :type="echartsSelect === 'forward' ? 'warning' : 'default'"
                   class="button_1"
                   round
-                  :type="echartsSelect === 'forward' ? 'warning' : 'default'"
                   @click="handleEcharts('forward')"
                   >转发数
                 </NButton>
