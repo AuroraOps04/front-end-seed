@@ -60,12 +60,19 @@ declare namespace API {
     area: string
   } & Model
 
+  type CharsQuery = {
+    accountId:number
+    dateList:number
+  } & Model
+
+
   type DictParams = Partial<Dict>
   type AccountParams = Partial<Account>
   type AccountQueryParams = Partial<AccountQuery>
   type UserParams = Partial<User>
   type UserQueryParams = Partial<UserQuery>
 
+  type CharsParams = Partial<CharsQuery>
   type LoginRequest = {
     phone: string
     smsCode: string

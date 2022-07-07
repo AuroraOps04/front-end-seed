@@ -17,6 +17,11 @@ const routes: Array<RouteRecordRaw> = [
         path: '/admin/dict',
         name: 'Dict',
         component: () => import('@/views/admin/dict/index.vue')
+      },
+      {
+        path: '/admin/monitor',
+        name: 'monitor',
+        component: () => import('@/views/admin/monitor/index.vue')
       }
     ]
   },

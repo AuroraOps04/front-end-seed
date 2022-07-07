@@ -1,12 +1,7 @@
 <script lang="ts" setup>
-import personLogoPng from "@/assets/person_logo.png"
-import personIconPng from "@/assets/person_icon.png"
-import personIcon2Png from "@/assets/person_icon2.png"
-import personIcon3Png from "@/assets/person_icon3.png"
-import personGradePng from "@/assets/person_grade.png"
-import rankingBgPng from "@/assets/ranking_bg.png"
-import {NAvatar, NIcon, NPopselect, NButton, NInput, NUpload, NModal, useMessage, UploadFileInfo} from "naive-ui";
-import {ref, reactive} from "vue";
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import {
   PersonOutline,
   StarOutline,
@@ -14,37 +9,52 @@ import {
   PersonCircleOutline,
   IdCardSharp,
   PhonePortraitOutline
-} from "@vicons/ionicons5";
-import Header from "@/components/Header.vue"
-import {useStore} from "vuex";
-import {updatePhoneApi, updateUsernameApi} from "@service/person";
-import {useRouter} from "vue-router";
+} from '@vicons/ionicons5'
+import {
+  NAvatar,
+  NIcon,
+  NPopselect,
+  NButton,
+  NInput,
+  NUpload,
+  NModal,
+  useMessage,
+  UploadFileInfo
+} from 'naive-ui'
+import { updatePhoneApi, updateUsernameApi } from '@service/person'
+import personLogoPng from '@/assets/person_logo.png'
+import personIconPng from '@/assets/person_icon.png'
+import personIcon2Png from '@/assets/person_icon2.png'
+import personIcon3Png from '@/assets/person_icon3.png'
+import personGradePng from '@/assets/person_grade.png'
+import rankingBgPng from '@/assets/ranking_bg.png'
+import Header from '@/components/Header.vue'
 
-const router = useRouter();
+const router = useRouter()
 const message = useMessage()
-const store = useStore();
-const avatar = ref("头像")
+const store = useStore()
 const username = ref<string>('')
 const phone = ref<string>('')
 const menuArr = reactive([
   {
-    name: "我的资料",
-    code: "person",
+    name: '我的资料',
+    code: 'person',
     isSelect: true
   },
   {
-    name: "我的榜单",
-    code: "Leaderboard",
-    isSelect: false
-  }, {
-    name: "收藏账号",
-    code: "collect",
+    name: '我的榜单',
+    code: 'Leaderboard',
     isSelect: false
   },
+  {
+    name: '收藏账号',
+    code: 'collect',
+    isSelect: false
+  }
 ])
 const handleClick = (e: string) => {
-  menuArr.forEach(item => {
-    item.isSelect = item.code === e;
+  menuArr.forEach((item) => {
+    item.isSelect = item.code === e
   })
 }
 const showModal = ref(false)
@@ -99,23 +109,14 @@ const handleUpdateUsername = async () => {
     console.log(e)
   }
 }
-const beforeUpload = async (data: {
-  file: UploadFileInfo
-  fileList: UploadFileInfo[]
-}) => {
+const beforeUpload = async (data: { file: UploadFileInfo; fileList: UploadFileInfo[] }) => {
   if (data.file.file?.type !== 'image/png') {
     message.error('只能上传png格式的图片文件，请重新上传')
     return false
   }
   return true
 }
-const handleFinish = ({
-                        file,
-                        event
-                      }: {
-  file: UploadFileInfo
-  event?: ProgressEvent
-}) => {
+const handleFinish = ({ file, event }: { file: UploadFileInfo; event?: ProgressEvent }) => {
   console.log(event)
   console.log(2222)
   if (event?.isTrusted) {
@@ -127,19 +128,27 @@ const handleFinish = ({
   // file.url = '__HTTPS__://www.mocky.io/v2/5e4bafc63100007100d8b70f'
   return file
 }
+const handleShowModalUsername = (e: boolean) => {
+  showModalUsername.value = e
+  username.value = ''
+}
+const handleShowModal = (e: boolean) => {
+  showModal.value = e
+  phone.value = ''
+}
 </script>
 
 <template>
   <div>
-    <Header/>
+    <Header />
     <div class="person-top">
       <!-- logo -->
       <div class="person-top-menu-logo">
-        <img :src="personLogoPng" style="width: 100px;" alt="logo">
-        <span style="width: 20px"></span>
+        <img :src="personLogoPng" alt="logo" />
+        <span></span>
         <div class="logo-title">
           <span>潮汐</span>
-          <span style="color:black;">指数</span>
+          <span style="color: black">指数</span>
         </div>
       </div>
     </div>
@@ -148,65 +157,80 @@ const handleFinish = ({
       <div class="main">
         <div class="main-menu">
           <div class="menu-avatar">
-            <n-avatar round :size="80" :src="store.getters.currentPictureUrl">
-            </n-avatar>
+            <NAvatar round :size="50" :src="store.getters.currentPictureUrl"> </NAvatar>
           </div>
           <span class="menu-username">{{ store.getters.currentUsername }}</span>
           <div class="menu-identification">
-            <img :src="personGradePng" style="width: 30px;height: 30px;margin-right: 10px" alt="用户等级">
+            <img :src="personGradePng" alt="用户等级" />
             <div class="identification-grade">用户等级</div>
           </div>
-          <hr style="background: rgba(140,140,140,0.02)">
+          <hr style="background: rgba(140, 140, 140, 0.02)" />
           <div class="menu-list">
-            <div class="list-content" v-for="item in menuArr">
-              <n-icon size="25" v-if="item.code==='person'" :component="PersonOutline"
-                      :color="item.isSelect?'#F78B32':'black'" @click="handleClick(item.code)"/>
-              <n-icon size="25" v-else-if="item.code==='Leaderboard'" :component="BarChartOutline"
-                      :color="item.isSelect?'#F78B32':'black'" @click="handleClick(item.code)"/>
-              <n-icon size="25" v-else-if="item.code==='collect'" :component="StarOutline"
-                      :color="item.isSelect?'#F78B32':'black'" @click="handleClick(item.code)"/>
-              <span :style="{color: item.isSelect?'#F78B32':'black'}" @click="handleClick(item.code)">{{
-                  item.name
-                }}</span>
+            <div class="list-content" v-for="(item, index) in menuArr" :key="index">
+              <NIcon
+                size="25"
+                v-if="item.code === 'person'"
+                :component="PersonOutline"
+                :color="item.isSelect ? '#F78B32' : 'black'"
+                @click="handleClick(item.code)"
+              />
+              <NIcon
+                size="25"
+                v-else-if="item.code === 'Leaderboard'"
+                :component="BarChartOutline"
+                :color="item.isSelect ? '#F78B32' : 'black'"
+                @click="handleClick(item.code)"
+              />
+              <NIcon
+                size="25"
+                v-else-if="item.code === 'collect'"
+                :component="StarOutline"
+                :color="item.isSelect ? '#F78B32' : 'black'"
+                @click="handleClick(item.code)"
+              />
+              <span
+                :style="{ color: item.isSelect ? '#F78B32' : 'black' }"
+                @click="handleClick(item.code)"
+                >{{ item.name }}</span
+              >
             </div>
           </div>
         </div>
 
         <div class="main-content">
-          <template v-for="item in menuArr">
+          <template v-for="(item, index) in menuArr" :key="index">
             <div class="content-header" v-if="item.isSelect">
               <span>{{ '/' + item.name }}</span>
             </div>
-            <hr style="background-color:rgb(239,239,239) " v-if="item.isSelect">
-            <div v-if="item.code==='person'&&item.isSelect" class="content-person">
+            <hr style="background-color: rgb(239, 239, 239)" v-if="item.isSelect" />
+            <div v-if="item.code === 'person' && item.isSelect" class="content-person">
               <div class="person-list">
                 <div class="list-title">
-                  <n-icon size="40" :component="PersonCircleOutline" color="black" :depth="3"/>
+                  <NIcon size="40" :component="PersonCircleOutline" color="black" :depth="3" />
                   <span>头像</span>
                 </div>
                 <div class="list-info">
-                  <n-avatar round :size="48" :src="store.getters.currentPictureUrl">
-                  </n-avatar>
+                  <n-avatar round :size="48" :src="store.getters.currentPictureUrl"> </n-avatar>
                 </div>
                 <div class="list-controller">
-                  <n-popselect trigger="click">
+                  <NPopselect trigger="click">
                     <span>更换头像</span>
                     <template #empty>
-                      <n-upload
-                        action="http://localhost:4000/api/user/updatePictrue"
+                      <NUpload
+                        action="https://test1.auni.top/api/user/updatePictrue"
                         @before-upload="beforeUpload"
                         @finish="handleFinish"
                       >
-                        <n-button>上传图片</n-button>
-                      </n-upload>
+                        <NButton>上传图片</NButton>
+                      </NUpload>
                     </template>
-                  </n-popselect>
+                  </NPopselect>
                 </div>
               </div>
 
               <div class="person-list">
                 <div class="list-title">
-                  <n-icon size="40" :component="IdCardSharp" color="black" :depth="3"/>
+                  <NIcon size="40" :component="IdCardSharp" color="black" :depth="3" />
                   <span>账号</span>
                 </div>
                 <div class="list-info">
@@ -214,26 +238,30 @@ const handleFinish = ({
                 </div>
 
                 <div class="list-controller">
-                  <span @click="showModalUsername=true;username=''">修改名称</span>
+                  <span @click="handleShowModalUsername(true)">修改名称</span>
                 </div>
-                <n-modal v-model:show="showModalUsername" :mask-closable="false"
-                         preset="dialog" title="Dialog">
+                <NModal
+                  v-model:show="showModalUsername"
+                  :mask-closable="false"
+                  preset="dialog"
+                  title="Dialog"
+                >
                   <template #header>
                     <span>修改名称</span>
                   </template>
                   <div>
-                    <n-input v-model:value="username" placeholder="请输入新的名称"></n-input>
+                    <NInput v-model:value="username" placeholder="请输入新的名称"></NInput>
                   </div>
                   <template #action>
-                    <n-button @click="handleUpdateUsername" type="primary">确认</n-button>
-                    <n-button @click="showModalUsername=false;username=''">取消</n-button>
+                    <NButton @click="handleUpdateUsername" type="primary">确认</NButton>
+                    <NButton @click="handleShowModalUsername(false)">取消</NButton>
                   </template>
-                </n-modal>
+                </NModal>
               </div>
 
               <!--              <div class="person-list">-->
               <!--                <div class="list-title">-->
-              <!--                  <n-icon size="40" :component="LockClosed" color="black" :depth="3"/>-->
+              <!--                  <NIcon size="40" :component="LockClosed" color="black" :depth="3"/>-->
               <!--                  <span>密码</span>-->
               <!--                </div>-->
               <!--                <div class="list-info">-->
@@ -244,45 +272,45 @@ const handleFinish = ({
 
               <div class="person-list">
                 <div class="list-title">
-                  <n-icon size="40" :component="PhonePortraitOutline" color="black" :depth="3"/>
+                  <NIcon size="40" :component="PhonePortraitOutline" color="black" :depth="3" />
                   <span>绑定手机号</span>
                 </div>
                 <div class="list-info">
                   {{ store.getters.currentPhone }}
                 </div>
                 <div class="list-controller">
-                  <span @click="showModal=true;phone=''">更换号码</span>
+                  <span @click="handleShowModal(true)">更换号码</span>
                 </div>
-                <n-modal v-model:show="showModal" :mask-closable="false"
-                         preset="dialog" title="Dialog">
+                <NModal
+                  v-model:show="showModal"
+                  :mask-closable="false"
+                  preset="dialog"
+                  title="Dialog"
+                >
                   <template #header>
                     <div>更换号码</div>
                   </template>
                   <div>
-                    <n-input v-model:value="phone" placeholder="请输入新的电话号码"></n-input>
+                    <NInput v-model:value="phone" placeholder="请输入新的电话号码"></NInput>
                   </div>
                   <template #action>
-                    <n-button @click="handleUpdatePhone" type="primary">确认</n-button>
-                    <n-button @click="showModal=false;phone=''">取消</n-button>
+                    <NButton @click="handleUpdatePhone" type="primary">确认</NButton>
+                    <NButton @click="handleShowModal(false)">取消</NButton>
                   </template>
-                </n-modal>
+                </NModal>
               </div>
-
             </div>
-            <div v-else-if="item.code==='Leaderboard'&&item.isSelect" class="content-ranking">
-              <img :src="rankingBgPng" style="width: 400px" alt="排行榜">
+            <div v-else-if="item.code === 'Leaderboard' && item.isSelect" class="content-ranking">
+              <img :src="rankingBgPng" alt="排行榜" />
             </div>
-            <div v-else-if="item.code==='collect'&&item.isSelect" class="content-collect">
-
-            </div>
+            <div v-else-if="item.code === 'collect' && item.isSelect" class="content-collect"></div>
           </template>
         </div>
       </div>
-      <img :src="personIconPng" class="main-icon1" alt="背景图标">
-      <img :src="personIcon2Png" class="main-icon2" alt="背景图标">
-      <img :src="personIcon3Png" class="main-icon3" alt="背景图标">
+      <img :src="personIconPng" class="maiNIcon1" alt="背景图标" />
+      <img :src="personIcon2Png" class="maiNIcon2" alt="背景图标" />
+      <img :src="personIcon3Png" class="maiNIcon3" alt="背景图标" />
     </div>
-
   </div>
 </template>
 
@@ -294,6 +322,10 @@ const handleFinish = ({
   align-items: center;
   justify-content: start;
   margin: 0 100px;
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    height: 20vw;
+    margin: 0 5vw;
+  }
 
   .person-top-menu-logo {
     display: flex;
@@ -301,11 +333,28 @@ const handleFinish = ({
     justify-content: start;
     align-items: center;
 
+    span {
+      width: 20px;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        width: 5vw;
+      }
+    }
+
+    img {
+      width: 100px;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        width: 15vw;
+      }
+    }
+
     .logo-title span {
-      color: #F78B32;
+      color: #f78b32;
       font-size: 30px;
       font-weight: bold;
-      letter-spacing: 5px;
+      letter-spacing: 1vw;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        font-size: 6vw;
+      }
     }
   }
 }
@@ -313,6 +362,9 @@ const handleFinish = ({
 .person-main {
   position: relative;
   height: 1000px;
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    height: auto;
+  }
 
   .main {
     margin: 0 100px;
@@ -324,6 +376,9 @@ const handleFinish = ({
     position: relative;
     display: flex;
     flex-direction: row;
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      margin: 0 1vw;
+    }
 
     .main-menu {
       height: 100%;
@@ -337,12 +392,19 @@ const handleFinish = ({
 
       .menu-avatar {
         margin: 25px;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          margin: 5vw 0;
+        }
       }
 
       .menu-username {
         font-size: 20px;
         font-weight: bold;
         letter-spacing: 2px;
+
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          font-size: 4vw;
+        }
       }
 
       .menu-identification {
@@ -352,6 +414,20 @@ const handleFinish = ({
         justify-content: center;
         margin: 25px 0;
 
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          flex-direction: column;
+          margin: 2vw 0;
+        }
+
+        img {
+          width: 30px;
+          height: 30px;
+          margin-right: 10px;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            margin-right: 0;
+          }
+        }
+
         .identification-grade {
           width: 100px;
           height: 30px;
@@ -359,9 +435,18 @@ const handleFinish = ({
           padding-left: 15px;
           line-height: 30px;
           border-radius: 15px;
-          background: linear-gradient(to right, #F78B32, rgba(0, 0, 0, 0));
+          background: linear-gradient(to right, #f78b32, rgba(0, 0, 0, 0));
           font-size: 16px;
           color: white;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            height: 6vw;
+            line-height: 6vw;
+            width: auto;
+            font-size: 3vw;
+            border-radius: 2vw;
+            padding: 0 1vw;
+            margin: 2vw 0;
+          }
         }
       }
 
@@ -371,6 +456,9 @@ const handleFinish = ({
         align-items: center;
         justify-content: start;
         margin: 30px 0;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          margin: 10vw 0;
+        }
 
         .list-content {
           display: flex;
@@ -379,11 +467,18 @@ const handleFinish = ({
           justify-content: center;
           margin: 15px 0;
           cursor: pointer;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            flex-direction: column;
+          }
 
           span {
             margin: 0 10px;
             font-size: 16px;
             letter-spacing: 2px;
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              margin: 0;
+              font-size: 3vw;
+            }
           }
         }
 
@@ -397,12 +492,17 @@ const handleFinish = ({
       width: 100%;
 
       .content-header {
-        color: #BDC7DF;
+        color: #bdc7df;
         font-size: 20px;
         text-align: left;
         height: 60px;
         line-height: 60px;
         margin: 0 20px;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          font-size: 4vw;
+          height: 10vw;
+          line-height: 10vw;
+        }
       }
 
       .content-person {
@@ -410,12 +510,18 @@ const handleFinish = ({
         flex-direction: column;
         justify-content: center;
         margin: 100px;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          margin: 2vw;
+        }
 
         .person-list {
           display: flex;
           flex-direction: row;
           align-items: center;
           justify-content: space-between;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            margin: 5vw 0;
+          }
 
           .list-title {
             display: flex;
@@ -424,22 +530,37 @@ const handleFinish = ({
             justify-content: center;
             margin: 20px 0;
 
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              margin: 1vw 0;
+            }
+
             span {
               font-size: 16px;
               color: #757575;
               margin: 0 20px;
+              @media screen and (min-width: 320px) and (max-width: 480px) {
+                font-size: 3vw;
+                margin: 0;
+              }
             }
           }
 
           .list-info {
             font-size: 16px;
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              font-size: 3vw;
+            }
           }
 
           .list-controller {
             font-size: 16px;
-            color: #F78B32;
-            border-bottom: 1px solid #F78B32;
+            color: #f78b32;
+            border-bottom: 1px solid #f78b32;
             cursor: pointer;
+
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              font-size: 3vw;
+            }
           }
 
           .list-controller:hover {
@@ -453,11 +574,18 @@ const handleFinish = ({
         align-items: center;
         justify-content: center;
         overflow: hidden;
+
+        img {
+          width: 400px;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            width: 80vw;
+          }
+        }
       }
     }
   }
 
-  .main-icon1 {
+  .maiNIcon1 {
     width: 60%;
     position: absolute;
     top: -50px;
@@ -465,7 +593,7 @@ const handleFinish = ({
     z-index: -1;
   }
 
-  .main-icon2 {
+  .maiNIcon2 {
     width: 20%;
     position: absolute;
     bottom: -50px;
@@ -473,7 +601,7 @@ const handleFinish = ({
     z-index: -1;
   }
 
-  .main-icon3 {
+  .maiNIcon3 {
     width: 40%;
     position: absolute;
     top: 200px;
@@ -485,7 +613,7 @@ const handleFinish = ({
 .home-top {
   width: 100%;
   height: 626px;
-  background-image: url("@/assets/home_bg.png");
+  background-image: url('@/assets/home_bg.png');
   background-size: 100% 626px;
   background-repeat: no-repeat;
   display: flex;
@@ -512,7 +640,7 @@ const handleFinish = ({
         width: 108px;
         height: 40px;
         line-height: 40px;
-        color: #F78B32FF;
+        color: #f78b32ff;
         font-size: 24px;
         font-weight: bold;
         letter-spacing: 2px;
@@ -535,15 +663,18 @@ const handleFinish = ({
         line-height: 40px;
         border-bottom: 5px solid rgba(0, 0, 0, 0);
         margin: 0 20px;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          font-size: 5vw;
+        }
       }
 
       div:hover {
         opacity: 0.7;
-        border-bottom: 5px solid #F2882B;
+        border-bottom: 5px solid #f2882b;
       }
 
       .menu-hover {
-        border-bottom: 5px solid #F2882B;
+        border-bottom: 5px solid #f2882b;
       }
     }
 
@@ -580,7 +711,6 @@ const handleFinish = ({
         line-height: 40px;
       }
     }
-
   }
 }
 
@@ -594,7 +724,7 @@ const handleFinish = ({
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    background: url("@/assets/home_bg2.png") no-repeat;
+    background: url('@/assets/home_bg2.png') no-repeat;
     background-size: 100% 272px;
     margin-top: 108px;
 
@@ -684,7 +814,6 @@ const handleFinish = ({
       justify-content: space-around;
       align-items: center;
 
-
       img {
         width: 74px;
         height: 74px;
@@ -730,7 +859,7 @@ const handleFinish = ({
       .box-title1 {
         color: rgba(16, 16, 16, 100);
         font-size: 18px;
-        border-bottom: 5px solid #F78B32;
+        border-bottom: 5px solid #f78b32;
         text-align: center;
       }
 
@@ -740,7 +869,6 @@ const handleFinish = ({
         text-align: center;
         line-height: 20px;
       }
-
     }
   }
 
@@ -753,13 +881,11 @@ const handleFinish = ({
 
   .row-line {
     height: 5px;
-    background-color: #7488BF;
+    background-color: #7488bf;
     width: 50px;
     margin: 0 20px;
   }
-
 }
-
 
 .home-bottom {
   display: flex;
@@ -807,6 +933,5 @@ const handleFinish = ({
       opacity: 0.7;
     }
   }
-
 }
 </style>
