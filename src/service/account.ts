@@ -1,47 +1,58 @@
 import request from './_requests'
-import AccountParams = API.AccountParams;
-import PageParams = API.PageParams;
-import AccountQueryParams = API.AccountQueryParams;
-import CharsParams = API.CharsParams;
+import AccountParams = API.AccountParams
+import PageParams = API.PageParams
+import AccountQueryParams = API.AccountQueryParams
 
 export const listAccountByPageApi = (params: AccountParams & PageParams): Promise<API.Response> => {
-  return request("/account/findAccountSelectPage", {
-    method: "GET",
+  return request('/account/findAccountSelectPage', {
+    method: 'GET',
     params
-  });
+  })
 }
 
-export const findAllCategoryApi = (params: null): Promise<API.Response> => {
-  return request("/category/findCategory", {
-    method: "GET"
-  });
+export const findAllCategoryApi = (): Promise<API.Response> => {
+  return request('/category/findCategory', {
+    method: 'GET'
+  })
 }
 
-export const findAreaApi = (params: null): Promise<API.Response> => {
-  return request("/area/findArea", {
-    method: "GET"
-  });
+export const findAreaApi = (): Promise<API.Response> => {
+  return request('/area/findArea', {
+    method: 'GET'
+  })
 }
 
-export const findAccountByAccountApi = (params:AccountQueryParams): Promise<API.Response> => {
-  return request("/account/findAccountByAccount", {
-    method: "GET",
+export const findAccountByAccountApi = (params: AccountQueryParams): Promise<API.Response> => {
+  return request('/account/findAccountByAccount', {
+    method: 'GET',
     params
-  });
+  })
 }
 
-export const findRecordTotalApi = (AccountId:number): Promise<API.Response> => {
+export const findRecordTotalApi = (AccountId: number): Promise<API.Response> => {
   return request(`/account/findRecordTotal/${AccountId}`, {
-    method: "GET",
-  });
+    method: 'GET'
+  })
 }
 
-export const findRecordCharsDataApi = (params:AccountQueryParams): Promise<API.Response> => {
-  return request("/account/findRecordCharsData", {
-    method: "GET",
+export const findRecordCharsDataApi = (params: AccountQueryParams): Promise<API.Response> => {
+  return request('/account/findRecordCharsData', {
+    method: 'GET',
     params
-  });
+  })
 }
 
+export const removeAccountBatchByIdsApi = (params: number[]): Promise<API.Response> => {
+  return request('/account/removeAccountBatchByIds', {
+    method: 'DELETE',
+    params: {
+      ids: params
+    }
+  })
+}
 
-
+export const removeAccountByIdApi = (accountId: number): Promise<API.Response> => {
+  return request(`/account/removeAccountById/${accountId}`, {
+    method: 'DELETE'
+  })
+}

@@ -1,8 +1,9 @@
-import Axios from 'axios'
 import type { AxiosRequestConfig, AxiosResponse } from 'axios'
+import Axios from 'axios'
 import { createDiscreteApi } from 'naive-ui'
 import nProgress from 'nProgress'
 import Cookies from 'js-cookie'
+import qs from 'qs'
 
 const message = createDiscreteApi(['message', 'notification'])
 
@@ -13,14 +14,18 @@ const _instance = Axios.create({
 
 _instance.interceptors.request.use(
   (config) => {
-    nProgress.start()
-    const token = Cookies.get("token")
-    if(token){
-      config.headers!['Authorization'] = 'Bearer ' + token
+    const c = { ...config }
+    c.paramsSerializer = (params) => {
+      return qs.stringify(params, { indices: false })
     }
-    return config
+    nProgress.start()
+    const token = Cookies.get('token')
+    if (token) {
+      c.headers!.Authorization = `Bearer ${token}`
+    }
+    return c
   },
-  (err) => {}
+  () => {}
 )
 
 _instance.interceptors.response.use(
@@ -51,7 +56,7 @@ _instance.interceptors.response.use(
 
     return res.data
   },
-  (err) => {
+  () => {
     nProgress.done()
   }
 )
@@ -86,6 +91,11 @@ const request = (
       return _instance.put(url, params.data, {
         params: params.params,
         ...params.config
+      })
+    default:
+      return _instance.get(url, {
+        params: params?.params,
+        ...params?.config
       })
   }
 }

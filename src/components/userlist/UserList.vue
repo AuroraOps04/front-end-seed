@@ -93,13 +93,13 @@ const findUserSelectPage = async () => {
 
 // 查询所有地区
 const findAllArea = async () => {
-  const res = await findAreaApi(null)
+  const res = await findAreaApi()
   userData.area = res.data as never
 }
 
 // 查询所有分类
 const findAllCategory = async () => {
-  const res = await findAllCategoryApi(null)
+  const res = await findAllCategoryApi()
   userData.cateGory = res.data as any
 }
 
@@ -164,30 +164,30 @@ onMounted(() => {
 
 <template>
   <div class="bg1">
-    <n-grid x-gap="24" :cols="4">
+    <n-grid :cols="4" x-gap="24">
       <n-gi span="4">
         <vxe-toolbar>
           <template v-slot:buttons>
             <div style="margin-left: 10px">
               <vxe-input
+                v-model="userData.option.username"
                 placeholder="输入姓名搜索"
                 type="search"
                 @blur="changeUserName"
-                v-model="userData.option.username"
               ></vxe-input>
             </div>
 
             <div style="margin-left: 30px">
               <vxe-select
+                v-model="userData.option.userRating"
                 placeholder="选择用户等级"
                 @change="changeUserRating($event)"
-                v-model="userData.option.userRating"
               >
                 <vxe-option
                   v-for="rating in userData.userRating"
                   :key="rating.ratingId"
-                  :value="rating.ratingName"
                   :label="rating.ratingName"
+                  :value="rating.ratingName"
                 ></vxe-option>
               </vxe-select>
             </div>
@@ -201,8 +201,8 @@ onMounted(() => {
                 <vxe-option
                   v-for="cateGory in userData.cateGory"
                   :key="cateGory.categoryId"
-                  :value="cateGory.categoryName"
                   :label="cateGory.categoryName"
+                  :value="cateGory.categoryName"
                 ></vxe-option>
               </vxe-select>
             </div>
@@ -216,18 +216,18 @@ onMounted(() => {
                 <vxe-option
                   v-for="area in userData.area"
                   :key="area.areaId"
-                  :value="area.areaName"
                   :label="area.areaName"
+                  :value="area.areaName"
                 ></vxe-option>
               </vxe-select>
             </div>
 
             <div style="margin-left: 45px">
-              <n-button @click="clickEvent" type="info" ghost>重置</n-button>
+              <n-button ghost type="info" @click="clickEvent">重置</n-button>
             </div>
 
             <div style="margin-left: 35px">
-              <n-button @click="exportSelectEvent" type="info">导出</n-button>
+              <n-button type="info" @click="exportSelectEvent">导出</n-button>
             </div>
           </template>
         </vxe-toolbar>
@@ -235,13 +235,13 @@ onMounted(() => {
     </n-grid>
 
     <div style="height: 530px">
-      <n-grid x-gap="24" :cols="4">
+      <n-grid :cols="4" x-gap="24">
         <n-gi span="4">
           <vxe-table
             ref="xTable1"
+            :data="userData.tableData"
             :export-config="{}"
             :row-config="{ isHover: true }"
-            :data="userData.tableData"
           >
             <vxe-column type="checkbox" width="60"></vxe-column>
             <vxe-table-column field="userName" title="姓名"></vxe-table-column>
@@ -256,14 +256,11 @@ onMounted(() => {
       </n-grid>
     </div>
 
-    <n-grid x-gap="24" :cols="4">
+    <n-grid :cols="4" x-gap="24">
       <n-gi span="4">
         <vxe-pager
-          background
           v-model:current-page="userData.tablePage.currentPage"
           v-model:page-size="userData.tablePage.pageSize"
-          @page-change="handleChangePage"
-          :total="userData.tablePage.total"
           :layouts="[
             'PrevJump',
             'PrevPage',
@@ -273,6 +270,9 @@ onMounted(() => {
             'FullJump',
             'Total'
           ]"
+          :total="userData.tablePage.total"
+          background
+          @page-change="handleChangePage"
         >
         </vxe-pager>
       </n-gi>
