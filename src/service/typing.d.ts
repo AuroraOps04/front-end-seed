@@ -45,6 +45,19 @@ declare namespace API {
     gender: string
     phone: string
     mail: string
+  }
+  type Area = {
+    areaCode: string
+    areaDescription: string
+    areaId: number
+    areaName: string
+  } & Model
+
+  type Category = {
+    categoryCode: string
+    categoryDescription: string
+    categoryId: number
+    categoryName: string
   } & Model
 
   type AccountQuery = {
@@ -61,10 +74,24 @@ declare namespace API {
   } & Model
 
   type CharsQuery = {
-    accountId:number
-    dateList:number
+    accountId: number
+    dateList: number
   } & Model
 
+  type AccountData = {
+    accountId: number
+    accountName: string
+    accountPictureUrl: string
+    areaName: string
+    categoryName: string
+    introduction: string
+    platformName: string
+    recordComment: number
+    recordArticle: number
+    recordFan: number
+    recordForward: number
+    recordLike: number
+  } & Model
 
   type DictParams = Partial<Dict>
   type AccountParams = Partial<Account>

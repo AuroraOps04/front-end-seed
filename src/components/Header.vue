@@ -29,14 +29,14 @@ const handleTo = (e: string) => {
     <div class="title">
       <template v-for="item in menuArr">
         <span
-          @click="handleTo(item.code)"
           :style="{ backgroundColor: item.code === store.state.menu ? '#113691' : 'black' }"
-          >{{ item.name }}</span
-        >
+          @click="handleTo(item.code)"
+          >{{ item.name }}
+        </span>
       </template>
     </div>
     <div class="avatar" @click="handleTo('person')">
-      <NAvatar round :size="35" :src="store.getters.currentPictureUrl"></NAvatar>
+      <NAvatar :size="35" :src="store.getters.currentPictureUrl" round></NAvatar>
       <span style="margin: 0 5px">个人中心</span>
     </div>
   </div>

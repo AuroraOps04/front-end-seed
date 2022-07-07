@@ -11,8 +11,7 @@ import AdminNavigationBar from '@/components/admin/AdminNavigationBar.vue'
   </div>
 </template>
 
-
-<style scoped lang="scss">
+<style lang="scss" scoped>
 html,
 body,
 #app {
@@ -22,14 +21,16 @@ body,
 .container {
   width: 100%;
   background-color: red;
+  display: flex;
+  height: 100vh;
 
   .container_table {
     width: calc(98% - 110px);
     border: 1px solid white;
     margin: 50px 45px 30px 65px;
-
+    border-radius: 17px;
     background-color: white;
-    height: 100vh;
+    height: 500px;
   }
 }
 </style>
