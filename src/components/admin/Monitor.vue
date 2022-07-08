@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from 'vue'
-import { NButton, NSpace, NIcon } from 'naive-ui'
-import { TrashOutline, Add, SwapVertical } from '@vicons/ionicons5'
+import { NButton, NSpace, NIcon, NDropdown } from 'naive-ui'
+import { TrashOutline, Add, SwapVertical, ChevronDownOutline } from '@vicons/ionicons5'
 import {
   VxeColumnPropTypes,
   VxeFormItemPropTypes,
@@ -97,6 +97,25 @@ const tablePage = reactive<TablePage>({
   pageSize: 10
 })
 
+const accountDetail = reactive({
+  accountId: null,
+  accountName: '',
+  areaName: '',
+  categoryName: '',
+  introduction: '',
+  platformName: '',
+  recordComment: '',
+  recordArticle: 0,
+  recordFan: 0,
+  recordForward: 0,
+  recordLike: 0,
+  areaId: null,
+  platformId: 0,
+  categoryId: 0,
+  areaDescription: '',
+  platformDescription: '',
+  categoryDescription: ''
+})
 const demo1 = reactive({
   submitLoading: false,
   tableData: [] as any[],
@@ -179,7 +198,8 @@ const params = reactive<API.AccountParams & API.PageParams>({
   platform: '',
   accountName: accountName.value,
   startTime: '',
-  endTime: ''
+  endTime: '',
+  sortType: 1
 })
 
 // 分页查询所有数据
@@ -277,9 +297,25 @@ const resetEvent = () => {
   findAccountSelectPage()
 }
 
-// 排序
-const sortEvent = () => {}
+const sortOptions = [
+  {
+    label: '潮汐指数',
+    key: 1
+  },
+  {
+    label: '粉丝数',
+    key: 2
+  },
+  {
+    label: '新增时间',
+    key: 3
+  }
+]
 
+const handleSortSelect = (key: number) => {
+  params.sortType = key
+  findAccountSelectPage()
+}
 // 新增
 const insertEvent = () => {
   demo1.formData = {
@@ -384,14 +420,24 @@ onMounted(() => {
           </div>
           <div class="search_button">
             <n-space align="center">
-              <n-button color="#70ACFF" @click="sortEvent()">
-                <template #icon>
+              <n-dropdown
+                :options="sortOptions"
+                placement="bottom-start"
+                trigger="click"
+                @select="handleSortSelect"
+              >
+                <n-button color="#70ACFF">
+                  <template #icon>
+                    <n-icon>
+                      <SwapVertical />
+                    </n-icon>
+                  </template>
+                  排序
                   <n-icon>
-                    <SwapVertical />
+                    <ChevronDownOutline />
                   </n-icon>
-                </template>
-                排序
-              </n-button>
+                </n-button>
+              </n-dropdown>
               <n-button color="#70ACFF" @click="insertEvent()">
                 <template #icon>
                   <n-icon>
@@ -429,7 +475,7 @@ onMounted(() => {
     >
       <vxe-column type="checkbox" width="60"></vxe-column>
       <vxe-column align="center" field="accountName" title="账号"></vxe-column>
-      <!--      :formatter="formatterSex"-->
+      <vxe-column align="center" field="recordFan" sortable title="粉丝数"></vxe-column>
       <vxe-column
         :formatter="formatterArea"
         align="center"
@@ -492,7 +538,7 @@ onMounted(() => {
     >
       <template #default>
         <vxe-form
-          :data="demo1.formData"
+          :data="accountDetail"
           :rules="demo1.formRules"
           title-align="right"
           title-width="100"
@@ -502,25 +548,20 @@ onMounted(() => {
             :span="24"
             :title-prefix="{ icon: 'fa fa-address-card-o' }"
             :title-width="200"
-            title="Basic information"
+            title="基础信息"
             title-align="left"
           ></vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="name" title="Name">
+          <vxe-form-item :item-render="{}" :span="0" field="accountId">
             <template #default="{ data }">
-              <vxe-input v-model="data.name" placeholder="请输入名称"></vxe-input>
+              <vxe-input v-model="data.accountId" type="hidden"></vxe-input>
             </template>
           </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="nickname" title="Nickname">
+          <vxe-form-item :item-render="{}" :span="24" field="accountName" title="账号名">
             <template #default="{ data }">
-              <vxe-input v-model="data.name" placeholder="请输入名称"></vxe-input>
+              <vxe-input v-model="data.accountName" placeholder="请输入名称"></vxe-input>
             </template>
           </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="role" title="Role">
-            <template #default="{ data }">
-              <vxe-input v-model="data.name" placeholder="请输入角色"></vxe-input>
-            </template>
-          </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="sex" title="Sex">
+          <vxe-form-item :item-render="{}" :span="12" field="areaName" title="地区">
             <template #default="{ data }">
               <vxe-select v-model="data.sex" transfer>
                 <vxe-option
@@ -532,19 +573,46 @@ onMounted(() => {
               </vxe-select>
             </template>
           </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="age" title="Age">
+          <vxe-form-item :item-render="{}" :span="12" field="role" title="地区简介">
             <template #default="{ data }">
-              <vxe-input v-model="data.age" placeholder="请输入年龄" type="number"></vxe-input>
+              <vxe-input v-model="data.name" placeholder="请输入角色"></vxe-input>
             </template>
           </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="flag1" title="是否单身">
+          <vxe-form-item :item-render="{}" :span="12" field="areaName" title="分类">
             <template #default="{ data }">
-              <vxe-radio-group v-model="data.flag1">
-                <vxe-radio content="是" label="Y"></vxe-radio>
-                <vxe-radio content="否" label="N"></vxe-radio>
-              </vxe-radio-group>
+              <vxe-select v-model="data.sex" transfer>
+                <vxe-option
+                  v-for="item in demo1.sexList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></vxe-option>
+              </vxe-select>
             </template>
           </vxe-form-item>
+          <vxe-form-item :item-render="{}" :span="12" field="role" title="分类简介">
+            <template #default="{ data }">
+              <vxe-input v-model="data.name" placeholder="请输入角色"></vxe-input>
+            </template>
+          </vxe-form-item>
+          <vxe-form-item :item-render="{}" :span="12" field="areaName" title="平台">
+            <template #default="{ data }">
+              <vxe-select v-model="data.sex" transfer>
+                <vxe-option
+                  v-for="item in demo1.sexList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></vxe-option>
+              </vxe-select>
+            </template>
+          </vxe-form-item>
+          <vxe-form-item :item-render="{}" :span="12" field="role" title="平台简介">
+            <template #default="{ data }">
+              <vxe-input v-model="data.name" placeholder="请输入角色"></vxe-input>
+            </template>
+          </vxe-form-item>
+          <!--          粉丝数，文章数，转发数，评论数，点赞数-->
           <vxe-form-item
             :item-render="{}"
             :span="24"
@@ -565,7 +633,7 @@ onMounted(() => {
             :span="24"
             :title-prefix="{ message: '请填写必填项', icon: 'fa fa-info-circle' }"
             :title-width="200"
-            title="Other information"
+            title="其它信息"
             title-align="left"
           ></vxe-form-item>
           <vxe-form-item :item-render="{}" :span="12" field="num" title="Number">
