@@ -150,9 +150,16 @@ const xTable1 = ref<VxeTableInstance>()
 
 const exportSelectEvent: VxeButtonEvents.Click = () => {
   const table = xTable1.value
-  table?.exportData({
-    data: table.getCheckboxRecords()
-  })
+  if (table?.getCheckboxRecords().length === 0) {
+    console.log(table?.getCheckboxRecords().length)
+    table?.exportData({
+      type: 'csv'
+    })
+  } else {
+    table?.exportData({
+      data: table.getCheckboxRecords()
+    })
+  }
 }
 
 onMounted(() => {
@@ -234,11 +241,13 @@ onMounted(() => {
       </n-gi>
     </n-grid>
 
-    <div style="height: 530px">
+    <div style="height: 470px">
       <n-grid :cols="4" x-gap="24">
         <n-gi span="4">
           <vxe-table
             ref="xTable1"
+            size="small"
+            align="center"
             :data="userData.tableData"
             :export-config="{}"
             :row-config="{ isHover: true }"
@@ -282,7 +291,10 @@ onMounted(() => {
 
 <style scoped>
 .bg1 {
-  margin: 3%;
+  height: 80%;
+  width: 80%;
+  margin: 2%;
+  margin-left: 80px;
   padding: 3%;
   border-radius: 15px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);

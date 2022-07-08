@@ -23,7 +23,7 @@ const menuArr = reactive([
   {
     name: '用户列表管理',
     icon: menuUser,
-    path: '/',
+    path: '/admin/menu/userList',
     isSelect: false
   },
   {
