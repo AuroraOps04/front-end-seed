@@ -49,8 +49,8 @@ const handleTo = (e: string) => {
             :src="store.getters.currentPictureUrl"
           >
           </NAvatar>
-          <span @click="handleTo('login')">登录</span>
-          <span @click="handleTo('person')">个人中心</span>
+          <span @click="handleTo('login')" v-if="!store.getters.currentPictureUrl">登录</span>
+          <span @click="handleTo('person')" v-else>个人中心</span>
         </div>
       </div>
 
@@ -156,7 +156,7 @@ const handleTo = (e: string) => {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .home-top {
   width: 100%;
   height: 626px;
@@ -170,6 +170,8 @@ const handleTo = (e: string) => {
   @media screen and (min-width: 320px) and (max-width: 480px) {
     display: flex;
     flex-direction: column;
+    background-clip: content-box;
+    background-size: auto;
   }
 
   .home-top-menu {
@@ -312,7 +314,7 @@ const handleTo = (e: string) => {
       width: 750px;
 
       @media screen and (min-width: 320px) and (max-width: 480px) {
-        width: 80vw;
+        width: 95vw;
       }
 
       .title1 {
@@ -332,8 +334,8 @@ const handleTo = (e: string) => {
         line-height: 40px;
 
         @media screen and (min-width: 320px) and (max-width: 480px) {
-          font-size: 3vw;
-          line-height: 5vw;
+          font-size: 4vw;
+          line-height: 8vw;
         }
       }
     }
@@ -443,7 +445,7 @@ const handleTo = (e: string) => {
       color: rgba(187, 187, 187, 100);
       font-size: 18px;
       @media screen and (min-width: 320px) and (max-width: 480px) {
-        font-size: 2vw;
+        font-size: 4vw;
       }
     }
 
@@ -499,7 +501,7 @@ const handleTo = (e: string) => {
         line-height: 50px;
 
         @media screen and (min-width: 320px) and (max-width: 480px) {
-          font-size: 3vw;
+          font-size: 4vw;
           line-height: 6vw;
         }
       }
@@ -557,7 +559,7 @@ const handleTo = (e: string) => {
         text-align: center;
 
         @media screen and (min-width: 320px) and (max-width: 480px) {
-          font-size: 4vw;
+          font-size: 5vw;
         }
       }
 
@@ -567,7 +569,7 @@ const handleTo = (e: string) => {
         text-align: center;
         line-height: 20px;
         @media screen and (min-width: 320px) and (max-width: 480px) {
-          font-size: 3vw;
+          font-size: 4vw;
           line-height: 5vw;
         }
       }
