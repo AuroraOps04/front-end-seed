@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { reactive, ref, onMounted, defineExpose } from 'vue'
+import { reactive, ref, onMounted, defineExpose, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { NAvatar } from 'naive-ui'
 import { VxeButtonEvents, VxePagerEvents, VxeTableInstance } from 'vxe-table'
 import moment from 'moment'
 import { listAccountByPageApi, findAllCategoryApi, findAreaApi } from '@/service/account'
@@ -9,206 +10,136 @@ import 'moment/locale/pt-br'
 const router = useRouter()
 
 // 日榜类
-class DateObject {
-  id: number | undefined
-
-  startTime: string | undefined
-
-  endTime: string | undefined
-
-  date: string | undefined
-
-  constructor(id: number, startTime: string, endTime: string, date: string) {
-    this.id = id
-    this.startTime = startTime
-    this.endTime = endTime
-    this.date = date
-  }
+type DateObject = {
+  id: number
+  startTime: string
+  endTime: string
+  date: string
 }
 
-// 周榜类
-class WeekDateObject {
-  id: number | undefined
-
-  startTime: string | undefined
-
-  endTime: string | undefined
-
-  date: string | undefined
-
-  constructor(id: number, startTime: string, endTime: string, date: string) {
-    this.id = id
-    this.startTime = startTime
-    this.endTime = endTime
-    this.date = date
-  }
+type TableData = {
+  data: API.AccountData[]
 }
 
-// 月榜类
-class MonthDateObject {
-  id: number | undefined
-
-  startTime: string | undefined
-
-  endTime: string | undefined
-
-  date: string | undefined
-
-  constructor(id: number, startTime: string, endTime: string, date: string) {
-    this.id = id
-    this.startTime = startTime
-    this.endTime = endTime
-    this.date = date
-  }
+type DateObjectList = {
+  data: DateObject[]
 }
 
-// 地区对象
-class AreaObject {
-  areaId: number | undefined
-
-  areaName: string | undefined
-
-  areaCode: string | undefined
-
-  areaDescription: string | undefined
-
-  createdAt: string | undefined
-
-  updatedAt: string | undefined
-
-  createdBy: string | undefined
-
-  deletedAt: number | undefined
-
-  constructor(
-    areaId: number,
-    areaName: string,
-    areaCode: string,
-    areaDescription: string,
-    createdAt: string,
-    updatedAt: string,
-    createdBy: string,
-    deletedAt: number
-  ) {
-    this.areaId = areaId
-    this.areaName = areaName
-    this.areaCode = areaCode
-    this.areaDescription = areaDescription
-    this.createdAt = createdAt
-    this.updatedAt = updatedAt
-    this.createdBy = createdBy
-    this.deletedAt = deletedAt
-  }
+type TablePage = {
+  total: number
+  currentPage: number
+  pageSize: number
 }
+
+type AreaData = {
+  data: API.Area[]
+}
+
+type CategoryData = {
+  data: API.Category[]
+}
+// 分类信息
+const categoryData = reactive<CategoryData>({
+  data: []
+})
+
+// 地区信息
+const areaData = reactive<AreaData>({
+  data: []
+})
+
+const tablePage = reactive<TablePage>({
+  total: 0,
+  currentPage: 1,
+  pageSize: 10
+})
+const tableData = reactive<TableData>({
+  data: []
+})
+
+const dateObject = reactive<DateObject>({
+  id: 0,
+  startTime: '',
+  endTime: '',
+  date: ''
+})
+
+const dailyList = reactive<DateObjectList>({
+  data: []
+})
+// 日榜周榜月榜选项 1：日榜 2：周榜 3：月榜
+const dateList = ref<string>('1')
+
+// 搜索账号条件
+const accountName = ref<string>('')
+
+const currentDate = ref<string>()
+
+const category = ref<string>()
+
+const area = ref<string>()
+
+// 默认时间榜单
+const defaultDailyTime = ref<string>('')
+const defaultWeeklyTime = ref<string>('')
+const defaultMonthlyTime = ref<string>('')
+
+// 查询数据的条件参数
+const params = reactive<API.AccountParams & API.PageParams>({
+  pageSize: tablePage.pageSize,
+  page: tablePage.currentPage,
+  area: '',
+  category: '',
+  platform: '',
+  accountName: '',
+  startTime: '',
+  endTime: '',
+  sortType: 0
+})
 
 // 单击行实现信息跳转
-function cellClickTable(row: any) {
+const cellClickTable = (row: any) => {
   const rowData = row.data[row.rowIndex]
   router.push({
     path: `/Account/${rowData.accountId}`
   })
 }
 
-// 日榜周榜月榜选项 1：日榜 2：周榜 3：月榜
-const dateList = ref<string>('1')
-// 搜索账号条件
-const accountName = ref<string>('')
-// TODO
-// const dateChangeTable = ref<number>(1);
-// watch(dateList, (newValue: number, oldValue: any) => {
-//   if (newValue == 1) {
-//     dateChangeTable.value = 1
-//   } else if (newValue == 2) {
-//     dateChangeTable.value = 2
-//   } else {
-//     dateChangeTable.value = 3
-//   }
-// })
-
-const tideData = reactive({
-  // areaTemp:[],
-  // 表格数据
-  tableData: [],
-  // 分页数据
-  tablePage: {
-    total: 0,
-    currentPage: 1,
-    pageSize: 10
-  },
-  // 分类列表
-  cateGory: [],
-  // 地区列表
-  area: [AreaObject],
-  currentDate: '',
-  // 地区分类选项绑定
-  option: {
-    category: '',
-    area: ''
-  },
-  // 日榜列表
-  dailyList: [],
-  // 周榜列表
-  weeklyList: [],
-  // 月榜列表
-  monthlyList: []
-})
-// 默认时间榜单
-const optionDateTime = reactive({
-  defaultDailyTime: [],
-  defaultWeeklyTime: [],
-  defaultMonthlyTime: []
-})
-
-// 查询数据的条件参数
-const params = reactive<API.AccountParams & API.PageParams>({
-  pageSize: tideData.tablePage.pageSize,
-  page: tideData.tablePage.currentPage,
-  area: '',
-  category: '',
-  platform: '',
-  accountName: '',
-  startTime: '',
-  endTime: ''
-})
-
 // 分页查询所有数据
 const findAccountSelectPage = async (e: string) => {
   params.accountName = e
   const res = await listAccountByPageApi(params)
-  // tideData.tableData = (res.data! as any).data
-  tideData.tableData = res.data! as any
-  tideData.tablePage.total = res.count! as any
+  tableData.data = res.data as API.AccountData[]
+  tablePage.total = res.count
 }
 
-// 查询所有地区
+// 查询地区
 const findAllArea = async () => {
-  const res = await findAreaApi(null)
-  // const area = new AreaObject(0, '全部', '', '', '', '', '', 0)
-  tideData.area = res.data as never
-  // tideData.area.push(area as never)
+  const res = await findAreaApi()
+  areaData.data = res.data as API.Area[]
 }
 
-// 查询所有分类
+// 查询分类
 const findAllCategory = async () => {
-  const res = await findAllCategoryApi(null)
-  tideData.cateGory = res.data as any
+  const res = await findAllCategoryApi()
+  categoryData.data = res.data as API.Category[]
 }
 
 // 下拉时间选项
-function changeDate(event: any) {
+const changeDate = (event: any) => {
   params.startTime = event.value.startTime
   params.endTime = event.value.endTime
   findAccountSelectPage(accountName.value)
 }
 
 // 地区下拉选项
-function changeArea(event: any) {
+const changeArea = (event: any) => {
   params.area = event.value
   findAccountSelectPage(accountName.value)
 }
 
 // 分类下拉选项
-function changeCategory(event: any) {
+const changeCategory = (event: any) => {
   params.category = event.value
   if (event.value === '全部') {
     params.category = ''
@@ -221,11 +152,11 @@ const getTime = async () => {
   const myDate = new Date()
   const month = (myDate.getMonth() + 1).toString().padStart(2, '0')
   const day = myDate.getDate().toString().padStart(2, '0')
-  tideData.currentDate = `${myDate.getFullYear()}年${month}月${day}日`
+  currentDate.value = `${myDate.getFullYear()}年${month}月${day}日`
 }
 
 // 给日期加0
-function addDate0(time: any) {
+const addDate0 = (time: any) => {
   let temp = time
   if (temp.toString().length === 1) {
     temp = `0${temp.toString()}`
@@ -246,6 +177,7 @@ const getNowMonthLast = (date: any) => {
 
 // 获取最近3个月的时间
 const getMonthDate = async () => {
+  dailyList.data.length = 0
   const date = new Date()
   for (let i = 0; i <= 2; i += 1) {
     const nowMonthFirst = getNowMonthFirst(date)
@@ -256,19 +188,19 @@ const getMonthDate = async () => {
     let m = startDateTime.getMonth() + 1 // 获取月份js月份从0开始，需要+1
     m = addDate0(m)
     const dateTime = `${y}年${m}月`
-    const monthlyList = new MonthDateObject(
-      i,
-      moment(nowMonthFirst.getTime()).format('YYYY-MM-DD'),
-      moment(nowMonthLast.getTime()).format('YYYY-MM-DD'),
-      dateTime
-    )
-    tideData.monthlyList.push(monthlyList as never)
+    dateObject.id = i
+    dateObject.startTime = moment(nowMonthFirst.getTime()).format('YYYY-MM-DD')
+    dateObject.endTime = moment(nowMonthLast.getTime()).format('YYYY-MM-DD')
+    dateObject.date = dateTime
+    const dateObjectTemp = { ...dateObject }
+    dailyList.data.push(dateObjectTemp)
     date.setMonth(date.getMonth() - 1)
   }
 }
 
 // 获取周榜
 const getWeekDate = async () => {
+  dailyList.data.length = 0
   let date = new Date()
   for (let i = 0; i < 3; i += 1) {
     // 当前时间
@@ -286,19 +218,18 @@ const getWeekDate = async () => {
     sm = addDate0(sm) // 给为单数的月份补零
     sd = addDate0(sd) // 给为单数的日期补零
     const dateTime = `${ey}年${em}月${ed}日`.concat(`-${sy}年${sm}月${sd}日`)
-    const weeklyList = new WeekDateObject(
-      i,
-      moment(endTimeItem).format('YYYY-MM-DD'),
-      moment(startTimeItem).format('YYYY-MM-DD'),
-      dateTime
-    )
-    tideData.weeklyList.push(weeklyList as never)
+    dateObject.id = i
+    dateObject.startTime = moment(endTimeItem).format('YYYY-MM-DD')
+    dateObject.endTime = moment(startTimeItem).format('YYYY-MM-DD')
+    dateObject.date = dateTime
+    const dateObjectTemp = { ...dateObject }
+    dailyList.data.push(dateObjectTemp)
   }
-  // optionDateTime.defaultWeeklyTime = tideData.dailyList[0]
 }
 
 // 获取最近7天的时间
 const getNearly7Day = async () => {
+  dailyList.data.length = 0
   const date = new Date()
   for (let i = 0; i <= 24 * 6; i += 24) {
     // 今天加上前6天
@@ -307,26 +238,17 @@ const getNearly7Day = async () => {
     const y = dateItem.getFullYear() // 获取年份
     let m = dateItem.getMonth() + 1 // 获取月份js月份从0开始，需要+1
     let d = dateItem.getDate() // 获取日期
-    // const h = dateItem.getHours() // 获取小时
-    // const dm = dateItem.getMinutes() // 获取分钟
-    // const s = dateItem.getSeconds() // 获取秒
     m = addDate0(m) // 给为单数的月份补零
     d = addDate0(d) // 给为单数的日期补零
     const valueItem = `${y}年${m}月${d}日` // 组合
-    // const dateTime = `${y}-${m}-${d}${h}:${dm}:${s}` // 组合
-    const tempDateList = new DateObject(
-      i,
-      moment(dateItem).format('YYYY-MM-DD'),
-      moment(endDateItem).format('YYYY-MM-DD'),
-      valueItem
-    )
-    tideData.dailyList.push(tempDateList as never)
+    dateObject.id = i
+    dateObject.startTime = moment(dateItem).format('YYYY-MM-DD')
+    dateObject.endTime = moment(endDateItem).format('YYYY-MM-DD')
+    dateObject.date = valueItem
+    const dateObjectTemp = { ...dateObject }
+    dailyList.data.push(dateObjectTemp)
   }
-  // optionDateTime.defaultDailyTime = tideData.dailyList[0]
 }
-
-// 下拉过滤TODO
-function regionDropDown(searchValue: any, option: any, group: any) {}
 
 // 分页
 const handlePageChange: VxePagerEvents.PageChange = ({ currentPage, pageSize }) => {
@@ -340,17 +262,35 @@ const xTable: any = ref<VxeTableInstance>()
 
 // 导出当前页
 const exportCurrentPage: VxeButtonEvents.Click = () => {
+  const tableExportData = tableData.data
   const $table = xTable.value
   $table.exportData({
-    filename: 'FackBook榜单',
+    filename: 'FaceBook榜单',
     type: 'csv',
+    data: tableExportData,
     isHeader: true,
     isFooter: true
   })
 }
 
-function receiveParametersMethods(accountNameProp: string) {
+const receiveParametersMethods = (accountNameProp: string) => {
   accountName.value = accountNameProp
+  findAccountSelectPage(accountName.value)
+}
+
+const resetParams = () => {
+  params.pageSize = 10
+  params.page = 1
+  params.area = ''
+  params.category = ''
+  params.platform = ''
+  params.startTime = ''
+  params.endTime = ''
+  dateList.value = '1'
+  area.value = ''
+  category.value = ''
+  defaultDailyTime.value = ''
+  params.sortType = 0
   findAccountSelectPage(accountName.value)
 }
 
@@ -361,10 +301,24 @@ onMounted(() => {
   getTime()
   findAllCategory()
   findAllArea()
-  getNearly7Day()
-  getWeekDate()
-  getMonthDate()
 })
+
+watch(
+  dateList,
+  (newValue) => {
+    if (newValue === '1') {
+      defaultDailyTime.value = ''
+      getNearly7Day()
+    } else if (newValue === '2') {
+      defaultWeeklyTime.value = ''
+      getWeekDate()
+    } else {
+      defaultMonthlyTime.value = ''
+      getMonthDate()
+    }
+  },
+  { immediate: true }
+)
 </script>
 <template>
   <div class="faceBookBackground-border">
@@ -376,7 +330,7 @@ onMounted(() => {
             <p>FaceBook&nbsp;榜&nbsp;单</p>
           </div>
           <div class="tideDataTime">
-            <span>截止日期:{{ tideData.currentDate }}</span>
+            <span>截止日期:{{ currentDate }}</span>
           </div>
         </div>
       </template>
@@ -386,149 +340,131 @@ onMounted(() => {
       <template #buttons>
         <div class="radioLeft">
           <vxe-radio-group v-model="dateList" :strict="false">
-            <vxe-radio-button label="1" content="日榜"></vxe-radio-button>
-            <vxe-radio-button label="2" content="周榜"></vxe-radio-button>
-            <vxe-radio-button label="3" content="月榜"></vxe-radio-button>
+            <vxe-radio-button content="日榜" label="1"></vxe-radio-button>
+            <vxe-radio-button content="周榜" label="2"></vxe-radio-button>
+            <vxe-radio-button content="月榜" label="3"></vxe-radio-button>
           </vxe-radio-group>
         </div>
         <div class="vxe-menu-date">
           <!--日榜-->
           <p v-if="dateList === '1'">
             <vxe-select
-              v-model="optionDateTime.defaultDailyTime.date"
+              v-model="defaultDailyTime"
+              filterable
               placeholder="选择时间"
               @change="changeDate($event)"
-              filterable
             >
               <vxe-option
-                v-for="daily in tideData.dailyList"
+                v-for="daily in dailyList.data"
                 :key="daily.id"
-                :value="daily"
                 :label="daily.date"
+                :value="daily"
               ></vxe-option>
             </vxe-select>
           </p>
           <!--周榜-->
           <p v-if="dateList === '2'">
             <vxe-select
-              v-model="optionDateTime.defaultWeeklyTime.date"
+              v-model="defaultWeeklyTime"
+              filterable
               placeholder="选择时间"
               @change="changeDate($event)"
-              filterable
             >
               <vxe-option
-                v-for="weekly in tideData.weeklyList"
-                :key="weekly.id"
-                :value="weekly"
-                :label="weekly.date"
+                v-for="daily in dailyList.data"
+                :key="daily.id"
+                :label="daily.date"
+                :value="daily"
               ></vxe-option>
             </vxe-select>
           </p>
           <!--月榜-->
           <p v-if="dateList === '3'">
             <vxe-select
-              v-model="tideData.monthlyList.date"
-              placeholder="选择时间"
+              v-model="defaultMonthlyTime"
               filterable
-              :filter-method="regionDropDown(1, 2, 3)"
+              placeholder="选择时间"
               @change="changeDate($event)"
             >
               <vxe-option
-                v-for="monthly in tideData.monthlyList"
-                :key="monthly.id"
-                :value="monthly"
-                :label="monthly.date"
+                v-for="daily in dailyList.data"
+                :key="daily.id"
+                :label="daily.date"
+                :value="daily"
               ></vxe-option>
             </vxe-select>
           </p>
         </div>
         <div class="vxe-menu-select">
           <span>地区</span>
-          <vxe-select
-            v-model="tideData.option.area"
-            placeholder="选择区域"
-            filterable
-            :filter-method="regionDropDown(1, 2, 3)"
-            @change="changeArea($event)"
-          >
+          <vxe-select v-model="area" filterable placeholder="选择区域" @change="changeArea($event)">
             <vxe-option
-              v-for="area in tideData.area"
+              v-for="area in areaData.data"
               :key="area.areaId"
-              :value="area.areaName"
               :label="area.areaName"
+              :value="area.areaName"
             ></vxe-option>
           </vxe-select>
         </div>
         <div class="vxe-menu-select">
           <span>分类</span>
           <vxe-select
-            v-model="tideData.option.category"
-            placeholder="全部"
+            v-model="category"
             filterable
-            :filter-method="regionDropDown(1, 2, 3)"
+            placeholder="全部"
             @change="changeCategory($event)"
           >
             <vxe-option
-              v-for="cateGory in tideData.cateGory"
+              v-for="cateGory in categoryData.data"
               :key="cateGory.categoryId"
-              :value="cateGory.categoryName"
               :label="cateGory.categoryName"
+              :value="cateGory.categoryName"
             ></vxe-option>
           </vxe-select>
         </div>
       </template>
       <template #tools>
+        <vxe-button icon="vxe-icon--refresh" type="reset" @click="resetParams()">重置</vxe-button>
         <vxe-button
-          status="warning"
-          icon="vxe-icon--download"
-          @click="exportCurrentPage"
           content="导出"
+          icon="vxe-icon--download"
+          status="warning"
+          @click="exportCurrentPage"
         ></vxe-button>
       </template>
     </vxe-toolbar>
     <!--    table内容-->
     <vxe-table
-      border
-      round
       ref="xTable"
-      height="400"
-      width="500"
-      :row-config="{ isHover: true }"
       :column-config="{ resizable: true }"
-      :data="tideData.tableData"
+      :data="tableData.data"
+      :row-config="{ isHover: true }"
+      border
+      height="400"
+      round
+      width="500"
       @cell-click="cellClickTable"
     >
-      <vxe-column type="seq" width="60" title="序号" align="center"></vxe-column>
-      <vxe-column field="accountId" title="排名" align="center" sortable></vxe-column>
+      <vxe-column align="center" title="序号" type="seq" width="60"></vxe-column>
+      <vxe-column align="center" field="accountId" sortable title="排名"></vxe-column>
+      <vxe-column align="center" title="头像">
+        <template #default="{ row }">
+          <n-avatar :size="25" round>{{ row.accountPictureUrl }}</n-avatar>
+          <span style="padding-left: 20px">{{ row.accountName }}</span>
+        </template>
+      </vxe-column>
 
-      <vxe-colgroup title="属性" align="center">
-        <vxe-column field="accountPictureUrl" title="头像" align="center">
-          <template #default="{ row }">
-            <n-avatar round :size="25">{{ row.accountPictureUrl }}</n-avatar>
-          </template>
-        </vxe-column>
-        <vxe-column field="accountName" align="center" title="账号">
-          <template #default="{ row }">
-            <span>{{ row.accountName }}</span>
-            <!--            <a href="https://github.com/x-extends/vxe-table" target="_black">{{ row.accountName }}</a>-->
-          </template>
-        </vxe-column>
-      </vxe-colgroup>
-
-      <vxe-column field="recordFan" title="粉丝数" align="center"></vxe-column>
-      <vxe-column field="recordArticle" title="发文数" align="center"></vxe-column>
-      <vxe-column field="recordLike" title="点赞数" align="center"></vxe-column>
-      <vxe-column field="recordComment" title="评论数" align="center"></vxe-column>
-      <vxe-column field="recordForward" title="转发数" align="center"></vxe-column>
-      <vxe-column field="sex" title="潮汐指数" align="center"></vxe-column>
+      <vxe-column align="center" field="recordFan" sortable title="粉丝数"></vxe-column>
+      <vxe-column align="center" field="recordArticle" sortable title="发文数"></vxe-column>
+      <vxe-column align="center" field="recordLike" sortable title="点赞数"></vxe-column>
+      <vxe-column align="center" field="recordComment" sortable title="评论数"></vxe-column>
+      <vxe-column align="center" field="recordForward" sortable title="转发数"></vxe-column>
+      <vxe-column align="center" field="sex" sortable title="潮汐指数"></vxe-column>
     </vxe-table>
     <!--    table分页-->
     <vxe-pager
-      perfect
-      v-model:current-page="tideData.tablePage.currentPage"
-      v-model:page-size="tideData.tablePage.pageSize"
-      :total="tideData.tablePage.total"
-      @page-change="handlePageChange"
+      v-model:current-page="tablePage.currentPage"
+      v-model:page-size="tablePage.pageSize"
       :layouts="[
         'PrevJump',
         'PrevPage',
@@ -539,6 +475,9 @@ onMounted(() => {
         'FullJump',
         'Total'
       ]"
+      :total="tablePage.total"
+      perfect
+      @page-change="handlePageChange"
     >
     </vxe-pager>
   </div>
@@ -660,5 +599,10 @@ onMounted(() => {
   @media screen and (min-width: 320px) and (max-width: 480px) {
     height: 25vw;
   }
+}
+.vxe-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
