@@ -19,18 +19,21 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/admin/dict/index.vue')
       },
       {
-        path: '/admin/monitor',
-        name: 'monitor',
-        component: () => import('@/views/admin/monitor/index.vue')
-      },
-      {
-        path: '/admin/home',
-        name: 'AdminHome',
-        component: () => import('@/views/admin/home/index.vue')
+        path: '/admin/menu',
+        name: 'menu',
+        component: () => import('@/components/admin/Menu.vue'),
+        children: [
+          {
+            path: '/admin/menu/monitor',
+            name: 'monitor',
+            component: () => import('@/views/admin/monitor/index.vue')
+          }
+        ]
       }
     ]
   },
   {
+
     path: '/',
     component: () => import('@/layout/index.vue'),
     redirect: {
@@ -49,17 +52,17 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: '/person',
-        component: () => import('@/views/person/Person.vue'),
+        component: () => import("@/views/person/Person.vue"),
         name: 'Person'
       },
       {
         path: '/account',
-        component: () => import('@/views/accountAnalysis/Account.vue'),
+        component: () => import("@/views/accountAnalysis/Account.vue"),
         name: 'Account'
       },
       {
         path: '/header',
-        component: () => import('@/components/Header.vue'),
+        component: () => import("@/components/Header.vue"),
         name: 'Header'
       },
       {
@@ -76,7 +79,7 @@ const routes: Array<RouteRecordRaw> = [
         path: `/Account/:accountId`,
         name: 'Account',
         component: () => import('@/views/accountAnalysis/Account.vue')
-      }
+      },
     ]
   }
 ]
@@ -94,11 +97,12 @@ router.beforeEach((to, from, next) => {
       return
     }
     next({
-      name: 'Login'
+      name: "Login"
     })
     return
   }
   next()
+
 })
 
 export default router

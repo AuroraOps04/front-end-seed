@@ -42,7 +42,7 @@ const handleTo = (e: string) => {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .header-bg {
   background-color: black;
   height: 60px;

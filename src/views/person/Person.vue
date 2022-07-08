@@ -539,7 +539,7 @@ const handleShowModal = (e: boolean) => {
               color: #757575;
               margin: 0 20px;
               @media screen and (min-width: 320px) and (max-width: 480px) {
-                font-size: 3vw;
+                font-size: 4vw;
                 margin: 0;
               }
             }
@@ -548,7 +548,7 @@ const handleShowModal = (e: boolean) => {
           .list-info {
             font-size: 16px;
             @media screen and (min-width: 320px) and (max-width: 480px) {
-              font-size: 3vw;
+              font-size: 4vw;
             }
           }
 
@@ -559,7 +559,7 @@ const handleShowModal = (e: boolean) => {
             cursor: pointer;
 
             @media screen and (min-width: 320px) and (max-width: 480px) {
-              font-size: 3vw;
+              font-size: 4vw;
             }
           }
 
