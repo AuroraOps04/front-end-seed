@@ -29,6 +29,16 @@ const routes: Array<RouteRecordRaw> = [
             component: () => import('@/views/admin/monitor/index.vue')
           }
         ]
+      },
+      {
+        path: '/admin/monitor',
+        name: 'monitor',
+        component: () => import('@/views/admin/monitor/index.vue')
+      },
+      {
+        path: '/priority/priorityPage',
+        name: 'priorityPage',
+        component: () => import('@/views/admin/priority/index.vue')
       }
     ]
   },
