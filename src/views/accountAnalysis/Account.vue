@@ -16,6 +16,7 @@ import {
   findRecordTotalApi,
   findRecordCharsDataApi
 } from '@/service/account'
+import Header from '@/components/Header.vue'
 
 type accountObject = {
   accountId: number
@@ -416,7 +417,9 @@ onMounted(() => {
                     : accountInfo.accountDetailInfo.recordArticle
                 }}
               </text>
-              <text class="text_info2">/{{ accountInfo.recordTotal.recordArticleCount }}</text>
+              <text class="text_info2"
+                >/<br />{{ accountInfo.recordTotal.recordArticleCount }}</text
+              >
             </div>
             <div class="center_detail">
               <img :src="writePng" alt="发文数" class="img_arrow" />
@@ -432,7 +435,7 @@ onMounted(() => {
                     : accountInfo.accountDetailInfo.recordLike
                 }}
               </text>
-              <text class="text_info2">/{{ accountInfo.recordTotal.recordLikeCount }}</text>
+              <text class="text_info2">/<br />{{ accountInfo.recordTotal.recordLikeCount }}</text>
             </div>
             <div class="center_detail">
               <img :src="upPng" alt="点赞数" class="img_arrow" />
@@ -448,7 +451,9 @@ onMounted(() => {
                     : accountInfo.accountDetailInfo.recordComment
                 }}
               </text>
-              <text class="text_info2">/{{ accountInfo.recordTotal.recordCommentCount }}</text>
+              <text class="text_info2"
+                >/<br />{{ accountInfo.recordTotal.recordCommentCount }}</text
+              >
             </div>
             <div class="center_detail">
               <img :src="commentPng" alt="评论数" class="img_arrow" />
@@ -464,7 +469,9 @@ onMounted(() => {
                     : accountInfo.accountDetailInfo.recordForward
                 }}
               </text>
-              <text class="text_info2">/{{ accountInfo.recordTotal.recordForwardCount }}</text>
+              <text class="text_info2"
+                >/<br />{{ accountInfo.recordTotal.recordForwardCount }}</text
+              >
             </div>
             <div class="center_detail">
               <img :src="forwardPng" alt="转发数" class="img_arrow" />
@@ -692,7 +699,7 @@ onMounted(() => {
   font-size: 28px;
   font-weight: 600;
   @media screen and (min-width: 320px) and (max-width: 480px) {
-    font-size: 5vw;
+    font-size: 4vw;
   }
 }
 
@@ -700,6 +707,9 @@ onMounted(() => {
   color: #bdc7df;
   font-size: 20px;
   margin-left: 5px;
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    font-size: 4vw;
+  }
 }
 
 .text_num {
