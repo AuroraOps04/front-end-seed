@@ -25,6 +25,7 @@ module.exports = {
     'vue/no-v-model-argument': 0,
     'no-console': 0,
     'no-unused-vars': 'off',
-    'import/no-extraneous-dependencies': ['error', { devDependencies: true }]
+    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    'vue/no-v-for-template-key': 0
   }
 }

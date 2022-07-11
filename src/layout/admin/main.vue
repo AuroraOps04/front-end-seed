@@ -4,3 +4,8 @@
     <router-view />
   </div>
 </template>
+<style>
+.main-wrapper {
+  height: 100%;
+}
+</style>
