@@ -14,5 +14,15 @@
 <body>
 <div id="app"></div>
 <script type="module" src="/src/main.ts"></script>
+<script>
+  const _hmt = _hmt || []
+  window._hmt = _hmt // 修改为window 全局变量
+  ;(function () {
+    const hm = document.createElement('script')
+    hm.src = 'https://hm.baidu.com/hm.js?ceebbb7c7e3a5f30276a33dc4423eaea'
+    const s = document.getElementsByTagName('script')[0]
+    s.parentNode.insertBefore(hm, s)
+  })()
+</script>
 </body>
 </html>

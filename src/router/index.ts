@@ -32,6 +32,11 @@ const routes: Array<RouteRecordRaw> = [
             path: '/admin/menu/userList',
             name: 'userList',
             component: () => import('@/views/admin/userList/index.vue')
+          },
+          {
+            path: '/admin/menu/home',
+            name: 'AdminHome',
+            component: () => import('@/views/admin/home/index.vue')
           }
         ]
       },
