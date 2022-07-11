@@ -226,7 +226,7 @@ const handleEcharts = (type: string) => {
   init()
 }
 
-function DateListButtonChange(typeButton: number) {
+const DateListButtonChange = (typeButton: number) => {
   if (typeButton === 1) {
     dateListButtonStyle.value = 'warning'
     weeklyListButtonStyle.value = 'tertiary'

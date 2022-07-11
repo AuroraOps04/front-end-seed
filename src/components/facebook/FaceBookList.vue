@@ -2,7 +2,7 @@
 import { reactive, ref, onMounted, defineExpose, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { NAvatar } from 'naive-ui'
-import { VxeButtonEvents, VxePagerEvents, VxeTableInstance } from 'vxe-table'
+import { VxeButtonEvents, VxePagerEvents, VxeTableInstance, VxeTableDefines } from 'vxe-table'
 import moment from 'moment'
 import { listAccountByPageApi, findAllCategoryApi, findAreaApi } from '@/service/account'
 import 'moment/locale/pt-br'
@@ -94,7 +94,8 @@ const params = reactive<API.AccountParams & API.PageParams>({
   accountName: '',
   startTime: '',
   endTime: '',
-  sortType: 0
+  sortType: 0,
+  isExport: 0
 })
 
 // 单击行实现信息跳转
@@ -261,17 +262,21 @@ const handlePageChange: VxePagerEvents.PageChange = ({ currentPage, pageSize }) 
 const xTable: any = ref<VxeTableInstance>()
 
 // 导出当前页
-const exportCurrentPage: VxeButtonEvents.Click = () => {
-  const tableExportData = tableData.data
+const exportCurrentPage: VxeButtonEvents.Click = async () => {
+  params.isExport = 1
+  const res = await listAccountByPageApi(params)
+  params.isExport = 0
   const $table = xTable.value
-  $table.exportData({
+  await $table.exportData({
     filename: 'FaceBook榜单',
     type: 'csv',
-    data: tableExportData,
+    data: res.data as API.AccountData[],
     isHeader: true,
     isFooter: true
   })
 }
+
+const filterColumn = (column: any, $columnIndex: any) => {}
 
 const receiveParametersMethods = (accountNameProp: string) => {
   accountName.value = accountNameProp
@@ -445,7 +450,6 @@ watch(
       width="500"
       @cell-click="cellClickTable"
     >
-      <vxe-column align="center" title="序号" type="seq" width="60"></vxe-column>
       <vxe-column align="center" field="accountId" sortable title="排名"></vxe-column>
       <vxe-column align="center" title="头像">
         <template #default="{ row }">
