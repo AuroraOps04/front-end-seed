@@ -20,6 +20,7 @@ import Monitor from '@/components/admin/Monitor.vue'
   border-radius: 15px;
   background-color: white;
   display: flex;
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
 
   .n-tabs .n-tabs-nav {
     line-height: 1.4;

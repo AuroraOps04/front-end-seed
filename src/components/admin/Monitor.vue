@@ -415,7 +415,7 @@ onMounted(() => {
               </vxe-select>
             </div>
           </div>
-          <div>
+          <div style="padding-left: 7%">
             <n-button color="#70ACFF" @click="resetEvent()"> 重置 </n-button>
           </div>
           <div class="search_button">
@@ -433,7 +433,7 @@ onMounted(() => {
                     </n-icon>
                   </template>
                   排序
-                  <n-icon>
+                  <n-icon style="height: 1em">
                     <ChevronDownOutline />
                   </n-icon>
                 </n-button>
@@ -467,7 +467,7 @@ onMounted(() => {
       :radio-config="{ highlight: true }"
       :row-config="{ isHover: true }"
       border="inner"
-      height="580"
+      height="470"
       show-overflow
       @checkbox-all="selectAllChangeEvent"
       @checkbox-change="selectChangeEvent"
@@ -497,12 +497,20 @@ onMounted(() => {
       ></vxe-column>
       <vxe-column show-overflow title="操作" width="100">
         <template #default="{ row }">
-          <vxe-button
-            icon="vxe-icon--edit-outline"
-            type="text"
-            @click="editEvent(row)"
-          ></vxe-button>
-          <vxe-button icon="vxe-icon--close" type="text" @click="removeEvent(row)"></vxe-button>
+          <div style="display: flex; flex-wrap: nowrap; width: 100%">
+            <div style="display: flex; width: 40%">
+              <vxe-button
+                icon="vxe-icon--edit-outline"
+                type="text"
+                @click="editEvent(row)"
+              ></vxe-button>
+            </div>
+            <div style="display: flex; width: 60%">
+              <n-icon style="padding-top: 20px">
+                <TrashOutline @click="removeEvent(row)" />
+              </n-icon>
+            </div>
+          </div>
         </template>
       </vxe-column>
     </vxe-table>
@@ -717,5 +725,8 @@ onMounted(() => {
       }
     }
   }
+}
+.n-icon {
+  height: 2em;
 }
 </style>

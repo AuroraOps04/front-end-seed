@@ -14,5 +14,5 @@ export const getSmsApi = (phone: string) => {
 }
 
 export const getCurrentApi = () => {
-  return request("/user/current")
+  return request('/user/current')
 }
