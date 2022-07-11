@@ -16,7 +16,8 @@ import {
   findAreaApi,
   listAccountByPageApi,
   removeAccountBatchByIdsApi,
-  removeAccountByIdApi
+  removeAccountByIdApi,
+  addAccountApi
 } from '@/service/account'
 
 type AccountData = {
@@ -71,7 +72,10 @@ const accountName = ref<string>('')
 const areaValue = ref<string>('')
 // 分类
 const categoryValue = ref<string>('')
-// 定义数据ref结束
+// 检测账号添加
+const searchAccountName = ref<string>('')
+// 模态框添加是否显示
+const isShow = ref<boolean>(false)
 // 定义批量删除的数组
 const accountArray: number[] = []
 // 账户信息
@@ -97,97 +101,7 @@ const tablePage = reactive<TablePage>({
   pageSize: 10
 })
 
-const accountDetail = reactive({
-  accountId: null,
-  accountName: '',
-  areaName: '',
-  categoryName: '',
-  introduction: '',
-  platformName: '',
-  recordComment: '',
-  recordArticle: 0,
-  recordFan: 0,
-  recordForward: 0,
-  recordLike: 0,
-  areaId: null,
-  platformId: 0,
-  categoryId: 0,
-  areaDescription: '',
-  platformDescription: '',
-  categoryDescription: ''
-})
-const demo1 = reactive({
-  submitLoading: false,
-  tableData: [] as any[],
-  selectRow: null,
-  showEdit: false,
-  formData: {
-    name: '',
-    nickname: '',
-    role: '',
-    sex: '',
-    age: '',
-    num: '',
-    checkedList: [],
-    flag1: '',
-    date3: '',
-    address: ''
-  },
-  sexList: [
-    { label: '女', value: '0' },
-    { label: '男', value: '1' }
-  ],
-  formRules: {
-    name: [
-      { required: true, message: '请输入名称' },
-      { min: 3, max: 5, message: '长度在 3 到 5 个字符' }
-    ],
-    nickname: [{ required: true, message: '请输入昵称' }],
-    sex: [{ required: true, message: '请选择性别' }]
-  } as VxeFormPropTypes.Rules
-})
 const xTable = ref<VxeTableInstance>()
-
-const visibleMethod: VxeFormItemPropTypes.VisibleMethod = ({ data }) => {
-  return data.flag1 === 'Y'
-}
-
-const editEvent = (row: any) => {
-  demo1.formData = {
-    name: row.name,
-    nickname: row.nickname,
-    role: row.role,
-    sex: row.sex,
-    age: row.age,
-    num: row.num,
-    checkedList: row.checkedList,
-    flag1: row.flag1,
-    date3: row.date3,
-    address: row.address
-  }
-  demo1.selectRow = row
-  demo1.showEdit = true
-}
-
-const cellDBLClickEvent: VxeTableEvents.CellDblclick = ({ row }) => {
-  editEvent(row)
-}
-
-const submitEvent = () => {
-  demo1.submitLoading = true
-  setTimeout(() => {
-    const $table = xTable.value as any
-    demo1.submitLoading = false
-    demo1.showEdit = false
-    if (demo1.selectRow) {
-      VXETable.modal.message({ content: '保存成功', status: 'success' })
-      Object.assign(demo1.selectRow, demo1.formData)
-    } else {
-      VXETable.modal.message({ content: '新增成功', status: 'success' })
-      $table.insert(demo1.formData)
-    }
-  }, 500)
-}
 
 // 查询数据的条件参数
 const params = reactive<API.AccountParams & API.PageParams>({
@@ -316,23 +230,6 @@ const handleSortSelect = (key: number) => {
   params.sortType = key
   findAccountSelectPage()
 }
-// 新增
-const insertEvent = () => {
-  demo1.formData = {
-    name: '',
-    nickname: '',
-    role: '',
-    sex: '',
-    age: '',
-    num: '',
-    checkedList: [],
-    flag1: '',
-    date3: '',
-    address: ''
-  }
-  demo1.selectRow = null
-  demo1.showEdit = true
-}
 
 // 表格中的删除
 const removeEvent = async (row: any) => {
@@ -347,6 +244,13 @@ const removeEvent = async (row: any) => {
       await VXETable.modal.message('删除失败')
     }
   }
+}
+
+// 添加
+const insertEvent = async () => {
+  await addAccountApi(searchAccountName.value)
+  isShow.value = false
+  await findAccountSelectPage()
 }
 
 // 删除
@@ -438,13 +342,13 @@ onMounted(() => {
                   </n-icon>
                 </n-button>
               </n-dropdown>
-              <n-button color="#70ACFF" @click="insertEvent()">
+              <n-button color="#70ACFF" @click="isShow = true">
                 <template #icon>
                   <n-icon>
                     <Add />
                   </n-icon>
                 </template>
-                新增
+                添加
               </n-button>
               <n-button color="#D76C54" @click="deleteEvent()">
                 <template #icon>
@@ -471,7 +375,6 @@ onMounted(() => {
       show-overflow
       @checkbox-all="selectAllChangeEvent"
       @checkbox-change="selectChangeEvent"
-      @cell-dblclick="cellDBLClickEvent"
     >
       <vxe-column type="checkbox" width="60"></vxe-column>
       <vxe-column align="center" field="accountName" title="账号"></vxe-column>
@@ -535,151 +438,28 @@ onMounted(() => {
     </vxe-pager>
 
     <vxe-modal
-      v-model="demo1.showEdit"
-      :loading="demo1.submitLoading"
-      :title="demo1.selectRow ? '编辑&保存' : '新增&保存'"
+      v-model="isShow"
       destroy-on-close
-      min-height="300"
-      min-width="600"
+      min-height="500"
+      min-width="500"
       resize
-      width="800"
+      title="检测账号添加"
+      width="300"
     >
       <template #default>
-        <vxe-form
-          :data="accountDetail"
-          :rules="demo1.formRules"
-          title-align="right"
-          title-width="100"
-          @submit="submitEvent"
-        >
-          <vxe-form-item
-            :span="24"
-            :title-prefix="{ icon: 'fa fa-address-card-o' }"
-            :title-width="200"
-            title="基础信息"
-            title-align="left"
-          ></vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="0" field="accountId">
-            <template #default="{ data }">
-              <vxe-input v-model="data.accountId" type="hidden"></vxe-input>
-            </template>
-          </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="24" field="accountName" title="账号名">
-            <template #default="{ data }">
-              <vxe-input v-model="data.accountName" placeholder="请输入名称"></vxe-input>
-            </template>
-          </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="areaName" title="地区">
-            <template #default="{ data }">
-              <vxe-select v-model="data.sex" transfer>
-                <vxe-option
-                  v-for="item in demo1.sexList"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></vxe-option>
-              </vxe-select>
-            </template>
-          </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="role" title="地区简介">
-            <template #default="{ data }">
-              <vxe-input v-model="data.name" placeholder="请输入角色"></vxe-input>
-            </template>
-          </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="areaName" title="分类">
-            <template #default="{ data }">
-              <vxe-select v-model="data.sex" transfer>
-                <vxe-option
-                  v-for="item in demo1.sexList"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></vxe-option>
-              </vxe-select>
-            </template>
-          </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="role" title="分类简介">
-            <template #default="{ data }">
-              <vxe-input v-model="data.name" placeholder="请输入角色"></vxe-input>
-            </template>
-          </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="areaName" title="平台">
-            <template #default="{ data }">
-              <vxe-select v-model="data.sex" transfer>
-                <vxe-option
-                  v-for="item in demo1.sexList"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></vxe-option>
-              </vxe-select>
-            </template>
-          </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="role" title="平台简介">
-            <template #default="{ data }">
-              <vxe-input v-model="data.name" placeholder="请输入角色"></vxe-input>
-            </template>
-          </vxe-form-item>
-          <!--          粉丝数，文章数，转发数，评论数，点赞数-->
-          <vxe-form-item
-            :item-render="{}"
-            :span="24"
-            :visible-method="visibleMethod"
-            field="checkedList"
-            title="可选信息"
-          >
-            <template #default="{ data }">
-              <vxe-checkbox-group v-model="data.checkedList">
-                <vxe-checkbox content="运动、跑步" label="1"></vxe-checkbox>
-                <vxe-checkbox content="听音乐" label="2"></vxe-checkbox>
-                <vxe-checkbox content="爬山" label="3"></vxe-checkbox>
-                <vxe-checkbox content="吃美食" label="4"></vxe-checkbox>
-              </vxe-checkbox-group>
-            </template>
-          </vxe-form-item>
-          <vxe-form-item
-            :span="24"
-            :title-prefix="{ message: '请填写必填项', icon: 'fa fa-info-circle' }"
-            :title-width="200"
-            title="其它信息"
-            title-align="left"
-          ></vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="num" title="Number">
-            <template #default="{ data }">
-              <vxe-input v-model="data.num" placeholder="请输入数值" type="number"></vxe-input>
-            </template>
-          </vxe-form-item>
-          <vxe-form-item :item-render="{}" :span="12" field="date3" title="Date">
-            <template #default="{ data }">
-              <vxe-input
-                v-model="data.date3"
-                placeholder="请选择日期"
-                transfer
-                type="date"
-              ></vxe-input>
-            </template>
-          </vxe-form-item>
-          <vxe-form-item
-            :item-render="{}"
-            :span="24"
-            :title-suffix="{ message: '提示信息！！', icon: 'fa fa-question-circle' }"
-            field="address"
-            title="Date"
-          >
-            <template #default="{ data }">
-              <vxe-textarea
-                v-model="data.address"
-                :autosize="{ minRows: 2, maxRows: 4 }"
-              ></vxe-textarea>
-            </template>
-          </vxe-form-item>
-          <vxe-form-item :span="24" align="center" title-align="left">
-            <template #default>
-              <vxe-button type="submit">提交</vxe-button>
-              <vxe-button type="reset">重置</vxe-button>
-            </template>
-          </vxe-form-item>
-        </vxe-form>
+        <div>
+          <div class="modal-addSearch">
+            <vxe-input
+              v-model="searchAccountName"
+              placeholder="输入账号名搜索"
+              type="search"
+            ></vxe-input>
+          </div>
+          <div class="modal-button">
+            <vxe-button content="取消" status="info" @click="isShow = false"></vxe-button>
+            <vxe-button content="确定添加" status="primary" @click="insertEvent()"></vxe-button>
+          </div>
+        </div>
       </template>
     </vxe-modal>
   </div>
@@ -690,7 +470,13 @@ onMounted(() => {
   width: 94%;
   padding-left: 3%;
   padding-right: 3%;
-
+  .modal-addSearch {
+    text-align: center;
+  }
+  .modal-button {
+    text-align: center;
+    padding-top: 2%;
+  }
   .horizontal_line {
     width: 100%;
     height: 0.1px;

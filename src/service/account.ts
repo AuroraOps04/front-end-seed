@@ -56,3 +56,9 @@ export const removeAccountByIdApi = (accountId: number): Promise<API.Response> =
     method: 'DELETE'
   })
 }
+
+export const addAccountApi = (accountName: string): Promise<API.Response> => {
+  return request(`/record/addAccountAndRecord/${accountName}`, {
+    method: 'GET'
+  })
+}
