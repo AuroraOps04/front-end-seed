@@ -17,7 +17,7 @@ const menuArr = reactive([
   {
     name: '首页',
     icon: menuHome,
-    path: '/',
+    path: '/admin/menu/home',
     isSelect: true
   },
   {
