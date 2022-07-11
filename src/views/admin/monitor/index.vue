@@ -22,7 +22,6 @@ body,
   width: 100%;
   display: flex;
   height: 100vh;
-  border: 1px solid;
   box-sizing: border-box;
   .container_table {
     width: calc(98% - 110px);

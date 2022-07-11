@@ -2,7 +2,7 @@
 import { reactive, ref, onMounted, defineExpose, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { NAvatar } from 'naive-ui'
-import { VxeButtonEvents, VxePagerEvents, VxeTableInstance, VxeTableDefines } from 'vxe-table'
+import { VxeButtonEvents, VxePagerEvents, VxeTableInstance } from 'vxe-table'
 import moment from 'moment'
 import { listAccountByPageApi, findAllCategoryApi, findAreaApi } from '@/service/account'
 import 'moment/locale/pt-br'
@@ -276,8 +276,6 @@ const exportCurrentPage: VxeButtonEvents.Click = async () => {
   })
 }
 
-const filterColumn = (column: any, $columnIndex: any) => {}
-
 const receiveParametersMethods = (accountNameProp: string) => {
   accountName.value = accountNameProp
   findAccountSelectPage(accountName.value)
@@ -453,8 +451,14 @@ watch(
       <vxe-column align="center" field="accountId" sortable title="排名"></vxe-column>
       <vxe-column align="center" title="头像">
         <template #default="{ row }">
-          <n-avatar :size="25" round>{{ row.accountPictureUrl }}</n-avatar>
-          <span style="padding-left: 20px">{{ row.accountName }}</span>
+          <div style="display: flex; flex-wrap: nowrap; width: 100%">
+            <div style="width: 50%; display: flex; justify-content: left; padding-left: 20%">
+              <n-avatar round size="small">{{ row.accountPictureUrl }}</n-avatar>
+            </div>
+            <div style="width: 50%; display: flex">
+              <span>{{ row.accountName }}</span>
+            </div>
+          </div>
         </template>
       </vxe-column>
 
