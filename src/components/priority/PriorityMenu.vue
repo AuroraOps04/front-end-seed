@@ -43,10 +43,7 @@ const handleClickMenu = (e: string) => {
     <div class="menu">
       <div class="menu-txt">榜单名称</div>
       <template v-for="item in menuArr">
-        <div
-          :class="['menu-item', item.isSelect ? 'menu-active' : '']"
-          @click="handleClickMenu(item.name)"
-        >
+        <div :class="['menu-item', item.isSelect ? 'menu-active' : '']">
           <span>
             {{ item.name }}
           </span>
@@ -86,6 +83,7 @@ const handleClickMenu = (e: string) => {
     justify-content: center;
 
     @media screen and (min-width: 320px) and (max-width: 480px) {
+      display: none;
       width: 12vw;
     }
 

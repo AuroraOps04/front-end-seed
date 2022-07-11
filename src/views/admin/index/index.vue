@@ -15,7 +15,8 @@ const formData = reactive<API.LoginRequest>({
   smsCode: ''
 })
 const message = useMessage()
-
+const treatyCheck = ref<any>()
+const messageCode = ref<string>('获取验证码')
 const validatePhone = (): boolean => {
   if (formData.phone === '') {
     message.error('请输入手机号')
@@ -51,7 +52,10 @@ const handleLogin = async () => {
   if (!validateSmsCode()) {
     return
   }
-
+  if (!treatyCheck.value.checked) {
+    message.error('请勾选条约')
+    return
+  }
   try {
     const res = await adminLoginApi(formData)
     Cookies.set('token', res.data as unknown as string)
@@ -63,6 +67,19 @@ const handleLogin = async () => {
   }
 }
 
+const second = ref<number>(60)
+const timeDown = () => {
+  const result = setInterval(() => {
+    isSendSmsCode.value = true
+    second.value -= 1
+    if (second.value < 1) {
+      clearInterval(result)
+      messageCode.value = '重发验证码'
+      showSmsCode.value = false
+      second.value = 60
+    }
+  }, 1000)
+}
 const getSmsCode = async () => {
   if (!validatePhone()) {
     return
@@ -70,7 +87,7 @@ const getSmsCode = async () => {
   try {
     await getSmsApi(formData.phone)
     message.success('获取验证码成功')
-    isSendSmsCode.value = true
+    timeDown()
   } finally {
     showSmsCode.value = true
   }
@@ -80,6 +97,7 @@ const getSmsCode = async () => {
 <template>
   <div class="bg">
     <div class="login">
+      <div class="login-title">-管理端-</div>
       <input
         type="text"
         v-model="formData.phone"
@@ -93,21 +111,23 @@ const getSmsCode = async () => {
           class="login-verify-password"
           placeholder="请输入验证码"
         />
-        <span class="login-verify-code" @click="getSmsCode" v-if="!showSmsCode">获取验证码</span>
-        <NSpace class="login-verify-code" style="color: gray" v-else>
+        <span v-if="!showSmsCode" class="login-verify-code" @click="getSmsCode">
+          {{ messageCode }}
+        </span>
+        <NSpace v-else class="login-verify-code" style="color: gray">
           <span>
-            <NCountdown :duration="60000" :active="showSmsCode" @on-finish="showSmsCode = false" />
+            {{ second }}
+            <!--            <NCountdown :active="showSmsCode" :duration="60000" @on-finish="showSmsCode = false" />-->
           </span>
         </NSpace>
       </div>
       <NButton class="login-btn" @click="handleLogin">登陆</NButton>
       <div class="login-agree">
-        <input type="checkbox" class="login-agree-check" />
+        <input type="checkbox" class="login-agree-check" ref="treatyCheck" />
         <span class="login-agree-text"
           >&nbsp;&nbsp;我已阅读并接受《注册申明》《版权声明》《隐私政策》</span
         >
       </div>
-      <div class="login-title">-管理端-</div>
     </div>
   </div>
 </template>
@@ -213,6 +233,7 @@ const getSmsCode = async () => {
           font-size: 3vw;
         }
       }
+
       .login-verify-code:hover {
         opacity: 0.7;
       }
@@ -281,6 +302,12 @@ const getSmsCode = async () => {
       font-weight: 500;
       text-align: left;
       font-family: SourceHanSansSC-bold;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        position: static;
+        font-size: 5vw;
+        font-weight: bold;
+        width: auto;
+      }
     }
   }
 }

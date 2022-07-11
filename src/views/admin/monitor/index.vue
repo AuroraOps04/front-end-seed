@@ -4,9 +4,7 @@ import AdminNavigationBar from '@/components/admin/AdminNavigationBar.vue'
 <template>
   <div class="container">
     <div class="container_table">
-      <div>
-        <AdminNavigationBar ref="navigationBarRef"></AdminNavigationBar>
-      </div>
+      <AdminNavigationBar ref="navigationBarRef"></AdminNavigationBar>
     </div>
   </div>
 </template>
@@ -23,6 +21,7 @@ body,
   display: flex;
   height: 100vh;
   box-sizing: border-box;
+
   .container_table {
     width: calc(98% - 110px);
     border: 1px solid white;
@@ -30,6 +29,10 @@ body,
     border-radius: 17px;
     background-color: white;
     height: 500px;
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: 80vw;
+      margin: 0;
+    }
   }
 }
 </style>

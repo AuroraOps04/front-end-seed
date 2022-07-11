@@ -319,8 +319,8 @@ onMounted(() => {
               </vxe-select>
             </div>
           </div>
-          <div style="padding-left: 7%">
-            <n-button color="#70ACFF" @click="resetEvent()"> 重置 </n-button>
+          <div class="pl7">
+            <n-button color="#70ACFF" @click="resetEvent()"> 重置</n-button>
           </div>
           <div class="search_button">
             <n-space align="center">
@@ -501,6 +501,14 @@ onMounted(() => {
       }
     }
 
+    .pl7 {
+      padding-left: 7%;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        padding-left: 0;
+        margin: 10px 0;
+      }
+    }
+
     .search_button {
       display: flex;
       width: calc(50%);
@@ -512,6 +520,7 @@ onMounted(() => {
     }
   }
 }
+
 .n-icon {
   height: 2em;
 }
