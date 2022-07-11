@@ -24,9 +24,9 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/components/admin/Menu.vue'),
         children: [
           {
-            path: '/admin/menu/monitor',
-            name: 'monitor',
-            component: () => import('@/views/admin/monitor/index.vue')
+            path: '/admin/menu/index',
+            name: 'index',
+            component: () => import('@/views/admin/person/index.vue')
           },
           {
             path: '/admin/menu/userList',
@@ -37,6 +37,21 @@ const routes: Array<RouteRecordRaw> = [
             path: '/admin/menu/home',
             name: 'AdminHome',
             component: () => import('@/views/admin/home/index.vue')
+          },
+          {
+            path: '/admin/menu/monitor',
+            name: 'monitor',
+            component: () => import('@/views/admin/monitor/index.vue')
+          },
+          {
+            path: '/admin/menu/priorityPage',
+            name: 'priorityPage',
+            component: () => import('@/views/admin/priority/index.vue')
+          },
+          {
+            path: '/admin/menu/person',
+            name: 'person',
+            component: () => import('@/views/admin/person/index.vue')
           }
         ]
       }

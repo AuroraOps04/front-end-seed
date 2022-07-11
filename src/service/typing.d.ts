@@ -36,6 +36,8 @@ declare namespace API {
     startTime: string
     endTime: string
     sortType: number
+    accountIsView: number
+    isExport: number
   } & Model
 
   type User = {

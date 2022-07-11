@@ -94,7 +94,8 @@ const params = reactive<API.AccountParams & API.PageParams>({
   accountName: '',
   startTime: '',
   endTime: '',
-  sortType: 0
+  sortType: 0,
+  isExport: 0
 })
 
 // 单击行实现信息跳转
@@ -261,13 +262,15 @@ const handlePageChange: VxePagerEvents.PageChange = ({ currentPage, pageSize }) 
 const xTable: any = ref<VxeTableInstance>()
 
 // 导出当前页
-const exportCurrentPage: VxeButtonEvents.Click = () => {
-  const tableExportData = tableData.data
+const exportCurrentPage: VxeButtonEvents.Click = async () => {
+  params.isExport = 1
+  const res = await listAccountByPageApi(params)
+  params.isExport = 0
   const $table = xTable.value
-  $table.exportData({
+  await $table.exportData({
     filename: 'FaceBook榜单',
     type: 'csv',
-    data: tableExportData,
+    data: res.data as API.AccountData[],
     isHeader: true,
     isFooter: true
   })
@@ -445,12 +448,17 @@ watch(
       width="500"
       @cell-click="cellClickTable"
     >
-      <vxe-column align="center" title="序号" type="seq" width="60"></vxe-column>
       <vxe-column align="center" field="accountId" sortable title="排名"></vxe-column>
       <vxe-column align="center" title="头像">
         <template #default="{ row }">
-          <n-avatar :size="25" round>{{ row.accountPictureUrl }}</n-avatar>
-          <span style="padding-left: 20px">{{ row.accountName }}</span>
+          <div style="display: flex; flex-wrap: nowrap; width: 100%">
+            <div style="width: 50%; display: flex; justify-content: left; padding-left: 20%">
+              <n-avatar round size="small">{{ row.accountPictureUrl }}</n-avatar>
+            </div>
+            <div style="width: 50%; display: flex">
+              <span>{{ row.accountName }}</span>
+            </div>
+          </div>
         </template>
       </vxe-column>
 

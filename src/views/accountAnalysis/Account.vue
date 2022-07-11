@@ -5,6 +5,7 @@ import moment from 'moment'
 import 'moment/locale/pt-br'
 import * as echarts from 'echarts'
 import { NButton, NAvatar, NGrid, NGi, NDivider, NIcon, NButtonGroup } from 'naive-ui'
+import { StarOutline } from '@vicons/ionicons5'
 import arrow from '@/assets/arrow.png'
 import up from '@/assets/up.png'
 import comment from '@/assets/comment.png'
@@ -109,7 +110,7 @@ const getDate = () => {
 }
 // 设置实例参数
 const currentDate = getDate()
-const arrowpng = arrow
+const arrowPng = arrow
 const writePng = write
 const commentPng = comment
 const forwardPng = forward
@@ -226,7 +227,7 @@ const handleEcharts = (type: string) => {
   init()
 }
 
-function DateListButtonChange(typeButton: number) {
+const DateListButtonChange = (typeButton: number) => {
   if (typeButton === 1) {
     dateListButtonStyle.value = 'warning'
     weeklyListButtonStyle.value = 'tertiary'
@@ -370,7 +371,7 @@ onMounted(() => {
           <NGi>
             <div style="display: flex; align-items: center">
               <text class="text_italic">榜单排行</text>
-              <img :src="arrowpng" alt="榜单排行" class="img_arrow" />
+              <img :src="arrowPng" alt="榜单排行" class="img_arrow" />
             </div>
           </NGi>
         </NGrid>
@@ -402,7 +403,7 @@ onMounted(() => {
           <NGi>
             <div style="display: flex; align-items: center">
               <text class="text_italic">互动数据</text>
-              <img :src="arrowpng" alt="互动数据" class="img_arrow" />
+              <img :src="arrowPng" alt="互动数据" class="img_arrow" />
             </div>
           </NGi>
         </NGrid>
@@ -487,7 +488,7 @@ onMounted(() => {
           <NGi>
             <div style="display: flex; align-items: center">
               <text class="text_italic">数据趋势</text>
-              <img :src="arrowpng" alt="数据趋势" class="img_arrow" />
+              <img :src="arrowPng" alt="数据趋势" class="img_arrow" />
             </div>
           </NGi>
         </NGrid>

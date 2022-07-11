@@ -1,4 +1,11 @@
 <script lang="ts" setup></script>
 <template>
-  <router-view></router-view>
+  <div class="main-wrapper">
+    <router-view />
+  </div>
 </template>
+<style>
+.main-wrapper {
+  height: 100%;
+}
+</style>
