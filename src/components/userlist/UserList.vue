@@ -120,12 +120,14 @@ function changeUserRating(event: any) {
   params.userRating = event.value
   findUserSelectPage()
 }
+
 // 搜索用户名
 function changeUserName(event: any) {
   params.username = event.value
   // console.log(event.value)
   findUserSelectPage()
 }
+
 // 页码切换
 function handleChangePage() {
   params.pageSize = userData.tablePage.pageSize
@@ -175,7 +177,7 @@ onMounted(() => {
       <n-gi span="4">
         <vxe-toolbar>
           <template v-slot:buttons>
-            <div style="margin-left: 10px">
+            <div class="ml10">
               <vxe-input
                 v-model="userData.option.username"
                 placeholder="输入姓名搜索"
@@ -184,7 +186,7 @@ onMounted(() => {
               ></vxe-input>
             </div>
 
-            <div style="margin-left: 30px">
+            <div class="ml30">
               <vxe-select
                 v-model="userData.option.userRating"
                 placeholder="选择用户等级"
@@ -199,7 +201,7 @@ onMounted(() => {
               </vxe-select>
             </div>
 
-            <div style="margin-left: 30px">
+            <div class="ml30">
               <vxe-select
                 v-model="userData.option.category"
                 placeholder="选择关注领域"
@@ -214,7 +216,7 @@ onMounted(() => {
               </vxe-select>
             </div>
 
-            <div style="margin-left: 30px">
+            <div class="ml30">
               <vxe-select
                 v-model="userData.option.area"
                 placeholder="选择所在地"
@@ -229,11 +231,11 @@ onMounted(() => {
               </vxe-select>
             </div>
 
-            <div style="margin-left: 45px">
+            <div class="ml30">
               <n-button ghost type="info" @click="clickEvent">重置</n-button>
             </div>
 
-            <div style="margin-left: 35px">
+            <div class="ml30">
               <n-button type="info" @click="exportSelectEvent">导出</n-button>
             </div>
           </template>
@@ -241,7 +243,7 @@ onMounted(() => {
       </n-gi>
     </n-grid>
 
-    <div style="height: 470px">
+    <div class="table">
       <n-grid :cols="4" x-gap="24">
         <n-gi span="4">
           <vxe-table
@@ -289,7 +291,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .bg1 {
   height: 80%;
   width: 80%;
@@ -298,5 +300,33 @@ onMounted(() => {
   padding: 3%;
   border-radius: 15px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    width: calc(100% - 8vw);
+    height: auto;
+    margin: 2vw;
+    margin-left: 0;
+    padding: 2vw;
+  }
+
+  .table {
+    height: 470px;
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      height: auto;
+    }
+  }
+
+  .ml10 {
+    margin-left: 10px;
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      margin-left: 0;
+    }
+  }
+
+  .ml30 {
+    margin-left: 30px;
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      margin-left: 0;
+    }
+  }
 }
 </style>

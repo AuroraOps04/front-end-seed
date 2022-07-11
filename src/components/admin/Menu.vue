@@ -35,13 +35,13 @@ const menuArr = reactive([
   {
     name: '重点榜单管理',
     icon: menuAnalysis,
-    path: '/',
+    path: '/admin/menu/priorityPage',
     isSelect: false
   },
   {
     name: '账号密码管理',
     icon: menuSetting,
-    path: '/',
+    path: '/admin/menu/person',
     isSelect: false
   }
 ])
@@ -63,7 +63,7 @@ const handleClickMenu = (e: string) => {
       <div class="menu-logo">
         <img :src="menuLogo" alt="logo" />
       </div>
-      <template v-for="item in menuArr">
+      <template v-for="(item, index) in menuArr" :key="index">
         <div
           :class="['menu-item', item.isSelect ? 'menu-active' : '']"
           @click="handleClickMenu(item.name)"
