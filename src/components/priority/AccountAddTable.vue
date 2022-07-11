@@ -1,21 +1,12 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
-import { NButton, NSpace, NIcon } from 'naive-ui'
-import { TrashOutline, Add } from '@vicons/ionicons5'
-import {
-  VXETable,
-  VxeTableInstance,
-  VxeColumnPropTypes,
-  VxeFormPropTypes,
-  VxeFormItemPropTypes,
-  VxeTableEvents
-} from 'vxe-table'
+import { NButton } from 'naive-ui'
+import { VxeTableInstance, VxeColumnPropTypes, VxeTableEvents, VxePagerEvents, VXETable } from 'vxe-table'
 import {
   findAllCategoryApi,
   findAreaApi,
   listAccountByPageApi,
-  removeAccountBatchByIdsApi,
-  removeAccountByIdApi
+  updateAccountIsViewApi
 } from '@/service/account'
 
 type AccountData = {
@@ -69,8 +60,10 @@ const accountName = ref<string>('')
 const areaValue = ref<string>('')
 // 分类
 const categoryValue = ref<string>('')
-// 添加的数组
+// 定义批量删除的数组
 const accountArray: number[] = []
+// 获取父组件的modal关闭方法
+const emits = defineEmits(['close', 'selectData'])
 // 账户信息
 const accountData = reactive<AccountData>({
   count: 0,
@@ -92,11 +85,6 @@ const tablePage = reactive<TablePage>({
 })
 
 const xTable = ref<VxeTableInstance>()
-
-// 弹窗可选信息
-const visibleMethod: VxeFormItemPropTypes.VisibleMethod = ({ data }) => {
-  return data.flag1 === 'Y'
-}
 
 // 查询数据的条件参数
 const params = reactive<API.AccountParams & API.PageParams>({
@@ -195,7 +183,6 @@ const resetEvent = () => {
   params.page = 1
   params.area = ''
   params.category = ''
-  params.platform = ''
   params.accountName = ''
   accountName.value = ''
   areaValue.value = ''
@@ -203,22 +190,17 @@ const resetEvent = () => {
   findAccountSelectPage()
 }
 
-// 新增
-const insertEvent = () => {
-  formDatas.formData = {
-    name: '',
-    nickname: '',
-    role: '',
-    sex: '',
-    age: '',
-    num: '',
-    checkedList: [],
-    flag1: '',
-    date3: '',
-    address: ''
-  }
-  formDatas.selectRow = null
-  formDatas.showEdit = true
+// 添加
+const insertEvent = async () => {
+  const res = await updateAccountIsViewApi(accountArray, 1)
+  await VXETable.modal.message('添加成功')
+  emits('selectData')
+  emits('close', false)
+}
+
+// 取消
+const cancelEvent = () => {
+  emits('close', false)
 }
 
 onMounted(() => {
@@ -275,18 +257,6 @@ onMounted(() => {
               <n-button type="info" @click="resetEvent()" ghost> 重置 </n-button>
             </div>
           </div>
-          <div class="search_button">
-            <n-space align="center">
-              <n-button color="#70ACFF" @click="insertEvent()" round>
-                <template #icon>
-                  <n-icon>
-                    <Add />
-                  </n-icon>
-                </template>
-                新增
-              </n-button>
-            </n-space>
-          </div>
         </div>
       </template>
     </vxe-toolbar>
@@ -294,7 +264,7 @@ onMounted(() => {
       border="inner"
       show-overflow
       ref="xTable"
-      height="300"
+      height="450vw"
       :align="'center'"
       :column-config="{ resizable: true }"
       :data="accountData.data"
@@ -305,7 +275,7 @@ onMounted(() => {
     >
       <vxe-column type="checkbox" width="60"></vxe-column>
       <vxe-column field="accountName" title="账号"></vxe-column>
-      <vxe-column field="recordFan" title="粉丝数"></vxe-column>
+      <vxe-column field="recordFan" title="粉丝数" sortable></vxe-column>
       <vxe-column :formatter="formatterArea" field="areaName" title="地区"></vxe-column>
       <vxe-column
         :formatter="formatterCategory"
@@ -313,7 +283,7 @@ onMounted(() => {
         title="所属分类"
         show-overflow
       ></vxe-column>
-      <vxe-column field="recordFan" title="潮汐指数(暂用fans)" show-overflow></vxe-column>
+      <vxe-column field="accountId" title="潮汐指数(暂用fans)" show-overflow></vxe-column>
     </vxe-table>
 
     <vxe-pager
@@ -334,13 +304,24 @@ onMounted(() => {
       ]"
     >
     </vxe-pager>
+    <div class="add_button">
+      <n-button
+        style="width: 100px; margin-right: 5%"
+        @click="cancelEvent()"
+        strong
+        secondary
+        round
+      >
+        取消
+      </n-button>
+      <n-button type="info" @click="insertEvent()" round> 确定添加 </n-button>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .container {
   width: 100%;
-  /*background-color: #0E1222;*/
 }
 .toolbar {
   display: flex;
@@ -357,15 +338,9 @@ onMounted(() => {
       margin-left: 20px;
     }
   }
-
-  .search_button {
-    display: flex;
-    width: calc(50%);
-    justify-content: right;
-
-    div {
-      margin-right: 20px;
-    }
-  }
+}
+.add_button {
+  text-align: center;
+  margin-top: 20px;
 }
 </style>

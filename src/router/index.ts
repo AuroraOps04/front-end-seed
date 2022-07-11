@@ -52,8 +52,26 @@ const routes: Array<RouteRecordRaw> = [
             path: '/admin/menu/person',
             name: 'person',
             component: () => import('@/views/admin/person/index.vue')
+          },
+          {
+            path: '/admin/menu/priorityPage',
+            name: 'priorityPage',
+            component: () => import('@/views/admin/priority/index.vue'),
+            redirect: '/priority/priorityFacebookPage',
+            children: [
+              {
+                path: '/priority/priorityFacebookPage',
+                name: 'priorityFacebookPage',
+                component: () => import('@/views/admin/priority/PriorityFacebookPage.vue')
+              }
+            ]
           }
         ]
+      },
+      {
+        path: '/admin/monitor',
+        name: 'monitor',
+        component: () => import('@/views/admin/monitor/index.vue')
       }
     ]
   },

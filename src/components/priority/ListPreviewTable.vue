@@ -1,14 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
-import { NDivider } from 'naive-ui'
 import { VxeColumnPropTypes, VxePagerEvents } from 'vxe-table'
-import {
-  findAllCategoryApi,
-  findAreaApi,
-  listAccountByPageApi,
-  removeAccountBatchByIdsApi,
-  removeAccountByIdApi
-} from '@/service/account'
+import { listAccountByPageApi } from '@/service/account'
 
 type TablePage = {
   total: number
@@ -106,7 +99,7 @@ onMounted(() => {
       border="inner"
       show-overflow
       ref="xTable"
-      height="300"
+      height="475vw"
       :align="'center'"
       :column-config="{ resizable: true }"
       :data="accountData.data"

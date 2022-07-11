@@ -62,3 +62,13 @@ export const addAccountApi = (accountName: string): Promise<API.Response> => {
     method: 'GET'
   })
 }
+
+export const updateAccountIsViewApi = (params: number[], _state: number): Promise<API.Response> => {
+  return request('/account/batchModificationOfKeyLists', {
+    method: 'POST',
+    params: {
+      ids: params,
+      state: _state
+    }
+  })
+}
