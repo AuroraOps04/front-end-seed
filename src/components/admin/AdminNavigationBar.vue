@@ -15,6 +15,26 @@ import Monitor from '@/components/admin/Monitor.vue'
   </div>
 </template>
 <style lang="scss">
+.n-tabs-rail {
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    border-radius: 10px !important;
+    flex-direction: row;
+    width: 100% !important;
+  }
+}
+
+.toolbar {
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    flex-direction: column !important;
+  }
+
+  .search_tool {
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      flex-direction: column !important;
+    }
+  }
+}
+
 .navigationBarStyleTop {
   padding-top: calc(2%);
   border-radius: 15px;

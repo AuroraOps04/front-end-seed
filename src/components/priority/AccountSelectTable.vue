@@ -358,7 +358,7 @@ onMounted(() => {
               </vxe-select>
             </div>
             <div>
-              <n-button type="info" @click="resetEvent()" ghost> 重置 </n-button>
+              <n-button type="info" @click="resetEvent()" ghost> 重置</n-button>
             </div>
           </div>
           <div class="search_button">
@@ -443,7 +443,7 @@ onMounted(() => {
       min-height="300"
       min-width="600"
       resize
-      width="900"
+      width="100%"
     >
       <accountAddTable @close="closeModal" @selectData="findAccountSelectPage"></accountAddTable>
     </vxe-modal>
@@ -453,7 +453,15 @@ onMounted(() => {
 <style scoped lang="scss">
 .container {
   width: 100%;
+
+  .vxe-modal--box {
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: 100vw !important;
+      top: 10vw !important;
+    }
+  }
 }
+
 .toolbar {
   display: flex;
   flex-wrap: nowrap;
@@ -467,6 +475,9 @@ onMounted(() => {
 
     div {
       margin-left: 20px;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        margin-left: 0 !important;
+      }
     }
   }
 
@@ -474,6 +485,11 @@ onMounted(() => {
     display: flex;
     width: calc(50%);
     justify-content: right;
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: auto;
+      justify-content: center;
+      margin: 2vw 0;
+    }
 
     div {
       margin-right: 20px;
