@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { onMounted, ref, reactive } from 'vue'
+import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import moment from 'moment'
 import 'moment/locale/pt-br'
@@ -15,9 +16,13 @@ import textBg from '@/assets/text_bg.png'
 import {
   findAccountByAccountApi,
   findRecordTotalApi,
-  findRecordCharsDataApi
+  findRecordCharsDataApi,
+  AccountCollectionApi,
+  accountCollectionStatueApi
 } from '@/service/account'
 import Header from '@/components/Header.vue'
+
+const store = useStore()
 
 type accountObject = {
   accountId: number
@@ -60,6 +65,8 @@ type EChar = {
 const router = useRouter()
 
 const accountId = ref<number>()
+
+const collectionState = ref<number>()
 
 // 日榜周榜切换 1:是日榜，2：是周榜
 const dateList = ref<number>(1)
@@ -242,10 +249,24 @@ const DateListButtonChange = (typeButton: number) => {
   findAccountByAccount(typeButton)
 }
 
+const AccountCollection = async () => {
+  const accountCollectionId = accountId.value as number
+  const userId = store.getters.currentId
+  const res = await AccountCollectionApi(accountCollectionId, userId)
+  collectionState.value = res.data as unknown as number
+}
+
+const accountCollectionStatue = async () => {
+  const accountCollectionId = accountId.value as number
+  const userId = store.getters.currentId
+  const res = await accountCollectionStatueApi(accountCollectionId, userId)
+  collectionState.value = res.data as unknown as number
+}
 onMounted(() => {
   findRecordCharsData(1)
   findAccountByAccount(1)
   findRecordTotal(accountId.value as number)
+  accountCollectionStatue()
 })
 </script>
 
@@ -262,14 +283,24 @@ onMounted(() => {
               <NAvatar :size="60" round>
                 {{ accountInfo.accountDetailInfo.accountPictureUrl }}
               </NAvatar>
-              <div class="box-collect">
-                <NButton class="button_collection" ghost type="warning">
+              <div v-if="collectionState === 2" class="box-collect">
+                <NButton class="button_collection" ghost type="warning" @click="AccountCollection">
                   <template #icon>
                     <NIcon>
                       <StarOutline />
                     </NIcon>
                   </template>
                   收藏
+                </NButton>
+              </div>
+              <div v-else class="box-collect">
+                <NButton class="button_collection" ghost type="warning" @click="AccountCollection">
+                  <template #icon>
+                    <NIcon>
+                      <StarOutline />
+                    </NIcon>
+                  </template>
+                  取消收藏
                 </NButton>
               </div>
             </div>
@@ -482,7 +513,6 @@ onMounted(() => {
         </NGrid>
 
         <NDivider />
-
         <!--      数据趋势-->
         <NGrid :cols="1" x-gap="24">
           <NGi>
@@ -526,7 +556,6 @@ onMounted(() => {
                   >转发数
                 </NButton>
               </div>
-
               <div ref="main" class="echarts-content"></div>
             </div>
           </NGi>

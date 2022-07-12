@@ -84,3 +84,18 @@ export const updateAccountIsViewApi = (params: number[], _state: number): Promis
     }
   })
 }
+
+export const AccountCollectionApi = (accountId: number, userId: number): Promise<API.Response> => {
+  return request(`/userCollect/accountCollection/${accountId}/${userId}`, {
+    method: 'POST'
+  })
+}
+
+export const accountCollectionStatueApi = (
+  accountId: number,
+  userId: number
+): Promise<API.Response> => {
+  return request(`/userCollect/accountCollectionStatue/${accountId}/${userId}`, {
+    method: 'GET'
+  })
+}
