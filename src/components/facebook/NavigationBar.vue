@@ -20,7 +20,7 @@ defineExpose({ NavigationBarMethod })
       </NTabPane>
       <n-tab-pane name="chap2" tab="YouTube榜单"></n-tab-pane>
       <n-tab-pane name="chap3" tab="Twitter榜单"></n-tab-pane>
-      <n-tab-pane name="chap4" tab="Instagrams榜单"></n-tab-pane>
+      <n-tab-pane name="chap4" tab="Instagram's榜单"></n-tab-pane>
       <n-tab-pane name="chap5" tab="更多榜单"></n-tab-pane>
       <n-tab-pane name="chap6" tab="自定义榜单"></n-tab-pane>
     </NTabs>

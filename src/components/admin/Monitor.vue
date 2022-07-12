@@ -319,8 +319,8 @@ onMounted(() => {
               </vxe-select>
             </div>
           </div>
-          <div style="padding-left: 7%">
-            <n-button color="#70ACFF" @click="resetEvent()"> 重置 </n-button>
+          <div class="pl7">
+            <n-button color="#70ACFF" @click="resetEvent()"> 重置</n-button>
           </div>
           <div class="search_button">
             <n-space align="center">
@@ -443,16 +443,17 @@ onMounted(() => {
       min-height="500"
       min-width="500"
       resize
-      title="检测账号添加"
-      width="300"
+      title="账号链接添加"
+      width="350"
     >
       <template #default>
         <div>
           <div class="modal-addSearch">
             <vxe-input
               v-model="searchAccountName"
-              placeholder="输入账号名搜索"
+              placeholder="输入账号链接"
               type="search"
+              @search-click="insertEvent()"
             ></vxe-input>
           </div>
           <div class="modal-button">
@@ -501,6 +502,14 @@ onMounted(() => {
       }
     }
 
+    .pl7 {
+      padding-left: 7%;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        padding-left: 0;
+        margin: 10px 0;
+      }
+    }
+
     .search_button {
       display: flex;
       width: calc(50%);
@@ -512,6 +521,7 @@ onMounted(() => {
     }
   }
 }
+
 .n-icon {
   height: 2em;
 }
