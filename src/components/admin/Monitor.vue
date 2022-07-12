@@ -443,16 +443,17 @@ onMounted(() => {
       min-height="500"
       min-width="500"
       resize
-      title="检测账号添加"
-      width="300"
+      title="账号链接添加"
+      width="350"
     >
       <template #default>
         <div>
           <div class="modal-addSearch">
             <vxe-input
               v-model="searchAccountName"
-              placeholder="输入账号名搜索"
+              placeholder="输入账号链接"
               type="search"
+              @search-click="insertEvent()"
             ></vxe-input>
           </div>
           <div class="modal-button">

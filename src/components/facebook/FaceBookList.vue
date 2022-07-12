@@ -206,7 +206,7 @@ const getWeekDate = async () => {
   for (let i = 0; i < 3; i += 1) {
     // 当前时间
     const startTimeItem = new Date(date.getTime())
-    const endTimeItem = new Date(startTimeItem.getTime() - 24 * 60 * 60 * 1000 * 7)
+    const endTimeItem = new Date(startTimeItem.getTime() - 24 * 60 * 60 * 1000 * 6)
     date = endTimeItem
     const ey = endTimeItem.getFullYear() // 获取年份
     let em = endTimeItem.getMonth() + 1 // 获取月份js月份从0开始，需要+1
