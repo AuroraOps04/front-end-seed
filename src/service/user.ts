@@ -23,3 +23,9 @@ export const getSmsApi = (phone: string) => {
 export const getCurrentApi = () => {
   return request('/user/current')
 }
+
+export const getUserCountApi = () => {
+  return request('/user/getUserCount', {
+    method: 'GET'
+  })
+}

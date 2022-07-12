@@ -63,6 +63,18 @@ export const addAccountApi = (accountName: string): Promise<API.Response> => {
   })
 }
 
+export const getAccountCountApi = () => {
+  return request('/account/getAccountCount', {
+    method: 'GET'
+  })
+}
+
+export const getMonthAccountAPI = () => {
+  return request('/account/getMonthAccount', {
+    method: 'GET'
+  })
+}
+
 export const updateAccountIsViewApi = (params: number[], _state: number): Promise<API.Response> => {
   return request('/account/batchModificationOfKeyLists', {
     method: 'POST',
