@@ -62,3 +62,15 @@ export const addAccountApi = (accountName: string): Promise<API.Response> => {
     method: 'GET'
   })
 }
+
+export const getAccountCountApi = () => {
+  return request('/account/getAccountCount', {
+    method: 'GET'
+  })
+}
+
+export const getMonthAccountAPI = () => {
+  return request('/account/getMonthAccount', {
+    method: 'GET'
+  })
+}
