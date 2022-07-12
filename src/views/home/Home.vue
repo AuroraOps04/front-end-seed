@@ -2,6 +2,8 @@
 import { NAvatar } from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { onMounted } from 'vue'
+import { insertTrafficCount } from '@service/traffic'
 import rankingPng from '@/assets/ranking.png'
 import analysisPng from '@/assets/analysis.png'
 import rightPng from '@/assets/right.png'
@@ -13,6 +15,10 @@ import fastPng from '@/assets/fast.png'
 import professionalPng from '@/assets/professional.png'
 import authoritativePng from '@/assets/authoritative.png'
 import stablePng from '@/assets/stable.png'
+
+onMounted(() => {
+  insertTrafficCount()
+})
 
 const router = useRouter()
 const store = useStore()
