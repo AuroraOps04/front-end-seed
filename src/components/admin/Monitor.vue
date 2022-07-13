@@ -4,7 +4,6 @@ import { NButton, NSpace, NIcon, NDropdown } from 'naive-ui'
 import { TrashOutline, Add, SwapVertical, ChevronDownOutline } from '@vicons/ionicons5'
 import {
   VxeColumnPropTypes,
-  VxeFormItemPropTypes,
   VxeFormPropTypes,
   VxePagerEvents,
   VXETable,
@@ -17,7 +16,9 @@ import {
   listAccountByPageApi,
   removeAccountBatchByIdsApi,
   removeAccountByIdApi,
-  addAccountApi
+  addAccountApi,
+  editRowAccountApi,
+  findAllPlatFormApi
 } from '@/service/account'
 
 type AccountData = {
@@ -37,6 +38,10 @@ type TablePage = {
   total: number
   currentPage: number
   pageSize: number
+}
+
+type Platform = {
+  data: API.Platform[]
 }
 
 /**
@@ -72,15 +77,20 @@ const accountName = ref<string>('')
 const areaValue = ref<string>('')
 // 分类
 const categoryValue = ref<string>('')
-// 检测账号添加
-const searchAccountName = ref<string>('')
 // 模态框添加是否显示
 const isShow = ref<boolean>(false)
 // 定义批量删除的数组
 const accountArray: number[] = []
 // 账户信息
+const loading = ref<boolean>(false)
+
 const accountData = reactive<AccountData>({
   count: 0,
+  data: []
+})
+
+// 平台
+const platformData = reactive<Platform>({
   data: []
 })
 
@@ -99,6 +109,43 @@ const tablePage = reactive<TablePage>({
   total: 0,
   currentPage: 1,
   pageSize: 10
+})
+
+// 定义表单模态框
+const accountAdd = reactive({
+  submitLoading: false,
+  formData: {
+    areaId: 1,
+    categoryId: 1,
+    accountCode: '',
+    platformId: 1
+  },
+  formRules: {
+    areaId: [
+      {
+        required: true,
+        message: '请输入选择地区'
+      }
+    ],
+    platformId: [
+      {
+        required: true,
+        message: '请选择平台'
+      }
+    ],
+    categoryId: [
+      {
+        required: true,
+        message: '请选择分类'
+      }
+    ],
+    accountCode: [
+      {
+        required: true,
+        message: '请输入链接'
+      }
+    ]
+  } as VxeFormPropTypes.Rules
 })
 
 const xTable = ref<VxeTableInstance>()
@@ -134,6 +181,12 @@ const findAllArea = async () => {
 const findAllCategory = async () => {
   const res = await findAllCategoryApi()
   categoryData.data = res.data as API.Category[]
+}
+
+// 查询平台
+const findPlatform = async () => {
+  const res = await findAllPlatFormApi()
+  platformData.data = res.data as API.Platform[]
 }
 
 // 表格
@@ -175,7 +228,6 @@ const formatterArea: VxeColumnPropTypes.Formatter = ({ cellValue }) => {
 const formatterCategory: VxeColumnPropTypes.Formatter = ({ cellValue }) => {
   return isNullOrEmpty(cellValue) ? '暂未录入地区' : cellValue
 }
-
 // 地区下拉选项
 const changeArea = (value: string) => {
   params.area = value
@@ -239,18 +291,11 @@ const removeEvent = async (row: any) => {
     const res = await removeAccountByIdApi(accountId)
     if (res.data) {
       await findAccountSelectPage()
-      await VXETable.modal.message('删除成功')
+      await VXETable.modal.message({ content: '删除成功！', status: 'success' })
     } else {
-      await VXETable.modal.message('删除失败')
+      await VXETable.modal.message({ content: '删除失败！', status: 'error' })
     }
   }
-}
-
-// 添加
-const insertEvent = async () => {
-  await addAccountApi(searchAccountName.value)
-  isShow.value = false
-  await findAccountSelectPage()
 }
 
 // 删除
@@ -260,17 +305,57 @@ const deleteEvent = async () => {
     const res = await removeAccountBatchByIdsApi(accountArray)
     if (res.data) {
       await findAccountSelectPage()
-      await VXETable.modal.message('删除成功')
+      await VXETable.modal.message({ content: '删除成功！', status: 'success' })
     } else {
-      await VXETable.modal.message('删除失败')
+      await VXETable.modal.message({ content: '删除失败！', status: 'error' })
     }
   }
+}
+
+const editRowEvent = (row: any) => {
+  const $table = xTable.value as any
+  $table.setEditRow(row)
+}
+const saveRowEvent = async (row: API.AccountData) => {
+  const $table = xTable.value as any
+  $table.clearEdit().then(async () => {
+    loading.value = true
+    await editRowAccountApi(row)
+    loading.value = false
+    await VXETable.modal.message({ content: '保存成功！', status: 'success' })
+  })
+}
+// 提交表单
+const submitAccountEvent = async () => {
+  accountAdd.submitLoading = true
+  await addAccountApi(accountAdd.formData)
+  accountAdd.submitLoading = false
+  isShow.value = false
+  await findAccountSelectPage()
+}
+
+// 重置表单
+const resetAccountEvent = () => {
+  accountAdd.formData.areaId = 1
+  accountAdd.formData.categoryId = 1
+  accountAdd.formData.accountCode = ''
+  accountAdd.formData.platformId = 1
+}
+
+// 取消编辑
+const cancelRowEvent = (row: any) => {
+  const $table = xTable.value as any
+  $table.clearEdit().then(() => {
+    // 还原行数据
+    $table.revertData(row)
+  })
 }
 
 onMounted(() => {
   findAccountSelectPage()
   findAllArea()
   findAllCategory()
+  findPlatform()
 })
 </script>
 <template>
@@ -366,8 +451,12 @@ onMounted(() => {
 
     <vxe-table
       ref="xTable"
+      :auto-resize="true"
       :column-config="{ resizable: true }"
       :data="accountData.data"
+      :edit-config="{ trigger: 'manual', mode: 'row' }"
+      :keep-source="true"
+      :loading="loading"
       :radio-config="{ highlight: true }"
       :row-config="{ isHover: true }"
       border="inner"
@@ -380,17 +469,42 @@ onMounted(() => {
       <vxe-column align="center" field="accountName" title="账号"></vxe-column>
       <vxe-column align="center" field="recordFan" sortable title="粉丝数"></vxe-column>
       <vxe-column
+        :edit-render="{}"
         :formatter="formatterArea"
         align="center"
         field="areaName"
         title="地区"
-      ></vxe-column>
+      >
+        <template #edit="{ row }">
+          <vxe-select v-model="row.areaId" filterable placeholder="选择区域">
+            <vxe-option
+              v-for="area in areaData.data"
+              :key="area.areaId"
+              :label="area.areaName"
+              :value="area.areaId"
+            ></vxe-option>
+          </vxe-select>
+        </template>
+      </vxe-column>
       <vxe-column
+        :edit-render="{}"
         :formatter="formatterCategory"
         align="center"
         field="categoryName"
         title="所属分类"
-      ></vxe-column>
+      >
+        <template #edit="{ row }">
+          <vxe-select v-model="row.categoryId" filterable placeholder="全部">
+            <vxe-option
+              v-for="cateGory in categoryData.data"
+              :key="cateGory.categoryId"
+              :label="cateGory.categoryName"
+              :value="cateGory.categoryId"
+              :visible="cateGory.categoryId !== -1"
+            ></vxe-option>
+          </vxe-select>
+        </template>
+      </vxe-column>
       <vxe-column
         align="center"
         field="address"
@@ -398,14 +512,18 @@ onMounted(() => {
         sortable
         title="潮汐指数"
       ></vxe-column>
-      <vxe-column show-overflow title="操作" width="100">
+      <vxe-column show-overflow title="操作" width="150">
         <template #default="{ row }">
-          <div style="display: flex; flex-wrap: nowrap; width: 100%">
-            <div style="display: flex; width: 40%">
+          <div v-if="$refs.xTable.isEditByRow(row)">
+            <vxe-button @click="saveRowEvent(row)">保存</vxe-button>
+            <vxe-button @click="cancelRowEvent(row)">取消</vxe-button>
+          </div>
+          <div v-else style="display: flex; flex-wrap: nowrap; width: 100%">
+            <div style="display: flex; width: 25%">
               <vxe-button
                 icon="vxe-icon--edit-outline"
                 type="text"
-                @click="editEvent(row)"
+                @click="editRowEvent(row)"
               ></vxe-button>
             </div>
             <div style="display: flex; width: 60%">
@@ -440,27 +558,78 @@ onMounted(() => {
     <vxe-modal
       v-model="isShow"
       destroy-on-close
+      height="400"
       min-height="500"
       min-width="500"
       resize
       title="账号链接添加"
-      width="350"
+      width="500"
     >
       <template #default>
-        <div>
-          <div class="modal-addSearch">
-            <vxe-input
-              v-model="searchAccountName"
-              placeholder="输入账号链接"
-              type="search"
-              @search-click="insertEvent()"
-            ></vxe-input>
-          </div>
-          <div class="modal-button">
-            <vxe-button content="取消" status="info" @click="isShow = false"></vxe-button>
-            <vxe-button content="确定添加" status="primary" @click="insertEvent()"></vxe-button>
-          </div>
-        </div>
+        <vxe-form
+          :data="accountAdd.formData"
+          :rules="accountAdd.formRules"
+          title-align="right"
+          title-width="100"
+          @reset="resetAccountEvent"
+          @submit="submitAccountEvent"
+        >
+          <vxe-form-item
+            :span="24"
+            :title-prefix="{ icon: 'fa fa-address-card-o' }"
+            :title-width="200"
+            title="添加基本信息"
+            title-align="left"
+          ></vxe-form-item>
+          <vxe-form-item :span="24" field="accountCode" title="账号链接">
+            <template #default="{ data }">
+              <vxe-input v-model="data.accountCode" placeholder="请输入账号链接"></vxe-input>
+            </template>
+          </vxe-form-item>
+          <vxe-form-item :span="12" field="areaId" title="地区">
+            <template #default="{ data }">
+              <vxe-select v-model="data.areaId" filterable placeholder="选择区域">
+                <vxe-option
+                  v-for="area in areaData.data"
+                  :key="area.areaId"
+                  :label="area.areaName"
+                  :value="area.areaId"
+                ></vxe-option>
+              </vxe-select>
+            </template>
+          </vxe-form-item>
+          <vxe-form-item :span="12" field="categoryId" title="分类">
+            <template #default="{ data }">
+              <vxe-select v-model="data.categoryId" filterable placeholder="选择分类">
+                <vxe-option
+                  v-for="cateGory in categoryData.data"
+                  :key="cateGory.categoryId"
+                  :label="cateGory.categoryName"
+                  :value="cateGory.categoryId"
+                  :visible="cateGory.categoryId !== -1"
+                ></vxe-option>
+              </vxe-select>
+            </template>
+          </vxe-form-item>
+          <vxe-form-item :span="12" field="platformId" title="平台">
+            <template #default="{ data }">
+              <vxe-select v-model="data.platformId" filterable placeholder="选择平台">
+                <vxe-option
+                  v-for="platform in platformData.data"
+                  :key="platform.platformId"
+                  :label="platform.platformName"
+                  :value="platform.platformId"
+                ></vxe-option>
+              </vxe-select>
+            </template>
+          </vxe-form-item>
+          <vxe-form-item :span="24" align="center" title-align="left">
+            <template #default>
+              <vxe-button type="submit">提交</vxe-button>
+              <vxe-button type="reset">重置</vxe-button>
+            </template>
+          </vxe-form-item>
+        </vxe-form>
       </template>
     </vxe-modal>
   </div>

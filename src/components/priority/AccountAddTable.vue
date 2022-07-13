@@ -1,7 +1,13 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { reactive, ref, onMounted } from 'vue'
 import { NButton } from 'naive-ui'
-import { VxeTableInstance, VxeColumnPropTypes, VxeTableEvents, VxePagerEvents, VXETable } from 'vxe-table'
+import {
+  VxeTableInstance,
+  VxeColumnPropTypes,
+  VxeTableEvents,
+  VxePagerEvents,
+  VXETable
+} from 'vxe-table'
 import {
   findAllCategoryApi,
   findAreaApi,
@@ -193,7 +199,7 @@ const resetEvent = () => {
 // 添加
 const insertEvent = async () => {
   const res = await updateAccountIsViewApi(accountArray, 1)
-  await VXETable.modal.message('添加成功')
+  await VXETable.modal.message({ content: '添加成功！', status: 'success' })
   emits('selectData')
   emits('close', false)
 }
@@ -254,44 +260,41 @@ onMounted(() => {
               </vxe-select>
             </div>
             <div>
-              <n-button type="info" @click="resetEvent()" ghost> 重置 </n-button>
+              <n-button ghost type="info" @click="resetEvent()"> 重置 </n-button>
             </div>
           </div>
         </div>
       </template>
     </vxe-toolbar>
     <vxe-table
-      border="inner"
-      show-overflow
       ref="xTable"
-      height="450vw"
       :align="'center'"
       :column-config="{ resizable: true }"
       :data="accountData.data"
       :radio-config="{ highlight: true }"
       :row-config="{ isHover: true }"
+      border="inner"
+      height="450vw"
+      show-overflow
       @checkbox-all="selectAllChangeEvent"
       @checkbox-change="selectChangeEvent"
     >
       <vxe-column type="checkbox" width="60"></vxe-column>
       <vxe-column field="accountName" title="账号"></vxe-column>
-      <vxe-column field="recordFan" title="粉丝数" sortable></vxe-column>
+      <vxe-column field="recordFan" sortable title="粉丝数"></vxe-column>
       <vxe-column :formatter="formatterArea" field="areaName" title="地区"></vxe-column>
       <vxe-column
         :formatter="formatterCategory"
         field="categoryName"
-        title="所属分类"
         show-overflow
+        title="所属分类"
       ></vxe-column>
-      <vxe-column field="accountId" title="潮汐指数(暂用fans)" show-overflow></vxe-column>
+      <vxe-column field="accountId" show-overflow title="潮汐指数(暂用fans)"></vxe-column>
     </vxe-table>
 
     <vxe-pager
-      background
       v-model:current-page="tablePage.currentPage"
       v-model:page-size="tablePage.pageSize"
-      :total="tablePage.total"
-      @page-change="handlePageChange"
       :layouts="[
         'PrevJump',
         'PrevPage',
@@ -302,24 +305,27 @@ onMounted(() => {
         'FullJump',
         'Total'
       ]"
+      :total="tablePage.total"
+      background
+      @page-change="handlePageChange"
     >
     </vxe-pager>
     <div class="add_button">
       <n-button
+        round
+        secondary
+        strong
         style="width: 100px; margin-right: 5%"
         @click="cancelEvent()"
-        strong
-        secondary
-        round
       >
         取消
       </n-button>
-      <n-button type="info" @click="insertEvent()" round> 确定添加 </n-button>
+      <n-button round type="info" @click="insertEvent()"> 确定添加 </n-button>
     </div>
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .container {
   width: 100%;
 }

@@ -207,7 +207,6 @@ const getWeekDate = async () => {
     // 当前时间
     const startTimeItem = new Date(date.getTime())
     const endTimeItem = new Date(startTimeItem.getTime() - 24 * 60 * 60 * 1000 * 6)
-    date = endTimeItem
     const ey = endTimeItem.getFullYear() // 获取年份
     let em = endTimeItem.getMonth() + 1 // 获取月份js月份从0开始，需要+1
     let ed = endTimeItem.getDate() // 获取日期
@@ -225,6 +224,7 @@ const getWeekDate = async () => {
     dateObject.date = dateTime
     const dateObjectTemp = { ...dateObject }
     dailyList.data.push(dateObjectTemp)
+    date = new Date(startTimeItem.getTime() - 24 * 60 * 60 * 1000 * 7)
   }
 }
 
