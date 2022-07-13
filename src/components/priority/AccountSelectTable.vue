@@ -302,7 +302,6 @@ const removeEvent = async (row: any) => {
   deleteEvent()
 }
 
-// 关闭modal框，给子组件调用
 const closeModal = () => {
   formDatas.showEdit = false
 }
