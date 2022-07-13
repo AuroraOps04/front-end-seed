@@ -453,7 +453,7 @@ watch(
         <template #default="{ row }">
           <div style="display: flex; flex-wrap: nowrap; width: 100%">
             <div style="width: 50%; display: flex; justify-content: left; padding-left: 20%">
-              <n-avatar round size="small">{{ row.accountPictureUrl }}</n-avatar>
+              <n-avatar round size="small" :src="row.accountPictureUrl"></n-avatar>
             </div>
             <div style="width: 50%; display: flex">
               <span>{{ row.accountName }}</span>

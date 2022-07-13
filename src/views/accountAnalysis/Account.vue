@@ -280,8 +280,7 @@ onMounted(() => {
         <NGrid :cols="4" x-gap="24">
           <NGi>
             <div class="profile_picture">
-              <NAvatar :size="60" round>
-                {{ accountInfo.accountDetailInfo.accountPictureUrl }}
+              <NAvatar :size="60" :src="accountInfo.accountDetailInfo.accountPictureUrl" round>
               </NAvatar>
               <div v-if="collectionState === 2" class="box-collect">
                 <NButton class="button_collection" ghost type="warning" @click="AccountCollection">
@@ -307,7 +306,7 @@ onMounted(() => {
           </NGi>
           <NGi span="2">
             <div class="acc_body1">
-              <text class="account_name">账号名称</text>
+              <text class="account_name">{{ accountInfo.accountDetailInfo.accountName }}</text>
             </div>
             <div class="acc_body2">
               <text class="text_brief_color">账号名称：</text>
@@ -450,8 +449,8 @@ onMounted(() => {
                 }}
               </text>
               <text class="text_info2"
-                >/<br />{{ accountInfo.recordTotal.recordArticleCount }}</text
-              >
+                >/<br />{{ accountInfo.recordTotal.recordArticleCount }}
+              </text>
             </div>
             <div class="center_detail">
               <img :src="writePng" alt="发文数" class="img_arrow" />
@@ -484,8 +483,8 @@ onMounted(() => {
                 }}
               </text>
               <text class="text_info2"
-                >/<br />{{ accountInfo.recordTotal.recordCommentCount }}</text
-              >
+                >/<br />{{ accountInfo.recordTotal.recordCommentCount }}
+              </text>
             </div>
             <div class="center_detail">
               <img :src="commentPng" alt="评论数" class="img_arrow" />
@@ -502,8 +501,8 @@ onMounted(() => {
                 }}
               </text>
               <text class="text_info2"
-                >/<br />{{ accountInfo.recordTotal.recordForwardCount }}</text
-              >
+                >/<br />{{ accountInfo.recordTotal.recordForwardCount }}
+              </text>
             </div>
             <div class="center_detail">
               <img :src="forwardPng" alt="转发数" class="img_arrow" />
