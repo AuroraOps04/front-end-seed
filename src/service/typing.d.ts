@@ -94,6 +94,22 @@ declare namespace API {
     recordFan: number
     recordForward: number
     recordLike: number
+    categoryId: number
+    areaId: number
+  } & Model
+
+  type AccountFormData = {
+    areaId: number
+    categoryId: number
+    accountCode: string
+    platformId: number
+  }
+
+  type Platform = {
+    platformId: number
+    platformName: string
+    platformCode: string
+    platformDescription: string
   } & Model
 
   type DictParams = Partial<Dict>

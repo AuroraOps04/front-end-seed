@@ -207,7 +207,6 @@ const handleEcharts = (type: string) => {
     xAxisData.value = eCharDate.dateList
     eCharData.data.forEach((e) => {
       // 获取发文数
-      eCharDate.data.push(e.recordComment as never)
       eCharDate.data.push(e.recordLike as never)
     })
     seriesData.value = eCharDate.data

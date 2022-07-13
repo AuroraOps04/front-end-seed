@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { reactive, ref, onMounted } from 'vue'
 import { NButton, NSpace, NIcon } from 'naive-ui'
 import { TrashOutline, Add } from '@vicons/ionicons5'
@@ -287,9 +287,9 @@ const deleteEvent = async () => {
     const res = await updateAccountIsViewApi(accountArray, 0)
     if (res.data) {
       await findAccountSelectPage()
-      await VXETable.modal.message('删除成功')
+      await VXETable.modal.message({ content: '删除成功！', status: 'success' })
     } else {
-      await VXETable.modal.message('删除失败')
+      await VXETable.modal.message({ content: '删除失败！', status: 'error' })
     }
     accountArray.splice(0, accountArray.length)
   }
@@ -358,12 +358,12 @@ onMounted(() => {
               </vxe-select>
             </div>
             <div>
-              <n-button type="info" @click="resetEvent()" ghost> 重置</n-button>
+              <n-button ghost type="info" @click="resetEvent()"> 重置</n-button>
             </div>
           </div>
           <div class="search_button">
             <n-space align="center">
-              <n-button color="#70ACFF" @click="insertEvent()" round>
+              <n-button color="#70ACFF" round @click="insertEvent()">
                 <template #icon>
                   <n-icon>
                     <Add />
@@ -371,7 +371,7 @@ onMounted(() => {
                 </template>
                 添加
               </n-button>
-              <n-button color="#D76C54" @click="deleteEvent()" round>
+              <n-button color="#D76C54" round @click="deleteEvent()">
                 <template #icon>
                   <n-icon>
                     <TrashOutline />
@@ -385,15 +385,15 @@ onMounted(() => {
       </template>
     </vxe-toolbar>
     <vxe-table
-      border="inner"
-      show-overflow
       ref="xTable"
-      height="400vw"
       :align="'center'"
       :column-config="{ resizable: true }"
       :data="accountData.data"
       :radio-config="{ highlight: true }"
       :row-config="{ isHover: true }"
+      border="inner"
+      height="400vw"
+      show-overflow
       @checkbox-all="selectAllChangeEvent"
       @checkbox-change="selectChangeEvent"
     >
@@ -404,24 +404,21 @@ onMounted(() => {
       <vxe-column
         :formatter="formatterCategory"
         field="categoryName"
-        title="所属分类"
         show-overflow
+        title="所属分类"
       ></vxe-column>
-      <vxe-column field="recordFan" title="潮汐指数(暂用fans)" show-overflow></vxe-column>
-      <vxe-column title="操作" width="100" show-overflow>
+      <vxe-column field="recordFan" show-overflow title="潮汐指数(暂用fans)"></vxe-column>
+      <vxe-column show-overflow title="操作" width="100">
         <template #default="{ row }">
-          <vxe-button type="text" icon="vxe-icon--edit-outline"></vxe-button>
-          <vxe-button type="text" icon="vxe-icon--close" @click="removeEvent(row)"></vxe-button>
+          <vxe-button icon="vxe-icon--edit-outline" type="text"></vxe-button>
+          <vxe-button icon="vxe-icon--close" type="text" @click="removeEvent(row)"></vxe-button>
         </template>
       </vxe-column>
     </vxe-table>
 
     <vxe-pager
-      background
       v-model:current-page="tablePage.currentPage"
       v-model:page-size="tablePage.pageSize"
-      :total="tablePage.total"
-      @page-change="handlePageChange"
       :layouts="[
         'PrevJump',
         'PrevPage',
@@ -432,17 +429,20 @@ onMounted(() => {
         'FullJump',
         'Total'
       ]"
+      :total="tablePage.total"
+      background
+      @page-change="handlePageChange"
     >
     </vxe-pager>
 
     <vxe-modal
       v-model="formDatas.showEdit"
       :loading="formDatas.submitLoading"
-      title="榜单账号添加"
       destroy-on-close
       min-height="300"
       min-width="600"
       resize
+      title="榜单账号添加"
       width="100%"
     >
       <accountAddTable @close="closeModal" @selectData="findAccountSelectPage"></accountAddTable>
@@ -450,7 +450,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .container {
   width: 100%;
 

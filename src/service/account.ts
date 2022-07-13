@@ -16,6 +16,12 @@ export const findAllCategoryApi = (): Promise<API.Response> => {
   })
 }
 
+export const findAllPlatFormApi = (): Promise<API.Response> => {
+  return request('/platform/findAllPlatForm', {
+    method: 'GET'
+  })
+}
+
 export const findAreaApi = (): Promise<API.Response> => {
   return request('/area/findArea', {
     method: 'GET'
@@ -57,9 +63,10 @@ export const removeAccountByIdApi = (accountId: number): Promise<API.Response> =
   })
 }
 
-export const addAccountApi = (accountName: string): Promise<API.Response> => {
-  return request(`/record/addAccountAndRecord/${accountName}`, {
-    method: 'GET'
+export const addAccountApi = (AccountFormData: API.AccountFormData): Promise<API.Response> => {
+  return request(`/record/addAccountAndRecord`, {
+    method: 'GET',
+    params: AccountFormData
   })
 }
 
@@ -82,6 +89,13 @@ export const updateAccountIsViewApi = (params: number[], _state: number): Promis
       ids: params,
       state: _state
     }
+  })
+}
+
+export const editRowAccountApi = (AccountData: API.AccountData): Promise<API.Response> => {
+  return request(`/account/editRowAccount`, {
+    method: 'POST',
+    params: AccountData
   })
 }
 
