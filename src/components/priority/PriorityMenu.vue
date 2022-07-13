@@ -43,7 +43,10 @@ const handleClickMenu = (e: string) => {
     <div class="menu">
       <div class="menu-txt">榜单名称</div>
       <template v-for="item in menuArr">
-        <div :class="['menu-item', item.isSelect ? 'menu-active' : '']">
+        <div
+          :class="['menu-item', item.isSelect ? 'menu-active' : '']"
+          @click="handleClickMenu(item.name)"
+        >
           <span>
             {{ item.name }}
           </span>

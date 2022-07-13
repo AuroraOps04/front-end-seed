@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import {
@@ -22,6 +22,7 @@ import {
   UploadFileInfo
 } from 'naive-ui'
 import { updatePhoneApi, updateUsernameApi } from '@service/person'
+import { VXETable } from 'vxe-table'
 import personLogoPng from '@/assets/person_logo.png'
 import personIconPng from '@/assets/person_icon.png'
 import personIcon2Png from '@/assets/person_icon2.png'
@@ -29,6 +30,12 @@ import personIcon3Png from '@/assets/person_icon3.png'
 import personGradePng from '@/assets/person_grade.png'
 import rankingBgPng from '@/assets/ranking_bg.png'
 import Header from '@/components/Header.vue'
+import { accountCollectionListApi, AccountCollectionApi } from '@/service/account'
+
+type AccountData = {
+  count: number
+  data: API.AccountData[]
+}
 
 const router = useRouter()
 const message = useMessage()
@@ -52,6 +59,16 @@ const menuArr = reactive([
     isSelect: false
   }
 ])
+
+// 账户信息
+const accountData = reactive<AccountData>({
+  count: 0,
+  data: []
+})
+
+// 获取当前登录用户Id
+const userId = store.getters.currentId
+
 const handleClick = (e: string) => {
   menuArr.forEach((item) => {
     item.isSelect = item.code === e
@@ -136,6 +153,33 @@ const handleShowModal = (e: boolean) => {
   showModal.value = e
   phone.value = ''
 }
+
+// 查询用户账号收藏列表
+const selectUserCollectionList = async () => {
+  const res = await accountCollectionListApi(1)
+  accountData.data = res.data as API.AccountData[]
+}
+
+// 取消收藏
+const unCollection = async (row: any) => {
+  const type = await VXETable.modal.confirm('您是否要取消收藏?')
+  if (type === 'confirm') {
+    AccountCollectionApi(row.accountId, userId)
+    await VXETable.modal.message('取消成功')
+    selectUserCollectionList()
+  }
+}
+
+// 点击前往账号详情页
+const goToAccountPage = async (row: any) => {
+  router.push({
+    path: `/Account/${row.accountId}`
+  })
+}
+
+onMounted(() => {
+  selectUserCollectionList()
+})
 </script>
 
 <template>
@@ -303,7 +347,52 @@ const handleShowModal = (e: boolean) => {
             <div v-else-if="item.code === 'Leaderboard' && item.isSelect" class="content-ranking">
               <img :src="rankingBgPng" alt="排行榜" />
             </div>
-            <div v-else-if="item.code === 'collect' && item.isSelect" class="content-collect"></div>
+            <div v-else-if="item.code === 'collect' && item.isSelect" class="content-collect">
+              <vxe-table
+                border
+                show-header-overflow
+                show-overflow
+                :row-config="{ isHover: true }"
+                :data="accountData.data"
+              >
+                <vxe-column type="seq" align="center" title="序号" width="60"></vxe-column>
+                <vxe-column align="center" title="账号">
+                  <template #default="{ row }">
+                    <div
+                      style="display: flex; flex-wrap: nowrap; width: 100%"
+                      @click="goToAccountPage(row)"
+                    >
+                      <div
+                        style="width: 50%; display: flex; justify-content: left; padding-left: 20%"
+                      >
+                        <n-avatar round size="small">{{ row.accountPictureUrl }}</n-avatar>
+                      </div>
+                      <div style="width: 50%; display: flex">
+                        <span>{{ row.accountName }}</span>
+                      </div>
+                    </div>
+                  </template>
+                </vxe-column>
+                <vxe-column align="center" field="recordFan" title="粉丝数"></vxe-column>
+                <vxe-column align="center" field="areaName" title="地区"></vxe-column>
+                <vxe-column align="center" field="categoryName" title="类别"></vxe-column>
+                <vxe-column
+                  align="center"
+                  field="platformName"
+                  title="平台"
+                  :visible="false"
+                ></vxe-column>
+                <vxe-column title="操作" align="center" width="60" show-overflow>
+                  <template #default="{ row }">
+                    <vxe-button
+                      type="text"
+                      icon="vxe-icon--close"
+                      @click="unCollection(row)"
+                    ></vxe-button>
+                  </template>
+                </vxe-column>
+              </vxe-table>
+            </div>
           </template>
         </div>
       </div>
@@ -933,5 +1022,9 @@ const handleShowModal = (e: boolean) => {
       opacity: 0.7;
     }
   }
+}
+
+.content-collect {
+  padding: 2vw 4vw 0 4vw;
 }
 </style>

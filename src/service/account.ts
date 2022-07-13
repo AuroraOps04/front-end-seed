@@ -113,3 +113,9 @@ export const accountCollectionStatueApi = (
     method: 'GET'
   })
 }
+
+export const accountCollectionListApi = (userId: number): Promise<API.Response> => {
+  return request(`/userCollect/accountCollectionListByUserId/${userId}`, {
+    method: 'GET'
+  })
+}
