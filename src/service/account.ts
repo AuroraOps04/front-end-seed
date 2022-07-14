@@ -114,8 +114,19 @@ export const accountCollectionStatueApi = (
   })
 }
 
-export const accountCollectionListApi = (userId: number): Promise<API.Response> => {
-  return request(`/userCollect/accountCollectionListByUserId/${userId}`, {
-    method: 'GET'
+export const accountCollectionListApi = (param: API.collectionParams): Promise<API.Response> => {
+  return request('/userCollect/accountCollectionListByUserId', {
+    method: 'GET',
+    params: param
+  })
+}
+
+export const cancelCollectionsApi = (params: number[], userId: number): Promise<API.Response> => {
+  return request('/userCollect/cancelCollections', {
+    method: 'DELETE',
+    params: {
+      ids: params,
+      userId
+    }
   })
 }

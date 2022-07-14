@@ -19,10 +19,12 @@ import {
   NUpload,
   NModal,
   useMessage,
+  NTabs,
+  NTabPane,
   UploadFileInfo
 } from 'naive-ui'
 import { updatePhoneApi, updateUsernameApi } from '@service/person'
-import { VXETable } from 'vxe-table'
+import { VXETable, VxeTableEvents, VxeTableInstance } from 'vxe-table'
 import personLogoPng from '@/assets/person_logo.png'
 import personIconPng from '@/assets/person_icon.png'
 import personIcon2Png from '@/assets/person_icon2.png'
@@ -30,18 +32,26 @@ import personIcon3Png from '@/assets/person_icon3.png'
 import personGradePng from '@/assets/person_grade.png'
 import rankingBgPng from '@/assets/ranking_bg.png'
 import Header from '@/components/Header.vue'
-import { accountCollectionListApi, AccountCollectionApi } from '@/service/account'
+import underLine from '@/assets/underLine.png'
+import {
+  accountCollectionListApi,
+  AccountCollectionApi,
+  findAreaApi,
+  findAllCategoryApi,
+  cancelCollectionsApi
+} from '@/service/account'
 
 type AccountData = {
   count: number
   data: API.AccountData[]
 }
-
 const router = useRouter()
 const message = useMessage()
 const store = useStore()
 const username = ref<string>('')
 const phone = ref<string>('')
+// 定义批量删除的数组
+const accountArray: number[] = []
 const menuArr = reactive([
   {
     name: '我的资料',
@@ -59,15 +69,57 @@ const menuArr = reactive([
     isSelect: false
   }
 ])
-
+// 获取当前登录用户Id
+const userId = store.getters.currentId
 // 账户信息
 const accountData = reactive<AccountData>({
   count: 0,
   data: []
 })
 
-// 获取当前登录用户Id
-const userId = store.getters.currentId
+type AreaData = {
+  data: API.Area[]
+}
+
+type CategoryData = {
+  data: API.Category[]
+}
+
+// 地区信息
+const areaData = reactive<AreaData>({
+  data: []
+})
+
+// 分类信息
+const categoryData = reactive<CategoryData>({
+  data: []
+})
+
+// 查询数据的条件参数
+const params = reactive<API.collectionParams>({
+  area: null,
+  category: null,
+  accountName: '',
+  userId: store.getters.currentId
+})
+// 地区
+const areaValue = ref<number | null>()
+// 分类
+const categoryValue = ref<number | null>()
+
+const loading = ref<boolean>(true)
+
+// 查询地区
+const findAllArea = async () => {
+  const res = await findAreaApi()
+  areaData.data = res.data as API.Area[]
+}
+
+// 查询分类
+const findAllCategory = async () => {
+  const res = await findAllCategoryApi()
+  categoryData.data = res.data as API.Category[]
+}
 
 const handleClick = (e: string) => {
   menuArr.forEach((item) => {
@@ -118,7 +170,6 @@ const handleUpdateUsername = async () => {
 
   try {
     const res = await updateUsernameApi(username.value)
-    console.log(res)
     message.success('修改成功')
     showModalUsername.value = false
     router.go(0)
@@ -156,29 +207,106 @@ const handleShowModal = (e: boolean) => {
 
 // 查询用户账号收藏列表
 const selectUserCollectionList = async () => {
-  const res = await accountCollectionListApi(1)
+  loading.value = true
+  const res = await accountCollectionListApi(params)
   accountData.data = res.data as API.AccountData[]
+  loading.value = false
 }
 
 // 取消收藏
 const unCollection = async (row: any) => {
   const type = await VXETable.modal.confirm('您是否要取消收藏?')
   if (type === 'confirm') {
-    AccountCollectionApi(row.accountId, userId)
-    await VXETable.modal.message('取消成功')
-    selectUserCollectionList()
+    loading.value = true
+    await AccountCollectionApi(row.accountId, userId)
+    await selectUserCollectionList()
+    loading.value = false
+    await VXETable.modal.message({ content: '取消成功！', status: 'success' })
   }
 }
 
 // 点击前往账号详情页
 const goToAccountPage = async (row: any) => {
-  router.push({
+  await router.push({
     path: `/Account/${row.accountId}`
   })
 }
 
+const accountName = ref<string>()
+// 点击查询图标查询账号
+const searchName = (value: string) => {
+  loading.value = true
+  params.accountName = value
+  selectUserCollectionList()
+  loading.value = false
+}
+
+// 地区下拉选项
+const changeArea = (value: number, event: any) => {
+  loading.value = true
+  params.area = value
+  selectUserCollectionList()
+  loading.value = false
+}
+
+// 分类下拉选项
+const changeCategory = (value: number) => {
+  loading.value = true
+  params.category = value
+  if (value === -1) {
+    params.category = null
+  }
+  selectUserCollectionList()
+  loading.value = false
+}
+
+// 重置
+const resetCollection = async () => {
+  loading.value = true
+  params.area = null
+  params.category = null
+  params.accountName = ''
+  accountName.value = ''
+  areaValue.value = null
+  categoryValue.value = null
+  await selectUserCollectionList()
+  loading.value = false
+}
+const xTable = ref({} as any)
+// check全选
+const selectAllChangeEvent: VxeTableEvents.CheckboxAll = () => {
+  // 置空数组
+  accountArray.length = 0
+  const $table = xTable.value[0] as VxeTableInstance
+  const records = $table.getCheckboxRecords()
+  records.forEach((item) => {
+    accountArray.push(item.accountId)
+  })
+}
+
+// check单选
+const selectChangeEvent: VxeTableEvents.CheckboxChange = () => {
+  // 置空数组
+  accountArray.length = 0
+  const $table = xTable.value[0] as VxeTableInstance
+  const records = $table.getCheckboxRecords()
+  records.forEach((item) => {
+    accountArray.push(item.accountId)
+  })
+}
+
+// 批量取消收藏
+const cancelCollections = async () => {
+  loading.value = true
+  await cancelCollectionsApi(accountArray, userId)
+  await selectUserCollectionList()
+  loading.value = false
+  await VXETable.modal.message({ content: '取消成功！', status: 'success' })
+}
 onMounted(() => {
   selectUserCollectionList()
+  findAllArea()
+  findAllCategory()
 })
 </script>
 
@@ -201,7 +329,7 @@ onMounted(() => {
       <div class="main">
         <div class="main-menu">
           <div class="menu-avatar">
-            <NAvatar round :size="50" :src="store.getters.currentPictureUrl"> </NAvatar>
+            <NAvatar :size="50" :src="store.getters.currentPictureUrl" round> </NAvatar>
           </div>
           <span class="menu-username">{{ store.getters.currentUsername }}</span>
           <div class="menu-identification">
@@ -210,26 +338,26 @@ onMounted(() => {
           </div>
           <hr style="background: rgba(140, 140, 140, 0.02)" />
           <div class="menu-list">
-            <div class="list-content" v-for="(item, index) in menuArr" :key="index">
+            <div v-for="(item, index) in menuArr" :key="index" class="list-content">
               <NIcon
-                size="25"
                 v-if="item.code === 'person'"
+                :color="item.isSelect ? '#F78B32' : 'black'"
                 :component="PersonOutline"
-                :color="item.isSelect ? '#F78B32' : 'black'"
+                size="25"
                 @click="handleClick(item.code)"
               />
               <NIcon
-                size="25"
                 v-else-if="item.code === 'Leaderboard'"
-                :component="BarChartOutline"
                 :color="item.isSelect ? '#F78B32' : 'black'"
+                :component="BarChartOutline"
+                size="25"
                 @click="handleClick(item.code)"
               />
               <NIcon
-                size="25"
                 v-else-if="item.code === 'collect'"
-                :component="StarOutline"
                 :color="item.isSelect ? '#F78B32' : 'black'"
+                :component="StarOutline"
+                size="25"
                 @click="handleClick(item.code)"
               />
               <span
@@ -243,18 +371,18 @@ onMounted(() => {
 
         <div class="main-content">
           <template v-for="(item, index) in menuArr" :key="index">
-            <div class="content-header" v-if="item.isSelect">
+            <div v-if="item.isSelect" class="content-header">
               <span>{{ '/' + item.name }}</span>
             </div>
-            <hr style="background-color: rgb(239, 239, 239)" v-if="item.isSelect" />
+            <hr v-if="item.isSelect" style="background-color: rgb(239, 239, 239)" />
             <div v-if="item.code === 'person' && item.isSelect" class="content-person">
               <div class="person-list">
                 <div class="list-title">
-                  <NIcon size="40" :component="PersonCircleOutline" color="black" :depth="3" />
+                  <NIcon :component="PersonCircleOutline" :depth="3" color="black" size="40" />
                   <span>头像</span>
                 </div>
                 <div class="list-info">
-                  <n-avatar round :size="48" :src="store.getters.currentPictureUrl"> </n-avatar>
+                  <n-avatar :size="48" :src="store.getters.currentPictureUrl" round> </n-avatar>
                 </div>
                 <div class="list-controller">
                   <NPopselect trigger="click">
@@ -262,8 +390,8 @@ onMounted(() => {
                     <template #empty>
                       <NUpload
                         action="https://test1.auni.top/api/user/updatePictrue"
-                        @before-upload="beforeUpload"
                         @finish="handleFinish"
+                        @before-upload="beforeUpload"
                       >
                         <NButton>上传图片</NButton>
                       </NUpload>
@@ -274,7 +402,7 @@ onMounted(() => {
 
               <div class="person-list">
                 <div class="list-title">
-                  <NIcon size="40" :component="IdCardSharp" color="black" :depth="3" />
+                  <NIcon :component="IdCardSharp" :depth="3" color="black" size="40" />
                   <span>账号</span>
                 </div>
                 <div class="list-info">
@@ -297,7 +425,7 @@ onMounted(() => {
                     <NInput v-model:value="username" placeholder="请输入新的名称"></NInput>
                   </div>
                   <template #action>
-                    <NButton @click="handleUpdateUsername" type="primary">确认</NButton>
+                    <NButton type="primary" @click="handleUpdateUsername">确认</NButton>
                     <NButton @click="handleShowModalUsername(false)">取消</NButton>
                   </template>
                 </NModal>
@@ -316,7 +444,7 @@ onMounted(() => {
 
               <div class="person-list">
                 <div class="list-title">
-                  <NIcon size="40" :component="PhonePortraitOutline" color="black" :depth="3" />
+                  <NIcon :component="PhonePortraitOutline" :depth="3" color="black" size="40" />
                   <span>绑定手机号</span>
                 </div>
                 <div class="list-info">
@@ -338,7 +466,7 @@ onMounted(() => {
                     <NInput v-model:value="phone" placeholder="请输入新的电话号码"></NInput>
                   </div>
                   <template #action>
-                    <NButton @click="handleUpdatePhone" type="primary">确认</NButton>
+                    <NButton type="primary" @click="handleUpdatePhone">确认</NButton>
                     <NButton @click="handleShowModal(false)">取消</NButton>
                   </template>
                 </NModal>
@@ -348,57 +476,133 @@ onMounted(() => {
               <img :src="rankingBgPng" alt="排行榜" />
             </div>
             <div v-else-if="item.code === 'collect' && item.isSelect" class="content-collect">
-              <vxe-table
-                border
-                show-header-overflow
-                show-overflow
-                :row-config="{ isHover: true }"
-                :data="accountData.data"
-              >
-                <vxe-column type="seq" align="center" title="序号" width="60"></vxe-column>
-                <vxe-column align="center" title="账号">
-                  <template #default="{ row }">
-                    <div
-                      style="display: flex; flex-wrap: nowrap; width: 100%"
-                      @click="goToAccountPage(row)"
-                    >
-                      <div
-                        style="width: 50%; display: flex; justify-content: left; padding-left: 20%"
-                      >
-                        <n-avatar round size="small">{{ row.accountPictureUrl }}</n-avatar>
-                      </div>
-                      <div style="width: 50%; display: flex">
-                        <span>{{ row.accountName }}</span>
-                      </div>
+              <div>
+                <n-tabs animated type="line">
+                  <n-tab-pane name="Facebook" tab="Facebook">
+                    <div class="search-tool">
+                      <vxe-toolbar>
+                        <template #buttons>
+                          <vxe-input
+                            v-model="accountName"
+                            placeholder="输入账号名搜索"
+                            type="search"
+                            @search-click="searchName(accountName)"
+                          ></vxe-input>
+                          <div style="padding-left: 20px">
+                            <vxe-select
+                              v-model="areaValue"
+                              filterable
+                              placeholder="选择区域"
+                              @change="changeArea(areaValue, $event)"
+                            >
+                              <vxe-option
+                                v-for="area in areaData.data"
+                                :key="area.areaId"
+                                :label="area.areaName"
+                                :value="area.areaId"
+                              ></vxe-option>
+                            </vxe-select>
+                          </div>
+                          <div style="padding-left: 20px">
+                            <vxe-select
+                              v-model="categoryValue"
+                              filterable
+                              placeholder="全部"
+                              @change="changeCategory(categoryValue)"
+                            >
+                              <vxe-option
+                                v-for="cateGory in categoryData.data"
+                                :key="cateGory.categoryId"
+                                :label="cateGory.categoryName"
+                                :value="cateGory.categoryId"
+                              ></vxe-option>
+                            </vxe-select>
+                          </div>
+                        </template>
+                        <template #tools>
+                          <vxe-button @click="resetCollection">重置</vxe-button>
+                          <vxe-button status="primary" @click="cancelCollections"
+                            >取消收藏</vxe-button
+                          >
+                        </template>
+                      </vxe-toolbar>
                     </div>
-                  </template>
-                </vxe-column>
-                <vxe-column align="center" field="recordFan" title="粉丝数"></vxe-column>
-                <vxe-column align="center" field="areaName" title="地区"></vxe-column>
-                <vxe-column align="center" field="categoryName" title="类别"></vxe-column>
-                <vxe-column
-                  align="center"
-                  field="platformName"
-                  title="平台"
-                  :visible="false"
-                ></vxe-column>
-                <vxe-column title="操作" align="center" width="60" show-overflow>
-                  <template #default="{ row }">
-                    <vxe-button
-                      type="text"
-                      icon="vxe-icon--close"
-                      @click="unCollection(row)"
-                    ></vxe-button>
-                  </template>
-                </vxe-column>
-              </vxe-table>
+                    <vxe-table
+                      ref="xTable"
+                      :auto-resize="true"
+                      :column-config="{ resizable: true }"
+                      :data="accountData.data"
+                      :keep-source="true"
+                      :loading="loading"
+                      :radio-config="{ highlight: true }"
+                      :row-config="{ isHover: true }"
+                      border="inner"
+                      show-header-overflow
+                      show-overflow
+                      @checkbox-all="selectAllChangeEvent"
+                      @checkbox-change="selectChangeEvent"
+                    >
+                      <vxe-column type="checkbox" width="60"></vxe-column>
+                      <vxe-column align="center" title="账号">
+                        <template #default="{ row }">
+                          <div
+                            style="display: flex; flex-wrap: nowrap; width: 100%"
+                            @click="goToAccountPage(row)"
+                          >
+                            <div
+                              style="
+                                width: 50%;
+                                display: flex;
+                                justify-content: left;
+                                padding-left: 20%;
+                              "
+                            >
+                              <n-avatar round size="small">{{ row.accountPictureUrl }}</n-avatar>
+                            </div>
+                            <div style="width: 50%; display: flex">
+                              <span>{{ row.accountName }}</span>
+                            </div>
+                          </div>
+                        </template>
+                      </vxe-column>
+                      <vxe-column align="center" field="areaName" title="地区"></vxe-column>
+                      <vxe-column align="center" field="categoryName" title="类别"></vxe-column>
+                      <vxe-column
+                        :visible="false"
+                        align="center"
+                        field="platformName"
+                        title="平台"
+                      ></vxe-column>
+                      <vxe-column align="center" field="recordFan" title="备注"></vxe-column>
+                      <vxe-column align="center" show-overflow title="操作" width="60">
+                        <template #default="{ row }">
+                          <NButton
+                            class="button_collection"
+                            ghost
+                            type="warning"
+                            @click="unCollection(row)"
+                          >
+                            <template #icon>
+                              <NIcon>
+                                <StarOutline />
+                              </NIcon>
+                            </template>
+                          </NButton>
+                        </template>
+                      </vxe-column> </vxe-table
+                  ></n-tab-pane>
+                  <n-tab-pane name="YouTube" tab="YouTube"> 正在制作 </n-tab-pane>
+                  <n-tab-pane name="Twitter" tab="Twitter"> 正在制作 </n-tab-pane>
+                  <n-tab-pane name="instagrams" tab="instagrams"> 正在制作 </n-tab-pane>
+                </n-tabs>
+              </div>
             </div>
           </template>
         </div>
       </div>
-      <img :src="personIconPng" class="maiNIcon1" alt="背景图标" />
-      <img :src="personIcon2Png" class="maiNIcon2" alt="背景图标" />
-      <img :src="personIcon3Png" class="maiNIcon3" alt="背景图标" />
+      <img :src="personIconPng" alt="背景图标" class="maiNIcon1" />
+      <img :src="personIcon2Png" alt="背景图标" class="maiNIcon2" />
+      <img :src="personIcon3Png" alt="背景图标" class="maiNIcon3" />
     </div>
   </div>
 </template>
@@ -1025,6 +1229,23 @@ onMounted(() => {
 }
 
 .content-collect {
-  padding: 2vw 4vw 0 4vw;
+  padding: 0.5vw 4vw 0 4vw;
+
+  .search-tool {
+    margin-bottom: 20px;
+  }
+}
+
+.v-x-scroll {
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    width: 100vh;
+  }
+}
+.n-tabs .n-tabs-tab .n-tabs-tab__label {
+  color: #1c294f;
+  font-size: 18px;
+  font-weight: bold;
+  opacity: 0.6;
+  font-family: SourceHanSansSC-bold;
 }
 </style>

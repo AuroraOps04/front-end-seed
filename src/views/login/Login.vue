@@ -119,7 +119,6 @@ const getSmsCode = async () => {
         <NSpace v-else class="login-verify-code" style="color: gray">
           <span>
             {{ second }}
-            <!--            <NCountdown :active="showSmsCode" :duration="60000" @on-finish="showSmsCode = false" />-->
           </span>
         </NSpace>
       </div>
