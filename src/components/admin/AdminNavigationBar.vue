@@ -10,7 +10,7 @@ import Monitor from '@/components/admin/Monitor.vue'
       </n-tab-pane>
       <n-tab-pane name="chap2" tab="YouTube"></n-tab-pane>
       <n-tab-pane name="chap3" tab="Twitter"></n-tab-pane>
-      <n-tab-pane name="chap4" tab="Instagram's"></n-tab-pane>
+      <n-tab-pane name="chap4" tab="Instagrams"></n-tab-pane>
     </n-tabs>
   </div>
 </template>

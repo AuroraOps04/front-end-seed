@@ -288,9 +288,10 @@ const removeEvent = async (row: any) => {
   const accountId = row.accountId as number
   const type = await VXETable.modal.confirm('您确定要删除该数据?')
   if (type === 'confirm') {
+    const $table = xTable.value as VxeTableInstance
     const res = await removeAccountByIdApi(accountId)
+    await $table.remove(row)
     if (res.data) {
-      await findAccountSelectPage()
       await VXETable.modal.message({ content: '删除成功！', status: 'success' })
     } else {
       await VXETable.modal.message({ content: '删除失败！', status: 'error' })
@@ -302,9 +303,11 @@ const removeEvent = async (row: any) => {
 const deleteEvent = async () => {
   const type = await VXETable.modal.confirm('您确定要删除该数据?')
   if (type === 'confirm') {
+    const $table = xTable.value as VxeTableInstance
     const res = await removeAccountBatchByIdsApi(accountArray)
+    await $table.remove($table.getCheckboxRecords())
     if (res.data) {
-      await findAccountSelectPage()
+      // await findAccountSelectPage()
       await VXETable.modal.message({ content: '删除成功！', status: 'success' })
     } else {
       await VXETable.modal.message({ content: '删除失败！', status: 'error' })
@@ -313,14 +316,15 @@ const deleteEvent = async () => {
 }
 
 const editRowEvent = (row: any) => {
-  const $table = xTable.value as any
+  const $table = xTable.value as VxeTableInstance
   $table.setEditRow(row)
 }
 const saveRowEvent = async (row: API.AccountData) => {
-  const $table = xTable.value as any
+  const $table = xTable.value as VxeTableInstance
   $table.clearEdit().then(async () => {
     loading.value = true
     await editRowAccountApi(row)
+    await findAccountSelectPage()
     loading.value = false
     await VXETable.modal.message({ content: '保存成功！', status: 'success' })
   })
@@ -344,7 +348,7 @@ const resetAccountEvent = () => {
 
 // 取消编辑
 const cancelRowEvent = (row: any) => {
-  const $table = xTable.value as any
+  const $table = xTable.value as VxeTableInstance
   $table.clearEdit().then(() => {
     // 还原行数据
     $table.revertData(row)
@@ -399,7 +403,7 @@ onMounted(() => {
                   v-for="cateGory in categoryData.data"
                   :key="cateGory.categoryId"
                   :label="cateGory.categoryName"
-                  :value="cateGory.categoryName"
+                  :value="cateGory.categoryId"
                 ></vxe-option>
               </vxe-select>
             </div>

@@ -1,10 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from 'vue'
 import { NButton } from 'naive-ui'
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 import {
   VxeTableInstance,
   VxeColumnPropTypes,

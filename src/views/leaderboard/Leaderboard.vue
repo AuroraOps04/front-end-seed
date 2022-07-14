@@ -17,15 +17,19 @@ const getNavigationBar = () => {
     <div class="tideBackground">
       <div class="searchHeader">
         <div class="tide">
-          <div class="leftTide">
-            <span class="tidalIndex">潮汐指数</span>
+          <div class="home-top-menu-logo">
+            <img alt="logo" src="@/assets/logo.png" />
+            <span></span>
+            <div class="home-title">
+              <span>潮汐</span>
+              <span style="color: white">指数</span>
+            </div>
           </div>
           <div class="rightTide">
             <div>
               <NInputGroup>
-                <input type="text" class="form_input" v-model="accountName" />
-                <!--                <NInput :style="{ width: '40%'}" v-model:value="accountName"/>-->
-                <NButton type="info" ghost @click="getNavigationBar"> 搜索账号 </NButton>
+                <input v-model="accountName" class="form_input" type="text" />
+                <NButton ghost type="info" @click="getNavigationBar"> 搜索账号 </NButton>
               </NInputGroup>
             </div>
           </div>
@@ -37,7 +41,7 @@ const getNavigationBar = () => {
     </div>
   </div>
 </template>
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .tideBackground {
   background-image: url('@/assets/home_bg.png');
   background-size: 100% 626px;
@@ -70,14 +74,56 @@ const getNavigationBar = () => {
   height: calc(100%);
 }
 
-.leftTide {
-  float: left;
-  width: calc(40%);
+.home-top-menu-logo {
+  display: flex;
+  flex-direction: row;
+  margin-left: 100px;
+  cursor: pointer;
+
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    margin-left: 1vw;
+  }
+
+  img {
+    width: 40px;
+    height: 40px;
+
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: 7vw;
+      height: 7vw;
+    }
+  }
+
+  span {
+    width: 20px;
+
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: 1vw;
+    }
+  }
+
+  .home-title {
+    width: 108px;
+    height: 40px;
+    line-height: 40px;
+    color: #f78b32ff;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-align: left;
+
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: 20vw;
+      font-size: 4vw;
+      height: 5vw;
+      line-height: 5vw;
+    }
+  }
 }
 
 .rightTide {
-  float: left;
   width: calc(60%);
+  padding-left: calc(25%);
 }
 
 input[type='text'],
@@ -106,5 +152,7 @@ input[type='text']:focus {
 
 .tide {
   padding-top: calc(5%);
+  display: flex;
+  flex-wrap: nowrap;
 }
 </style>

@@ -105,6 +105,13 @@ declare namespace API {
     platformId: number
   }
 
+  type collectionParams = {
+    area: number | null
+    category: number | null
+    accountName: string
+    userId: number
+  }
+
   type Platform = {
     platformId: number
     platformName: string

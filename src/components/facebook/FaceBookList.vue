@@ -80,9 +80,12 @@ const category = ref<string>()
 const area = ref<string>()
 
 // 默认时间榜单
-const defaultDailyTime = ref<string>('')
-const defaultWeeklyTime = ref<string>('')
-const defaultMonthlyTime = ref<string>('')
+const defaultDailyTime = reactive<DateObject>({
+  id: -1,
+  startTime: '',
+  endTime: '',
+  date: ''
+})
 
 // 查询数据的条件参数
 const params = reactive<API.AccountParams & API.PageParams>({
@@ -196,6 +199,13 @@ const getMonthDate = async () => {
     const dateObjectTemp = { ...dateObject }
     dailyList.data.push(dateObjectTemp)
     date.setMonth(date.getMonth() - 1)
+    if (i === 0) {
+      defaultDailyTime.startTime = dateObject.startTime
+      defaultDailyTime.endTime = dateObject.endTime
+      defaultDailyTime.date = dateObject.date
+      params.startTime = defaultDailyTime.startTime
+      params.endTime = defaultDailyTime.endTime
+    }
   }
 }
 
@@ -225,6 +235,13 @@ const getWeekDate = async () => {
     const dateObjectTemp = { ...dateObject }
     dailyList.data.push(dateObjectTemp)
     date = new Date(startTimeItem.getTime() - 24 * 60 * 60 * 1000 * 7)
+    if (i === 0) {
+      defaultDailyTime.startTime = dateObject.startTime
+      defaultDailyTime.endTime = dateObject.endTime
+      defaultDailyTime.date = dateObject.date
+      params.startTime = defaultDailyTime.startTime
+      params.endTime = defaultDailyTime.endTime
+    }
   }
 }
 
@@ -248,6 +265,13 @@ const getNearly7Day = async () => {
     dateObject.date = valueItem
     const dateObjectTemp = { ...dateObject }
     dailyList.data.push(dateObjectTemp)
+    if (i === 0) {
+      defaultDailyTime.startTime = moment(dateItem).format('YYYY-MM-DD')
+      defaultDailyTime.endTime = moment(endDateItem).format('YYYY-MM-DD')
+      defaultDailyTime.date = valueItem
+      params.startTime = defaultDailyTime.startTime
+      params.endTime = defaultDailyTime.endTime
+    }
   }
 }
 
@@ -292,7 +316,7 @@ const resetParams = () => {
   dateList.value = '1'
   area.value = ''
   category.value = ''
-  defaultDailyTime.value = ''
+  // defaultDailyTime.value = ''
   params.sortType = 0
   findAccountSelectPage(accountName.value)
 }
@@ -310,15 +334,13 @@ watch(
   dateList,
   (newValue) => {
     if (newValue === '1') {
-      defaultDailyTime.value = ''
       getNearly7Day()
     } else if (newValue === '2') {
-      defaultWeeklyTime.value = ''
       getWeekDate()
     } else {
-      defaultMonthlyTime.value = ''
       getMonthDate()
     }
+    findAccountSelectPage(accountName.value)
   },
   { immediate: true }
 )
@@ -352,7 +374,7 @@ watch(
           <!--日榜-->
           <p v-if="dateList === '1'">
             <vxe-select
-              v-model="defaultDailyTime"
+              v-model="defaultDailyTime.date"
               filterable
               placeholder="选择时间"
               @change="changeDate($event)"
@@ -368,7 +390,7 @@ watch(
           <!--周榜-->
           <p v-if="dateList === '2'">
             <vxe-select
-              v-model="defaultWeeklyTime"
+              v-model="defaultDailyTime.date"
               filterable
               placeholder="选择时间"
               @change="changeDate($event)"
@@ -384,7 +406,7 @@ watch(
           <!--月榜-->
           <p v-if="dateList === '3'">
             <vxe-select
-              v-model="defaultMonthlyTime"
+              v-model="defaultDailyTime.date"
               filterable
               placeholder="选择时间"
               @change="changeDate($event)"
@@ -453,7 +475,7 @@ watch(
         <template #default="{ row }">
           <div style="display: flex; flex-wrap: nowrap; width: 100%">
             <div style="width: 50%; display: flex; justify-content: left; padding-left: 20%">
-              <n-avatar round size="small" :src="row.accountPictureUrl"></n-avatar>
+              <n-avatar :src="row.accountPictureUrl" round size="small"></n-avatar>
             </div>
             <div style="width: 50%; display: flex">
               <span>{{ row.accountName }}</span>
