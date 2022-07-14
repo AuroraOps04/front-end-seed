@@ -76,6 +76,14 @@ declare namespace API {
     area: string
   } & Model
 
+  type AreaQuery = {
+    areaName: string
+  } & Model
+
+  type CategoryQuery = {
+    categoryName: string
+  } & Model
+
   type CharsQuery = {
     accountId: number
     dateList: number
@@ -101,6 +109,8 @@ declare namespace API {
   type AccountQueryParams = Partial<AccountQuery>
   type UserParams = Partial<User>
   type UserQueryParams = Partial<UserQuery>
+  type AreaQueryParams = Partial<AreaQuery>
+  type CategoryQueryParams = Partial<CategoryQuery>
 
   type CharsParams = Partial<CharsQuery>
   type LoginRequest = {
