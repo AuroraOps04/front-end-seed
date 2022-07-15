@@ -2,6 +2,7 @@
 import { NButton, NGrid, NGi, NIcon } from 'naive-ui'
 import { VxeButtonEvents, VXETable, VxeTableEvents, VxeTableInstance } from 'vxe-table'
 import { TrashOutline, Add } from '@vicons/ionicons5'
+import { EditRegular } from '@vicons/fa'
 import { onMounted, reactive, ref } from 'vue'
 import {
   addCategoryApi,
@@ -227,14 +228,23 @@ onMounted(() => {
               ></vxe-table-column>
               <vxe-column show-overflow title="操作">
                 <template #default="{ row }">
-                  <vxe-button
-                    icon="vxe-icon--edit-outline"
-                    type="text"
-                    @click="handleEditCategory(row)"
-                  />
-                  <n-icon style="padding-top: 20px">
-                    <TrashOutline @click="removeEvent(row)" />
-                  </n-icon>
+                  <div>
+                    <n-button text>
+                      <template #icon>
+                        <n-icon :depth="3">
+                          <EditRegular @click="handleEditCategory(row)" />
+                        </n-icon>
+                      </template>
+                    </n-button>
+
+                    <n-button text>
+                      <template #icon>
+                        <n-icon :depth="3">
+                          <TrashOutline @click="removeEvent(row)" />
+                        </n-icon>
+                      </template>
+                    </n-button>
+                  </div>
                 </template>
               </vxe-column>
             </vxe-table>
@@ -345,7 +355,9 @@ onMounted(() => {
     float: right;
     height: 625px;
     width: 1080px;
-    padding: 2%;
+    padding-left: 3%;
+    padding-right: 1%;
+    padding-bottom: 4%;
     border-radius: 15px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 
@@ -353,8 +365,8 @@ onMounted(() => {
       position: absolute;
       height: 17px;
       width: 144px;
-      left: 380px;
-      bottom: 550px;
+      left: 395px;
+      bottom: 575px;
     }
 
     .table1 {
