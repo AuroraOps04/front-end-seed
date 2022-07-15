@@ -43,6 +43,12 @@ const menuArr = reactive([
     icon: menuSetting,
     path: '/admin/menu/person',
     isSelect: false
+  },
+  {
+    name: '系统参数管理',
+    icon: menuSetting,
+    path: '/admin/menu/propertyMenu',
+    isSelect: false
   }
 ])
 const handleClickMenu = (e: string) => {
