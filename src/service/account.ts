@@ -130,3 +130,38 @@ export const cancelCollectionsApi = (params: number[], userId: number): Promise<
     }
   })
 }
+
+export const findAllCustomListAffiliateApi = (
+  customParams: API.customListAffiliateParams
+): Promise<API.Response> => {
+  return request(`/customListAffiliate/findAllCustomListAffiliate`, {
+    method: 'GET',
+    params: customParams
+  })
+}
+
+export const customListAffiliateByIdApi = (
+  customListAffiliateId: number
+): Promise<API.Response> => {
+  return request(`/customListAffiliate/deleteCustomListAffiliateById/${customListAffiliateId}`, {
+    method: 'DELETE'
+  })
+}
+
+export const cancelCustomCollectionApi = (
+  userId: number,
+  accountId: number
+): Promise<API.Response> => {
+  return request(`/userCollect/cancelCustomCollection/${userId}/${accountId}`, {
+    method: 'DELETE'
+  })
+}
+
+// export const addCustomCollectionApi = (
+//   userId: number,
+//   accountId: number
+// ): Promise<API.Response> => {
+//   return request(`/userCollect/addCustomCollection/${userId}/${accountId}`, {
+//     method: 'POST'
+//   })
+// }
