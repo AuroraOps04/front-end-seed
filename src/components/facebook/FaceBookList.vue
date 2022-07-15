@@ -75,9 +75,9 @@ const accountName = ref<string>('')
 
 const currentDate = ref<string>()
 
-const category = ref<string>()
+const category = ref<number | null>()
 
-const area = ref<string>()
+const area = ref<number | null>()
 
 // 默认时间榜单
 const defaultDailyTime = reactive<DateObject>({
@@ -91,14 +91,15 @@ const defaultDailyTime = reactive<DateObject>({
 const params = reactive<API.AccountParams & API.PageParams>({
   pageSize: tablePage.pageSize,
   page: tablePage.currentPage,
-  area: '',
-  category: '',
-  platform: '',
+  area: null,
+  category: null,
+  platform: null,
   accountName: '',
   startTime: '',
   endTime: '',
   sortType: 0,
-  isExport: 0
+  isExport: 0,
+  accountIsView: 1
 })
 
 // 单击行实现信息跳转
@@ -145,8 +146,8 @@ const changeArea = (event: any) => {
 // 分类下拉选项
 const changeCategory = (event: any) => {
   params.category = event.value
-  if (event.value === '全部') {
-    params.category = ''
+  if (event.value === -1) {
+    params.category = null
   }
   findAccountSelectPage(accountName.value)
 }
@@ -308,14 +309,14 @@ const receiveParametersMethods = (accountNameProp: string) => {
 const resetParams = () => {
   params.pageSize = 10
   params.page = 1
-  params.area = ''
-  params.category = ''
-  params.platform = ''
+  params.area = null
+  params.category = null
+  params.platform = null
   params.startTime = ''
   params.endTime = ''
   dateList.value = '1'
-  area.value = ''
-  category.value = ''
+  area.value = null
+  category.value = null
   // defaultDailyTime.value = ''
   params.sortType = 0
   findAccountSelectPage(accountName.value)
@@ -427,7 +428,7 @@ watch(
               v-for="area in areaData.data"
               :key="area.areaId"
               :label="area.areaName"
-              :value="area.areaName"
+              :value="area.areaId"
             ></vxe-option>
           </vxe-select>
         </div>
@@ -443,7 +444,7 @@ watch(
               v-for="cateGory in categoryData.data"
               :key="cateGory.categoryId"
               :label="cateGory.categoryName"
-              :value="cateGory.categoryName"
+              :value="cateGory.categoryId"
             ></vxe-option>
           </vxe-select>
         </div>

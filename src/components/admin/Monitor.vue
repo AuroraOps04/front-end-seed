@@ -74,9 +74,9 @@ const isNullOrEmpty = (obj: unknown): boolean => {
 // 账户名称
 const accountName = ref<string>('')
 // 地区
-const areaValue = ref<string>('')
+const areaValue = ref<number | null>()
 // 分类
-const categoryValue = ref<string>('')
+const categoryValue = ref<number | null>()
 // 模态框添加是否显示
 const isShow = ref<boolean>(false)
 // 定义批量删除的数组
@@ -154,9 +154,9 @@ const xTable = ref<VxeTableInstance>()
 const params = reactive<API.AccountParams & API.PageParams>({
   pageSize: tablePage.pageSize,
   page: tablePage.currentPage,
-  area: '',
-  category: '',
-  platform: '',
+  area: null,
+  category: null,
+  platform: null,
   accountName: accountName.value,
   startTime: '',
   endTime: '',
@@ -229,16 +229,16 @@ const formatterCategory: VxeColumnPropTypes.Formatter = ({ cellValue }) => {
   return isNullOrEmpty(cellValue) ? '暂未录入地区' : cellValue
 }
 // 地区下拉选项
-const changeArea = (value: string) => {
+const changeArea = (value: number) => {
   params.area = value
   findAccountSelectPage()
 }
 
 // 分类下拉选项
-const changeCategory = (value: string) => {
+const changeCategory = (value: number) => {
   params.category = value
-  if (value === '全部') {
-    params.category = ''
+  if (value === -1) {
+    params.category = null
   }
   findAccountSelectPage()
 }
@@ -253,13 +253,13 @@ const searchName = (value: string) => {
 const resetEvent = () => {
   params.pageSize = 10
   params.page = 1
-  params.area = ''
-  params.category = ''
-  params.platform = ''
+  params.area = null
+  params.category = null
+  params.platform = null
   params.accountName = ''
   accountName.value = ''
-  areaValue.value = ''
-  categoryValue.value = ''
+  areaValue.value = null
+  categoryValue.value = null
   findAccountSelectPage()
 }
 
@@ -388,7 +388,7 @@ onMounted(() => {
                   v-for="area in areaData.data"
                   :key="area.areaId"
                   :label="area.areaName"
-                  :value="area.areaName"
+                  :value="area.areaId"
                 ></vxe-option>
               </vxe-select>
             </div>
