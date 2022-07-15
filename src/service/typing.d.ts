@@ -129,10 +129,33 @@ declare namespace API {
 
   type customListAffiliateParams = {
     userId: number
-    customListId: number
+    customListId: number | null
     userName: string | null
     platformId: number | null
     accountIsView: number | null
+  }
+
+  type CustomList = {
+    customListId: number
+    customListName: string
+    customListDescribe: string
+    sumAccount: number
+    platformName: string
+    createdAt: string
+  }
+
+  type CustomListAddOrUpdate = {
+    customListId: number
+    customListName: string
+    customListDescribe: string
+    userId: number
+    platformId: number
+  }
+
+  type CustomListFormData = {
+    customListName: string
+    platformId: number | null
+    userId: number
   }
 
   type DictParams = Partial<Dict>
