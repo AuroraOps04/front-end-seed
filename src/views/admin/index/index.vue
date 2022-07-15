@@ -12,6 +12,7 @@ const isSendSmsCode = ref(false)
 const router = useRouter()
 const formData = reactive<API.LoginRequest>({
   phone: '',
+  password: '',
   smsCode: ''
 })
 const message = useMessage()
@@ -40,9 +41,24 @@ const validateSmsCode = (): boolean => {
   }
   return true
 }
+
+const validatePassword = (): boolean => {
+  if (formData.password === '') {
+    message.error('请输入密码')
+    return false
+  }
+  if (!formData.password.match(/^.{6,}$/)) {
+    message.error('密码格式不正确')
+    return false
+  }
+  return true
+}
 const handleLogin = async () => {
   // 校验手机号码
   if (!validatePhone()) {
+    return
+  }
+  if (!validatePassword()) {
     return
   }
   if (!isSendSmsCode.value) {
@@ -102,7 +118,13 @@ const getSmsCode = async () => {
         type="text"
         v-model="formData.phone"
         class="login-username"
-        placeholder="使用手机号码登录/注册"
+        placeholder="请输入手机号"
+      />
+      <input
+        type="password"
+        v-model="formData.password"
+        class="login-password"
+        placeholder="请输入密码"
       />
       <div class="login-verify">
         <input
@@ -175,7 +197,27 @@ const getSmsCode = async () => {
       height: 48px;
       position: absolute;
       left: 426px;
-      top: 157px;
+      top: 130px;
+      border-radius: 24px;
+      background-color: #eaeefe;
+      padding: 0 15px;
+      font-size: 15px;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        position: static;
+        width: 50vw;
+        height: 10vw;
+        font-size: 4vw;
+      }
+    }
+    .login-password {
+      background: none;
+      outline: none;
+      border: none;
+      width: 293px;
+      height: 48px;
+      position: absolute;
+      left: 426px;
+      top: 188px;
       border-radius: 24px;
       background-color: #eaeefe;
       padding: 0 15px;
@@ -208,7 +250,7 @@ const getSmsCode = async () => {
         height: 48px;
         position: absolute;
         left: 426px;
-        top: 237px;
+        top: 248px;
         border-radius: 24px;
         background-color: #eaeefe;
         padding: 0 15px;
@@ -226,7 +268,7 @@ const getSmsCode = async () => {
         cursor: pointer;
         position: absolute;
         left: 650px;
-        top: 252px;
+        top: 260px;
         @media screen and (min-width: 320px) and (max-width: 480px) {
           width: 16vw;
           position: static;
@@ -301,7 +343,6 @@ const getSmsCode = async () => {
       letter-spacing: 3px;
       font-weight: 500;
       text-align: left;
-      font-family: SourceHanSansSC-bold;
       @media screen and (min-width: 320px) and (max-width: 480px) {
         position: static;
         font-size: 5vw;

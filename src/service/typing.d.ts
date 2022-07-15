@@ -102,6 +102,29 @@ declare namespace API {
     recordFan: number
     recordForward: number
     recordLike: number
+    categoryId: number
+    areaId: number
+  } & Model
+
+  type AccountFormData = {
+    areaId: number
+    categoryId: number
+    accountCode: string
+    platformId: number
+  }
+
+  type collectionParams = {
+    area: number | null
+    category: number | null
+    accountName: string
+    userId: number
+  }
+
+  type Platform = {
+    platformId: number
+    platformName: string
+    platformCode: string
+    platformDescription: string
   } & Model
 
   type DictParams = Partial<Dict>
@@ -117,6 +140,23 @@ declare namespace API {
   type CharsParams = Partial<CharsQuery>
   type LoginRequest = {
     phone: string
+    password: string
     smsCode: string
+  }
+  type RegisterRequest = {
+    username: string
+    gender: string
+    mail: string
+    phone: string
+    focusCategory: any
+  }
+  type UserInfoRequest = {
+    id: number
+    username: string
+    gender: string
+    mail: string
+    phone: string
+    address: any
+    focusCategory: any
   }
 }

@@ -30,6 +30,7 @@ body,
     width: calc(98% - 10px);
     border: 1px solid white;
     background-color: white;
+
     @media screen and (min-width: 320px) and (max-width: 480px) {
       width: auto;
     }

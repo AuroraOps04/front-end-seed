@@ -43,9 +43,10 @@ _instance.interceptors.response.use(
           message.message.error(response.errorMessage)
           break
         case 4:
-          message.notification.error({
-            content: response.errorMessage
-          })
+          // 未登录提示框
+          // message.notification.error({
+          //   content: response.errorMessage
+          // })
           break
         case 9:
           break

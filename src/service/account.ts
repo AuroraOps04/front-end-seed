@@ -16,6 +16,12 @@ export const findAllCategoryApi = (): Promise<API.Response> => {
   })
 }
 
+export const findAllPlatFormApi = (): Promise<API.Response> => {
+  return request('/platform/findAllPlatForm', {
+    method: 'GET'
+  })
+}
+
 export const findAreaApi = (): Promise<API.Response> => {
   return request('/area/findArea', {
     method: 'GET'
@@ -57,9 +63,10 @@ export const removeAccountByIdApi = (accountId: number): Promise<API.Response> =
   })
 }
 
-export const addAccountApi = (accountName: string): Promise<API.Response> => {
-  return request(`/record/addAccountAndRecord/${accountName}`, {
-    method: 'GET'
+export const addAccountApi = (AccountFormData: API.AccountFormData): Promise<API.Response> => {
+  return request(`/record/addAccountAndRecord`, {
+    method: 'GET',
+    params: AccountFormData
   })
 }
 
@@ -85,6 +92,13 @@ export const updateAccountIsViewApi = (params: number[], _state: number): Promis
   })
 }
 
+export const editRowAccountApi = (AccountData: API.AccountData): Promise<API.Response> => {
+  return request(`/account/editRowAccount`, {
+    method: 'POST',
+    params: AccountData
+  })
+}
+
 export const AccountCollectionApi = (accountId: number, userId: number): Promise<API.Response> => {
   return request(`/userCollect/accountCollection/${accountId}/${userId}`, {
     method: 'POST'
@@ -97,5 +111,22 @@ export const accountCollectionStatueApi = (
 ): Promise<API.Response> => {
   return request(`/userCollect/accountCollectionStatue/${accountId}/${userId}`, {
     method: 'GET'
+  })
+}
+
+export const accountCollectionListApi = (param: API.collectionParams): Promise<API.Response> => {
+  return request('/userCollect/accountCollectionListByUserId', {
+    method: 'GET',
+    params: param
+  })
+}
+
+export const cancelCollectionsApi = (params: number[], userId: number): Promise<API.Response> => {
+  return request('/userCollect/cancelCollections', {
+    method: 'DELETE',
+    params: {
+      ids: params,
+      userId
+    }
   })
 }
