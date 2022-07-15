@@ -5,6 +5,8 @@ import { TrashOutline, Add } from '@vicons/ionicons5'
 import { onMounted, reactive, ref } from 'vue'
 import {
   addAreaApi,
+  editAreaByNameApi,
+  editCategoryByNameApi,
   listAreaByPageApi,
   removeAreaBatchByIdsApi,
   removeAreaByIdApi
@@ -29,6 +31,14 @@ const propertyData = reactive({
 const params = reactive<API.AreaQueryParams & API.PageParams>({
   pageSize: propertyData.tablePage.pageSize,
   page: propertyData.tablePage.currentPage,
+  areaName: ''
+})
+
+// 修改地区数据的参数
+const updateParams = reactive<API.AreaParams>({
+  areaId: 0,
+  areaCode: '',
+  areaDescription: '',
   areaName: ''
 })
 
@@ -79,12 +89,23 @@ const insertEvent = async () => {
   await findAreaSelectPage()
 }
 
+// 修改分类数据事件
+const updateEvent = async () => {
+  // 修改参数
+  updateParams.areaName = inputAreaName.value
+  await editAreaByNameApi(updateParams)
+  isShow2.value = false
+  await findAreaSelectPage()
+}
+
 function handleAddArea(event: any) {
   inputAreaName.value = ''
   isShow.value = true
 }
 
-function handleEditArea(event: any) {
+function handleEditArea(row: any) {
+  // 修改参数id
+  updateParams.areaId = row.areaId as number
   isShow2.value = true
 }
 
@@ -209,7 +230,7 @@ onMounted(() => {
                   <vxe-button
                     icon="vxe-icon--edit-outline"
                     type="text"
-                    @click="handleEditArea"
+                    @click="handleEditArea(row)"
                     class="add_icon"
                   />
                   <n-icon style="padding-top: 20px">
@@ -303,7 +324,7 @@ onMounted(() => {
               <vxe-button
                 content="保存"
                 status="primary"
-                @click="insertEvent()"
+                @click="updateEvent()"
                 class="button_right"
               ></vxe-button>
             </div>
