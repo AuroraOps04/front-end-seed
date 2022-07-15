@@ -24,15 +24,19 @@ export default createStore<RootState>({
   },
   mutations: {
     SET_USER(state, payload) {
+      // eslint-disable-next-line no-param-reassign
       state.user = payload
     },
     SET_MENU(state, payload) {
+      // eslint-disable-next-line no-param-reassign
       state.menu = payload
     },
     SET_TOKEN(state, payload) {
+      // eslint-disable-next-line no-param-reassign
       state.tempToken = payload
     },
     SET_TEMP_PHONE(state, payload) {
+      // eslint-disable-next-line no-param-reassign
       state.tempPhone = payload
     }
   },
@@ -45,6 +49,7 @@ export default createStore<RootState>({
     async fetchCurrentUser({ commit }) {
       try {
         const res = await getCurrentApi()
+        localStorage.setItem('userId', res.data?.id)
         commit('SET_USER', res.data)
       } catch (e) {
         commit('SET_USER', undefined)

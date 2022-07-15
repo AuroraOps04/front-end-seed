@@ -99,7 +99,7 @@ const accountData = reactive<AccountData>({
   data: []
 })
 // 获取当前登录用户Id
-const userId = store.getters.currentId
+const userId = Number(localStorage.getItem('userId'))
 const themeOverrides: GlobalThemeOverrides = {
   common: {
     primaryColor: '#1684FC'
@@ -156,7 +156,7 @@ const customAffiliateData = reactive<CustomAffiliateDetailData>({
 
 // 子界面后端参数
 const customParams = reactive<API.customListAffiliateParams>({
-  userId: store.getters.currentId,
+  userId: Number(localStorage.getItem('userId')),
   customListId: 1,
   userName: '',
   platformId: null,
@@ -230,6 +230,10 @@ const areaData = reactive<AreaData>({
 })
 
 // 分类信息
+const categoryDataS = reactive<CategoryData>({
+  data: []
+})
+
 const categoryData = reactive<CategoryData>({
   data: []
 })
@@ -239,7 +243,7 @@ const params = reactive<API.collectionParams>({
   area: null,
   category: null,
   accountName: '',
-  userId: store.getters.currentId
+  userId: Number(localStorage.getItem('userId'))
 })
 // 地区
 const areaValue = ref<number | null>()
@@ -257,11 +261,12 @@ const findAllArea = async () => {
 // 查询分类
 const findAllCategory = async () => {
   const res = await findAllCategoryApi()
-  categoryData.data = res.data as API.Category[]
+  categoryDataS.data = res.data as API.Category[]
 }
 
 const handleClick = (e: string) => {
   menuArr.forEach((item) => {
+    // eslint-disable-next-line no-param-reassign
     item.isSelect = item.code === e
   })
 }
@@ -948,8 +953,20 @@ onMounted(() => {
                                 placeholder="全部"
                                 @change="changeCategory(categoryValue)"
                               >
+                                <vxe-option
+                                  v-for="cateGory in categoryDataS.data"
+                                  :key="cateGory.categoryId"
+                                  :label="cateGory.categoryName"
+                                  :value="cateGory.categoryId"
+                                ></vxe-option>
                               </vxe-select>
                             </div>
+                          </template>
+                          <template #tools>
+                            <vxe-button @click="resetCollection">重置</vxe-button>
+                            <vxe-button status="primary" @click="cancelCollections"
+                              >取消收藏</vxe-button
+                            >
                           </template>
                         </vxe-toolbar>
                       </div>
