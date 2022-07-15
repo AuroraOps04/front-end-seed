@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
 import {
+  TrashOutline,
+  Add,
   PersonOutline,
   StarOutline,
   BarChartOutline,
@@ -10,6 +11,8 @@ import {
   IdCardSharp,
   PhonePortraitOutline
 } from '@vicons/ionicons5'
+import { useStore } from 'vuex'
+
 import {
   FormInst,
   NAvatar,
@@ -38,10 +41,17 @@ import {
   NConfigProvider,
   GlobalThemeOverrides
 } from 'naive-ui'
-import { VXETable, VxeTableEvents, VxeTableInstance } from 'vxe-table'
 import Cookies from 'js-cookie'
 import { getCategoryAllApi, registerApi, getCurrentApi, updateUserInfoApi } from '@service/user'
 import { updatePhoneApi, updateUsernameApi } from '@service/person'
+import {
+  VxeColumnPropTypes,
+  VxeFormEvents,
+  VxeFormPropTypes,
+  VXETable,
+  VxeTableEvents,
+  VxeTableInstance
+} from 'vxe-table'
 
 import personLogoPng from '@/assets/person_logo.png'
 import personIconPng from '@/assets/person_icon.png'
@@ -52,6 +62,8 @@ import rankingBgPng from '@/assets/ranking_bg.png'
 import phonePng from '@/assets/phone.png'
 import memberPng from '@/assets/member.png'
 import Header from '@/components/Header.vue'
+import underLine from '@/assets/underLine.png'
+
 import {
   accountCollectionListApi,
   AccountCollectionApi,
@@ -60,8 +72,14 @@ import {
   cancelCollectionsApi,
   findAllCustomListAffiliateApi,
   customListAffiliateByIdApi,
-  cancelCustomCollectionApi
+  cancelCustomCollectionApi,
+  findAllPlatFormApi
 } from '@/service/account'
+import {
+  selectAllCustomListApi,
+  deleteCustomsApi,
+  insertOrUpdateCustomsApi
+} from '@/service/customList'
 
 import AccountAddTable from '@/components/priority/AccountAddTable.vue'
 
@@ -100,6 +118,7 @@ const accountData = reactive<AccountData>({
 })
 // 获取当前登录用户Id
 const userId = Number(localStorage.getItem('userId'))
+
 const themeOverrides: GlobalThemeOverrides = {
   common: {
     primaryColor: '#1684FC'
@@ -156,8 +175,8 @@ const customAffiliateData = reactive<CustomAffiliateDetailData>({
 
 // 子界面后端参数
 const customParams = reactive<API.customListAffiliateParams>({
-  userId: Number(localStorage.getItem('userId')),
   customListId: 1,
+  userId,
   userName: '',
   platformId: null,
   accountIsView: 1
@@ -243,7 +262,7 @@ const params = reactive<API.collectionParams>({
   area: null,
   category: null,
   accountName: '',
-  userId: Number(localStorage.getItem('userId'))
+  userId
 })
 // 地区
 const areaValue = ref<number | null>()
@@ -508,7 +527,7 @@ const handleLogout = () => {
   router.push('/home')
 }
 
-const accountName = ref<string>()
+const accountName = ref<string>('')
 // 点击查询图标查询账号
 const searchName = (value: string) => {
   loading.value = true
@@ -579,6 +598,227 @@ const cancelCollections = async () => {
   loading.value = false
   await VXETable.modal.message({ content: '取消成功！', status: 'success' })
 }
+
+// --------------榜单部分 开始--------------
+// 平台
+type Platform = {
+  count: number
+  data: API.Platform[]
+}
+// 榜单表格
+type CustomList = {
+  count: number
+  data: API.CustomList[]
+}
+// 分页
+type CustomTablePage = {
+  total: number
+  currentPage: number
+  pageSize: number
+}
+
+// 榜单名称
+const customListName = ref<string>('')
+// 控制榜单添加修改模态框显隐
+const customModalIsView = ref<boolean>(false)
+// 控制榜单添加修改模态框中类型下拉框的显隐
+const addOrEdit = ref<boolean>(true)
+// 平台分类
+const platformId = ref<number | null>()
+// 榜单删除ids
+const customListIds: number[] = []
+// 自定义榜单表格对象
+const customListTable = ref({} as any)
+// 用于控制我的榜单页面主页面与子页面显隐
+const customGoToChild = ref<boolean>(false)
+// 平台信息，用于下拉框展示信息
+const platformData = reactive<Platform>({
+  count: 0,
+  data: []
+})
+// 榜单信息，用于表格
+const customData = reactive<CustomList>({
+  count: 0,
+  data: []
+})
+// 表格分页
+const customTablePage = reactive<CustomTablePage>({
+  total: 0,
+  currentPage: 1,
+  pageSize: 10
+})
+// 查询数据的条件参数
+const selectCustomParams = reactive<API.CustomListFormData & API.PageParams>({
+  pageSize: customTablePage.pageSize,
+  page: customTablePage.currentPage,
+  customListName: customListName.value,
+  platformId: platformId.value,
+  userId
+})
+
+// 查询所有platform平台
+const findAllPlatform = async () => {
+  const res = await findAllPlatFormApi()
+  platformData.data = res.data as API.Platform[]
+}
+
+// 分页查询所有榜单数据
+const selectAllCustomList = async () => {
+  const res = await selectAllCustomListApi(selectCustomParams)
+  console.log(res)
+  customData.count = res.count
+  customTablePage.total = res.count
+  customData.data = res.data.data as API.CustomList[]
+}
+
+// 按榜单名称搜索点击事件
+const searchByCustomListName = (searchValue: string) => {
+  selectCustomParams.customListName = searchValue
+  selectAllCustomList()
+}
+
+// 按榜单类型搜索点击事件（下拉框）
+const searchByPlatform = (searchValue: number) => {
+  selectCustomParams.platformId = searchValue
+  selectAllCustomList()
+}
+
+// 重置
+const resetCustomListEvent = () => {
+  customListName.value = ''
+  platformId.value = null
+  selectCustomParams.customListName = ''
+  selectCustomParams.platformId = null
+  selectCustomParams.page = 1
+  selectCustomParams.pageSize = 10
+  selectAllCustomList()
+}
+
+// 日期过滤器
+const formatterTime: VxeColumnPropTypes.Formatter = ({ cellValue }) => {
+  const date = new Date(cellValue)
+  const year = date.getFullYear()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const day = date.getDate().toString().padStart(2, '0')
+  const timeValue = `${year}-${month}-${day}`
+  return timeValue
+}
+
+// check全选
+const selectCustomListAllChangeEvent: VxeTableEvents.CheckboxAll = ({ checked }) => {
+  // 置空数组
+  customListIds.length = 0
+  const $table = customListTable.value[0] as VxeTableInstance
+  const records = $table.getCheckboxRecords()
+  records.forEach((item) => {
+    customListIds.push(item.customListId)
+  })
+}
+
+// check单选
+const selectCustomListChangeEvent: VxeTableEvents.CheckboxChange = () => {
+  // 置空数组
+  customListIds.length = 0
+  const $table = customListTable.value[0] as VxeTableInstance
+  const records = $table.getCheckboxRecords()
+  records.forEach((item) => {
+    customListIds.push(item.customListId)
+  })
+}
+
+// 删除
+const deleteCustomListEvent = async () => {
+  if (customListIds.length === 0) {
+    await VXETable.modal.message('您未选择数据')
+    return
+  }
+  const type = await VXETable.modal.confirm('您确定要删除该数据?')
+  if (type === 'confirm') {
+    const res = await deleteCustomsApi(customListIds)
+    if (res.data) {
+      await selectAllCustomList()
+      await VXETable.modal.message({ content: '删除成功！', status: 'success' })
+    } else {
+      await VXETable.modal.message({ content: '删除失败！', status: 'error' })
+    }
+    accountArray.splice(0, customListIds.length)
+  }
+}
+
+// 表格中的删除
+const removeCustomListEvent = async (row: any) => {
+  const customListId = row.customListId as number
+  customListIds.push(customListId)
+  deleteCustomListEvent()
+}
+
+// 添加修改modal表单
+const customModalData = reactive({
+  loading: false,
+  formData: {
+    customListId: '',
+    customListName: '',
+    customListDescribe: '',
+    userId,
+    platformId: ''
+  },
+  formRules: {
+    customListName: [
+      { required: true, message: '请输入榜单名称' },
+      { min: 3, max: 10, message: '长度在 3 到 10 个字符' }
+    ],
+    customListDescribe: [
+      { required: true, message: '请输入榜单描述' },
+      { min: 3, max: 100, message: '长度在 3 到 100 个字符' }
+    ],
+    platformId: [{ required: true, message: '请选择榜单类型' }]
+  } as VxeFormPropTypes.Rules
+})
+
+// 打开添加用户自定义榜单模态框
+const openAddCustomListEvent = () => {
+  customModalData.formData.customListId = ''
+  customModalData.formData.customListName = ''
+  customModalData.formData.customListDescribe = ''
+  customModalData.formData.platformId = ''
+  addOrEdit.value = true
+  customModalIsView.value = true
+}
+// 打开编辑用户自定义榜单信息
+const editCustomListEvent = (row: any) => {
+  console.log(row.customListId)
+  customModalData.formData.customListId = row.customListId
+  customModalData.formData.customListName = row.customListName
+  customModalData.formData.customListDescribe = row.customListDescribe
+  customModalData.formData.platformId = row.platformId
+  addOrEdit.value = false
+  customModalIsView.value = true
+}
+
+// modal中的表单提交
+const submitCustomListEvent: VxeFormEvents.Submit = async () => {
+  customModalData.loading = true
+  const res = await insertOrUpdateCustomsApi(customModalData.formData)
+  if (res) {
+    selectAllCustomList()
+    customModalData.loading = false
+    customModalIsView.value = false
+    VXETable.modal.message({ content: '保存成功', status: 'success' })
+  }
+}
+
+const cancelModalEvent = () => {
+  customModalIsView.value = false
+}
+
+// 跳转子页面
+const goToCustomChildPage = (row: any) => {
+  customParams.customListId = row.customListId
+  findAllCustomListAffiliate()
+  customGoToChild.value = true
+}
+// --------------榜单部分 结束--------------
+
 onMounted(() => {
   selectUserCollectionList()
   findAllArea()
@@ -586,6 +826,8 @@ onMounted(() => {
   getCategory()
   getUserInfo()
   findAllCustomListAffiliate()
+  findAllPlatform()
+  selectAllCustomList()
 })
 </script>
 
@@ -827,11 +1069,207 @@ onMounted(() => {
                   <button class="pbtn-logout" @click="handleLogout">退出登录</button>
                 </div>
               </div>
+
               <!--              我的榜单-->
               <div v-else-if="item.code === 'Leaderboard' && item.isSelect" class="content-ranking">
-                <!--                <img :src="rankingBgPng" alt="排行榜" />-->
+                <!--      -------------zjystart------------          -->
+                <div v-if="!customGoToChild">
+                  <!-- ---------------------榜单列表开始--------------------- -->
+                  <div class="leaderboard_title">
+                    <h3 class="leaderboard_txt">榜单列表</h3>
+                    <img class="leaderboard_title_png" :src="underLine" />
+                  </div>
+                  <div class="toolbar">
+                    <div class="search_tool">
+                      <div style="margin: 0 40px 0 3vw">
+                        <vxe-input
+                          placeholder="输入榜单名称搜索"
+                          type="search"
+                          v-model="customListName"
+                          @search-click="searchByCustomListName(customListName)"
+                        ></vxe-input>
+                      </div>
+                      <div>
+                        <vxe-select
+                          filterable
+                          placeholder="请选择榜单类型"
+                          v-model="platformId"
+                          @change="searchByPlatform(platformId)"
+                        >
+                          <vxe-option
+                            v-for="platform in platformData.data"
+                            :key="platform.platformId"
+                            :label="platform.platformName"
+                            :value="platform.platformId"
+                          ></vxe-option>
+                        </vxe-select>
+                      </div>
+                      <div style="margin-left: 40px">
+                        <n-button ghost type="info" @click="resetCustomListEvent()"> 重置</n-button>
+                      </div>
+                    </div>
+                    <div class="search_button">
+                      <n-space align="center">
+                        <n-button color="#70ACFF" round @click="openAddCustomListEvent()">
+                          <template #icon>
+                            <n-icon>
+                              <Add />
+                            </n-icon>
+                          </template>
+                          添加
+                        </n-button>
+                        <n-button
+                          color="#D76C54"
+                          round
+                          @click="deleteCustomListEvent()"
+                          style="margin: 0 40px 0 20px"
+                        >
+                          <template #icon>
+                            <n-icon>
+                              <TrashOutline />
+                            </n-icon>
+                          </template>
+                          删除
+                        </n-button>
+                      </n-space>
+                    </div>
+                  </div>
+                  <div class="table_style">
+                    <vxe-table
+                      ref="customListTable"
+                      :align="'center'"
+                      :column-config="{ resizable: true }"
+                      :data="customData.data"
+                      :radio-config="{ highlight: true }"
+                      :row-config="{ isHover: true }"
+                      border="inner"
+                      height="400vw"
+                      show-overflow
+                      @checkbox-all="selectCustomListAllChangeEvent"
+                      @checkbox-change="selectCustomListChangeEvent"
+                    >
+                      <vxe-column type="checkbox" width="60"></vxe-column>
+                      <vxe-column field="customListName" title="榜单名称"></vxe-column>
+                      <vxe-column field="platformName" title="榜单类型"></vxe-column>
+                      <vxe-column field="sumAccount" title="账号数"></vxe-column>
+                      <vxe-column
+                        field="customListDescribe"
+                        show-overflow
+                        title="榜单描述"
+                      ></vxe-column>
+                      <vxe-column
+                        :formatter="formatterTime"
+                        field="createdAt"
+                        show-overflow
+                        title="新增时间"
+                      ></vxe-column>
+                      <vxe-column show-overflow title="操作" width="180">
+                        <template #default="{ row }">
+                          <vxe-button
+                            icon="vxe-icon--eye"
+                            type="text"
+                            @click="goToCustomChildPage(row)"
+                          ></vxe-button>
+                          <vxe-button
+                            icon="vxe-icon--edit-outline"
+                            type="text"
+                            @click="editCustomListEvent(row)"
+                          ></vxe-button>
+                          <vxe-button
+                            icon="vxe-icon--close"
+                            type="text"
+                            @click="removeCustomListEvent(row)"
+                          ></vxe-button>
+                          <vxe-button
+                            icon="vxe-icon--circle-plus"
+                            type="text"
+                            @click="showEditModal = true"
+                          ></vxe-button>
+                        </template>
+                      </vxe-column>
+                    </vxe-table>
+                  </div>
+                  <vxe-modal
+                    v-model="customModalIsView"
+                    destroy-on-close
+                    min-height="300"
+                    min-width="600"
+                    resize
+                    title="新增榜单"
+                    height="500px"
+                  >
+                    <vxe-form
+                      title-colon
+                      :data="customModalData.formData"
+                      :rules="customModalData.formRules"
+                      :loading="customModalData.loading"
+                      @submit="submitCustomListEvent"
+                    >
+                      <vxe-form-gather>
+                        <vxe-form-item
+                          title="榜单类型"
+                          field="platformId"
+                          :item-render="{}"
+                          title-overflow
+                          v-if="addOrEdit"
+                        >
+                          <template #default="{ data }">
+                            <vxe-select
+                              filterable
+                              placeholder="请选择榜单类型"
+                              v-model="data.platformId"
+                            >
+                              <vxe-option
+                                v-for="platform in platformData.data"
+                                :key="platform.platformId"
+                                :label="platform.platformName"
+                                :value="platform.platformId"
+                              ></vxe-option>
+                            </vxe-select>
+                          </template>
+                        </vxe-form-item>
+                        <vxe-form-item title="榜单名称" field="customListName" :item-render="{}">
+                          <template #default="{ data }">
+                            <vxe-input
+                              v-model="data.customListName"
+                              placeholder="请输入榜单名称"
+                              clearable
+                            ></vxe-input>
+                          </template>
+                        </vxe-form-item>
+                        <vxe-form-item
+                          title="榜单描述"
+                          field="customListDescribe"
+                          :item-render="{}"
+                        >
+                          <template #default="{ data }">
+                            <vxe-textarea
+                              v-model="data.customListDescribe"
+                              placeholder="请输入榜单描述"
+                              :autosize="{ minRows: 6, maxRows: 10 }"
+                              clearable
+                            ></vxe-textarea>
+                          </template>
+                        </vxe-form-item>
+                      </vxe-form-gather>
+                      <vxe-form-item align="center">
+                        <vxe-button
+                          type="button"
+                          @click="cancelModalEvent()"
+                          content="取消"
+                        ></vxe-button>
+                        <vxe-button type="submit" status="primary" content="保存"></vxe-button>
+                      </vxe-form-item>
+                    </vxe-form>
+                  </vxe-modal>
+                  <!-- <img :src="rankingBgPng" alt="排行榜" /> -->
+                  <!-- ---------------------榜单列表结束--------------------- -->
+                </div>
+
+                <!--      -------------zjyend------------          -->
+                <!--     ------------------ygx----------------         -->
                 <!--              我的榜单子界面-->
-                <div v-if="true" class="custom-list-sub-interface">
+                <div v-if="customGoToChild" class="custom-list-sub-interface">
                   <!--                工具栏-->
                   <div class="search-tool">
                     <vxe-toolbar>
@@ -913,9 +1351,10 @@ onMounted(() => {
                   </vxe-modal>
                 </div>
                 <!--              子榜单的添加按钮弹框结束,引入AccountAddTable界面-->
+                <!--            我的榜单子界面结束-->
+                <!--          我的榜单结束-->
+                <!--     ------------------ygx----------------         -->
               </div>
-              <!--            我的榜单子界面结束-->
-              <!--          我的榜单结束-->
 
               <!--            我的收藏-->
               <div v-else-if="item.code === 'collect' && item.isSelect" class="content-collect">
@@ -1435,15 +1874,46 @@ onMounted(() => {
       }
 
       .content-ranking {
-        display: flex;
-        align-items: center;
-        justify-content: center;
         overflow: hidden;
+        height: 100vh;
 
-        img {
-          width: 400px;
-          @media screen and (min-width: 320px) and (max-width: 480px) {
-            width: 80vw;
+        .leaderboard_title {
+          padding-left: 3vw;
+          width: 150px;
+
+          .leaderboard_txt {
+            font-size: 20px;
+            position: absolute;
+            margin: 6px 0 0 15px;
+          }
+
+          .leaderboard_title_png {
+            margin: 3vh 0 1vh 0;
+            height: 2.5vh;
+          }
+        }
+
+        .toolbar {
+          display: flex;
+          flex-wrap: nowrap;
+          flex-direction: row;
+          width: calc(100%);
+          margin: 20px 0 20px 0;
+
+          .search_tool {
+            display: flex;
+            width: calc(50%);
+          }
+
+          .search_button {
+            display: flex;
+            width: calc(50%);
+            justify-content: right;
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              width: auto;
+              justify-content: center;
+              margin: 2vw 0;
+            }
           }
         }
 
@@ -1550,9 +2020,6 @@ onMounted(() => {
     .home-top-menu-avatar {
       margin-right: 100px;
       cursor: pointer;
-    }
-
-    .home-top-menu-avatar:hover {
     }
   }
 
@@ -1823,5 +2290,9 @@ onMounted(() => {
   font-size: 18px;
   font-weight: bold;
   opacity: 0.6;
+}
+
+.table_style {
+  padding: 0 50px 0 3vw;
 }
 </style>

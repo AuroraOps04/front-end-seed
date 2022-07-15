@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { NCard, NTabs, NTabPane } from 'naive-ui'
+import { NTabs, NTabPane } from 'naive-ui'
 
 import accountSelectTable from '@/components/priority/AccountSelectTable.vue'
 import listPreviewTable from '@/components/priority/ListPreviewTable.vue'
