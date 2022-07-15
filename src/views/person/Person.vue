@@ -826,7 +826,7 @@ onMounted(() => {
               <div v-else-if="item.code === 'Leaderboard' && item.isSelect" class="content-ranking">
                 <!--                <img :src="rankingBgPng" alt="排行榜" />-->
                 <!--              我的榜单子界面-->
-                <div v-if="false" class="custom-list-sub-interface">
+                <div v-if="true" class="custom-list-sub-interface">
                   <!--                工具栏-->
                   <div class="search-tool">
                     <vxe-toolbar>
@@ -898,7 +898,11 @@ onMounted(() => {
                     title="榜单账号添加"
                     width="100%"
                   >
-                    <AccountAddTable :isUserAdd="userAdd" @close="closeModal"></AccountAddTable>
+                    <AccountAddTable
+                      :isUserAdd="userAdd"
+                      @close="closeModal"
+                      @findAllCustomListAffiliate="findAllCustomListAffiliate"
+                    ></AccountAddTable>
                     <!--                  @close="closeModal"-->
                     <!--                  @selectData="findAccountSelectPage"-->
                   </vxe-modal>

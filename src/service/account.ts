@@ -157,11 +157,15 @@ export const cancelCustomCollectionApi = (
   })
 }
 
-// export const addCustomCollectionApi = (
-//   userId: number,
-//   accountId: number
-// ): Promise<API.Response> => {
-//   return request(`/userCollect/addCustomCollection/${userId}/${accountId}`, {
-//     method: 'POST'
-//   })
-// }
+export const insertIntoCustomListApi = (
+  params: number[],
+  customListId: number
+): Promise<API.Response> => {
+  return request('/customListAffiliate/insertIntoCustomList', {
+    method: 'POST',
+    params: {
+      ids: params,
+      customListId
+    }
+  })
+}

@@ -13,7 +13,8 @@ import {
   findAllCategoryApi,
   findAreaApi,
   listAccountByPageApi,
-  updateAccountIsViewApi
+  updateAccountIsViewApi,
+  insertIntoCustomListApi
 } from '@/service/account'
 
 const props = defineProps({
@@ -79,7 +80,7 @@ const categoryValue = ref<number | null>()
 // 定义批量删除的数组
 const accountArray: number[] = []
 // 获取父组件的modal关闭方法
-const emits = defineEmits(['close', 'selectData'])
+const emits = defineEmits(['close', 'selectData', 'findAllCustomListAffiliate'])
 // 账户信息
 const accountData = reactive<AccountData>({
   count: 0,
@@ -210,9 +211,15 @@ const resetEvent = () => {
 }
 // 添加
 const insertEvent = async () => {
-  const res = await updateAccountIsViewApi(accountArray, 1)
+  if (isUserAdd.isUserAdd.value === 1) {
+    // 从两个值 一个account_id一个custom_list_id
+    await insertIntoCustomListApi(accountArray, 1)
+    emits('findAllCustomListAffiliate')
+  } else {
+    const res = await updateAccountIsViewApi(accountArray, 1)
+    emits('selectData')
+  }
   await VXETable.modal.message({ content: '添加成功！', status: 'success' })
-  emits('selectData')
   emits('close', false)
 }
 
