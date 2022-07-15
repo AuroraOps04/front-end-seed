@@ -4,6 +4,8 @@ import { getCurrentApi } from '@/service/user'
 export type RootState = {
   user?: any
   menu: string
+  tempToken: string
+  tempPhone: string
 }
 
 export default createStore<RootState>({
@@ -12,9 +14,13 @@ export default createStore<RootState>({
       id: '',
       username: '',
       phone: '',
-      pictureUrl: ''
+      pictureUrl: '',
+      ipAddress: '',
+      userRating: ''
     },
-    menu: 'home'
+    menu: 'home',
+    tempToken: '',
+    tempPhone: ''
   },
   mutations: {
     SET_USER(state, payload) {
@@ -22,6 +28,12 @@ export default createStore<RootState>({
     },
     SET_MENU(state, payload) {
       state.menu = payload
+    },
+    SET_TOKEN(state, payload) {
+      state.tempToken = payload
+    },
+    SET_TEMP_PHONE(state, payload) {
+      state.tempPhone = payload
     }
   },
   actions: {
@@ -57,6 +69,15 @@ export default createStore<RootState>({
     },
     currentMenu(state) {
       return state.menu
+    },
+    currentToken(state) {
+      return state.tempToken
+    },
+    currentTempPhone(state) {
+      return state.tempPhone
+    },
+    currentIpAddress(state) {
+      return state.user?.ipAddress
     }
   }
 })

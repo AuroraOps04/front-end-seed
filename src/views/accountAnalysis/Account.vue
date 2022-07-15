@@ -137,12 +137,16 @@ function init() {
     yAxis: {
       type: 'value'
     },
+    tooltip: {
+      trigger: 'axis'
+    },
     series: [
       {
         data: seriesData.value,
         type: 'line',
         smooth: true,
-        color: '#F78B32'
+        color: '#F78B32',
+        itemStyle: { normal: { label: { show: true } } }
       }
     ]
   }
