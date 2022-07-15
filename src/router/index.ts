@@ -58,26 +58,26 @@ const routes: Array<RouteRecordRaw> = [
                 path: '/priority/priorityFacebookPage',
                 name: 'priorityFacebookPage',
                 component: () => import('@/views/admin/priority/PriorityFacebookPage.vue')
+              }
+            ]
+          },
+          {
+            path: '/admin/menu/propertyMenu',
+            name: 'PropertyMenu',
+            component: () => import('@/components/property/PropertyMenu.vue'),
+            redirect: {
+              path: '/admin/menu/propertyMenu/areaList'
+            },
+            children: [
+              {
+                path: '/admin/menu/propertyMenu/areaList',
+                name: 'areaList',
+                component: () => import('@/components/property/AreaList.vue')
               },
               {
-                path: '/admin/menu/propertyMenu',
-                name: 'PropertyMenu',
-                component: () => import('@/components/property/PropertyMenu.vue'),
-                redirect: {
-                  path: '/admin/menu/propertyMenu/areaList'
-                },
-                children: [
-                  {
-                    path: '/admin/menu/propertyMenu/areaList',
-                    name: 'areaList',
-                    component: () => import('@/components/property/AreaList.vue')
-                  },
-                  {
-                    path: '/admin/menu/propertyMenu/categoryList',
-                    name: 'categoryList',
-                    component: () => import('@/components/property/CategoryList.vue')
-                  }
-                ]
+                path: '/admin/menu/propertyMenu/categoryList',
+                name: 'categoryList',
+                component: () => import('@/components/property/CategoryList.vue')
               }
             ]
           }
