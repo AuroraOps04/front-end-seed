@@ -5,6 +5,7 @@ import { TrashOutline, Add } from '@vicons/ionicons5'
 import { onMounted, reactive, ref } from 'vue'
 import {
   addCategoryApi,
+  editCategoryByNameApi,
   listCategoryByPageApi,
   removeCategoryBatchByIdsApi,
   removeCategoryByIdApi
@@ -29,6 +30,14 @@ const params = reactive<API.CategoryQueryParams & API.PageParams>({
   pageSize: propertyData.tablePage.pageSize,
   page: propertyData.tablePage.currentPage,
   categoryName: ''
+})
+
+// 修改分类数据的参数
+const updateParams = reactive<API.CategoryParams>({
+  categoryId: 0,
+  categoryName: '',
+  categoryCode: '',
+  categoryDescription: ''
 })
 
 // 根据参数分页查询所有数据
@@ -77,13 +86,22 @@ const insertEvent = async () => {
   isShow.value = false
   await findCategorySelectPage()
 }
-
+// 修改分类数据事件
+const updateEvent = async () => {
+  // 修改参数
+  updateParams.categoryName = inputCategoryName.value
+  await editCategoryByNameApi(updateParams)
+  isShow2.value = false
+  await findCategorySelectPage()
+}
 function handleAddCategory(event: any) {
   inputCategoryName.value = ''
   isShow.value = true
 }
 
-function handleEditCategory(event: any) {
+function handleEditCategory(row: any) {
+  // 修改参数id
+  updateParams.categoryId = row.categoryId as number
   isShow2.value = true
 }
 
@@ -212,7 +230,7 @@ onMounted(() => {
                   <vxe-button
                     icon="vxe-icon--edit-outline"
                     type="text"
-                    @click="handleEditCategory"
+                    @click="handleEditCategory(row)"
                   />
                   <n-icon style="padding-top: 20px">
                     <TrashOutline @click="removeEvent(row)" />
@@ -305,7 +323,7 @@ onMounted(() => {
               <vxe-button
                 content="保存"
                 status="primary"
-                @click="insertEvent()"
+                @click="updateEvent()"
                 class="button_right"
               ></vxe-button>
             </div>

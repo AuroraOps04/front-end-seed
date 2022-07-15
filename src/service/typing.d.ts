@@ -108,6 +108,8 @@ declare namespace API {
   type AccountParams = Partial<Account>
   type AccountQueryParams = Partial<AccountQuery>
   type UserParams = Partial<User>
+  type AreaParams = Partial<Area>
+  type CategoryParams = Partial<Category>
   type UserQueryParams = Partial<UserQuery>
   type AreaQueryParams = Partial<AreaQuery>
   type CategoryQueryParams = Partial<CategoryQuery>
