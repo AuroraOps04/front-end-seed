@@ -35,9 +35,13 @@ const handleTo = (e: string) => {
         </span>
       </template>
     </div>
-    <div class="avatar" @click="handleTo('person')">
-      <NAvatar :size="35" :src="store.getters.currentPictureUrl" round></NAvatar>
-      <span style="margin: 0 5px">个人中心</span>
+    <div class="avatar">
+      <NAvatar :size="35" :src="store.getters?.currentPictureUrl" round></NAvatar>
+      <!--      <span style="margin: 0 5px">个人中心</span>-->
+      <span @click="handleTo('login')" style="margin: 0 5px" v-if="!store.getters.currentId">
+        登录
+      </span>
+      <span @click="handleTo('person')" style="margin: 0 5px" v-else>个人中心</span>
     </div>
   </div>
 </template>

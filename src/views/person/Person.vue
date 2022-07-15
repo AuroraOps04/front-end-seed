@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import {
@@ -11,6 +11,7 @@ import {
   PhonePortraitOutline
 } from '@vicons/ionicons5'
 import {
+  FormInst,
   NAvatar,
   NIcon,
   NPopselect,
@@ -18,21 +19,30 @@ import {
   NInput,
   NUpload,
   NModal,
+  FormItemRule,
+  NCountdown,
+  NForm,
+  NSpace,
+  NFormItem,
+  NSelect,
+  NCheckboxGroup,
+  NCheckbox,
+  NRadioGroup,
+  NRadio,
+  NCascader,
+  CascaderOption,
   useMessage,
   NTabs,
   NTabPane,
-  UploadFileInfo
+  UploadFileInfo,
+  NConfigProvider,
+  GlobalThemeOverrides
 } from 'naive-ui'
-import { updatePhoneApi, updateUsernameApi } from '@service/person'
 import { VXETable, VxeTableEvents, VxeTableInstance } from 'vxe-table'
-import personLogoPng from '@/assets/person_logo.png'
-import personIconPng from '@/assets/person_icon.png'
-import personIcon2Png from '@/assets/person_icon2.png'
-import personIcon3Png from '@/assets/person_icon3.png'
-import personGradePng from '@/assets/person_grade.png'
-import rankingBgPng from '@/assets/ranking_bg.png'
-import Header from '@/components/Header.vue'
-import underLine from '@/assets/underLine.png'
+import Cookies from 'js-cookie'
+import { getCategoryAllApi, registerApi, getCurrentApi, updateUserInfoApi } from '@service/user'
+import { updatePhoneApi, updateUsernameApi } from '@service/person'
+
 import {
   accountCollectionListApi,
   AccountCollectionApi,
@@ -40,6 +50,16 @@ import {
   findAllCategoryApi,
   cancelCollectionsApi
 } from '@/service/account'
+import personLogoPng from '@/assets/person_logo.png'
+import personIconPng from '@/assets/person_icon.png'
+import personIcon2Png from '@/assets/person_icon2.png'
+import personIcon3Png from '@/assets/person_icon3.png'
+import personGradePng from '@/assets/person_grade.png'
+import rankingBgPng from '@/assets/ranking_bg.png'
+import phonePng from '@/assets/phone.png'
+import memberPng from '@/assets/member.png'
+import Header from '@/components/Header.vue'
+import underLine from '@/assets/underLine.png'
 
 type AccountData = {
   count: number
@@ -54,7 +74,7 @@ const phone = ref<string>('')
 const accountArray: number[] = []
 const menuArr = reactive([
   {
-    name: '我的资料',
+    name: '账号管理',
     code: 'person',
     isSelect: true
   },
@@ -69,13 +89,21 @@ const menuArr = reactive([
     isSelect: false
   }
 ])
-// 获取当前登录用户Id
-const userId = store.getters.currentId
 // 账户信息
 const accountData = reactive<AccountData>({
   count: 0,
   data: []
 })
+// 获取当前登录用户Id
+const userId = store.getters.currentId
+const themeOverrides: GlobalThemeOverrides = {
+  common: {
+    primaryColor: '#1684FC'
+  },
+  Button: {
+    textColor: '#1684FC'
+  }
+}
 
 type AreaData = {
   data: API.Area[]
@@ -185,8 +213,6 @@ const beforeUpload = async (data: { file: UploadFileInfo; fileList: UploadFileIn
   return true
 }
 const handleFinish = ({ file, event }: { file: UploadFileInfo; event?: ProgressEvent }) => {
-  console.log(event)
-  console.log(2222)
   if (event?.isTrusted) {
     router.go(0)
   }
@@ -204,7 +230,6 @@ const handleShowModal = (e: boolean) => {
   showModal.value = e
   phone.value = ''
 }
-
 // 查询用户账号收藏列表
 const selectUserCollectionList = async () => {
   loading.value = true
@@ -212,7 +237,6 @@ const selectUserCollectionList = async () => {
   accountData.data = res.data as API.AccountData[]
   loading.value = false
 }
-
 // 取消收藏
 const unCollection = async (row: any) => {
   const type = await VXETable.modal.confirm('您是否要取消收藏?')
@@ -224,12 +248,148 @@ const unCollection = async (row: any) => {
     await VXETable.modal.message({ content: '取消成功！', status: 'success' })
   }
 }
-
 // 点击前往账号详情页
 const goToAccountPage = async (row: any) => {
   await router.push({
     path: `/Account/${row.accountId}`
   })
+}
+const size = ref('medium')
+const formRef = ref<FormInst | null>(null)
+const model = reactive<API.UserInfoRequest>({
+  id: -1, // 编号
+  username: '', // 名称
+  gender: '', // 性别
+  mail: '', // 邮箱
+  address: null, // 所在地
+  phone: '', // 手机号
+  focusCategory: '' // 关注领域
+})
+const autoCompleteOptions = computed(() => {
+  return ['@gmail.com', '@163.com', '@qq.com'].map((suffix) => {
+    const prefix = model.mail.split('@')[0]
+    return {
+      label: prefix + suffix,
+      value: prefix + suffix
+    }
+  })
+})
+const rules = {
+  username: {
+    required: true,
+    trigger: ['blur', 'input'],
+    message: '请输入名称'
+  },
+  gender: {
+    required: true,
+    trigger: 'change',
+    message: '请选择性别'
+  },
+  focusCategory: {
+    type: 'array',
+    required: true,
+    trigger: 'change',
+    message: '请选择关注领域'
+  },
+  mail: {
+    required: true,
+    trigger: ['blur', 'input'],
+    message: '请输入邮箱'
+  }
+}
+const cityOptions = [
+  {
+    value: '福建',
+    label: '福建',
+    children: [
+      {
+        value: '福建福州',
+        label: '福州'
+      },
+      {
+        value: '福建厦门',
+        label: '厦门'
+      },
+      {
+        value: '福建莆田',
+        label: '莆田'
+      },
+      {
+        value: '福建泉州',
+        label: '泉州'
+      },
+      {
+        value: '福建漳州',
+        label: '漳州'
+      },
+      {
+        value: '福建龙岩',
+        label: '龙岩'
+      },
+      {
+        value: '福建三明',
+        label: '三明'
+      },
+      {
+        value: '福建南平',
+        label: '南平'
+      },
+      {
+        value: '福建宁德',
+        label: '宁德'
+      }
+    ]
+  }
+]
+const getCategory = async () => {
+  const category = await getCategoryAllApi()
+  categoryData.data = category.data as API.Category[]
+}
+const getUserInfo = async () => {
+  const res = await getCurrentApi()
+  const tempUserInfo: any = res.data
+  console.log(tempUserInfo)
+  if (res.success) {
+    const split = tempUserInfo.focusCategory.split(',')
+    const category: Array<number> = []
+    split.forEach((item: string) => {
+      category.push(Number(item))
+    })
+    model.focusCategory = category
+    model.id = tempUserInfo.id
+    model.username = tempUserInfo.username
+    model.gender = tempUserInfo.gender
+    model.mail = tempUserInfo.mail
+    model.phone = tempUserInfo.phone
+    model.address = tempUserInfo.address
+  }
+}
+const handleSave = async (e: MouseEvent) => {
+  e.preventDefault()
+  // formRef.value?.validate(async (errors) => {
+  //   if (!errors) {
+  // message.success('验证成功')
+  model.focusCategory = model.focusCategory.join(',')
+  const res = await updateUserInfoApi(model)
+  console.log(res)
+  if (res.success) {
+    await store.dispatch('fetchCurrentUser')
+    message.success('修改成功')
+    router.go(0)
+  }
+  // } else {
+  //   console.log(errors)
+  //   message.error('验证失败')
+  // }
+  // })
+}
+const handleClose = async () => {
+  getUserInfo()
+}
+const handleLogout = () => {
+  Cookies.remove('token')
+  store.commit('SET_USER', undefined)
+  router.push('/home')
 }
 
 const accountName = ref<string>()
@@ -307,303 +467,382 @@ onMounted(() => {
   selectUserCollectionList()
   findAllArea()
   findAllCategory()
+  getCategory()
+  getUserInfo()
 })
 </script>
 
 <template>
   <div>
-    <Header />
-    <div class="person-top">
-      <!-- logo -->
-      <div class="person-top-menu-logo">
-        <img :src="personLogoPng" alt="logo" />
-        <span></span>
-        <div class="logo-title">
-          <span>潮汐</span>
-          <span style="color: black">指数</span>
+    <n-config-provider :theme-overrides="themeOverrides">
+      <Header />
+      <div class="person-top">
+        <!-- logo -->
+        <div class="person-top-menu-logo">
+          <img :src="personLogoPng" alt="logo" />
+          <span></span>
+          <div class="logo-title">
+            <span>潮汐</span>
+            <span style="color: black">指数</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="person-main">
-      <div class="main">
-        <div class="main-menu">
-          <div class="menu-avatar">
-            <NAvatar :size="50" :src="store.getters.currentPictureUrl" round> </NAvatar>
-          </div>
-          <span class="menu-username">{{ store.getters.currentUsername }}</span>
-          <div class="menu-identification">
-            <img :src="personGradePng" alt="用户等级" />
-            <div class="identification-grade">用户等级</div>
-          </div>
-          <hr style="background: rgba(140, 140, 140, 0.02)" />
-          <div class="menu-list">
-            <div v-for="(item, index) in menuArr" :key="index" class="list-content">
-              <NIcon
-                v-if="item.code === 'person'"
-                :color="item.isSelect ? '#F78B32' : 'black'"
-                :component="PersonOutline"
-                size="25"
-                @click="handleClick(item.code)"
-              />
-              <NIcon
-                v-else-if="item.code === 'Leaderboard'"
-                :color="item.isSelect ? '#F78B32' : 'black'"
-                :component="BarChartOutline"
-                size="25"
-                @click="handleClick(item.code)"
-              />
-              <NIcon
-                v-else-if="item.code === 'collect'"
-                :color="item.isSelect ? '#F78B32' : 'black'"
-                :component="StarOutline"
-                size="25"
-                @click="handleClick(item.code)"
-              />
-              <span
-                :style="{ color: item.isSelect ? '#F78B32' : 'black' }"
-                @click="handleClick(item.code)"
-                >{{ item.name }}</span
-              >
+      <div class="person-main">
+        <div class="main">
+          <div class="main-menu">
+            <div class="menu-avatar">
+              <NAvatar round :size="50" :src="store.getters?.currentPictureUrl"></NAvatar>
+            </div>
+            <span class="menu-username">{{ store.getters.currentUsername }}</span>
+            <span class="menu-ipaddress">IP所属地：{{ store.getters.currentIpAddress }}</span>
+            <div class="menu-identification">
+              <img :src="personGradePng" alt="用户等级" />
+              <div class="identification-grade">普通用户</div>
+            </div>
+            <hr style="background: rgba(140, 140, 140, 0.02)" />
+            <div class="menu-list">
+              <div class="list-content" v-for="(item, index) in menuArr" :key="index">
+                <NIcon
+                  size="25"
+                  v-if="item.code === 'person'"
+                  :component="PersonOutline"
+                  :color="item.isSelect ? '#F78B32' : 'black'"
+                  @click="handleClick(item.code)"
+                />
+                <NIcon
+                  size="25"
+                  v-else-if="item.code === 'Leaderboard'"
+                  :component="BarChartOutline"
+                  :color="item.isSelect ? '#F78B32' : 'black'"
+                  @click="handleClick(item.code)"
+                />
+                <NIcon
+                  size="25"
+                  v-else-if="item.code === 'collect'"
+                  :component="StarOutline"
+                  :color="item.isSelect ? '#F78B32' : 'black'"
+                  @click="handleClick(item.code)"
+                />
+                <span
+                  :style="{ color: item.isSelect ? '#F78B32' : 'black' }"
+                  @click="handleClick(item.code)"
+                  >{{ item.name }}</span
+                >
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="main-content">
-          <template v-for="(item, index) in menuArr" :key="index">
-            <div v-if="item.isSelect" class="content-header">
-              <span>{{ '/' + item.name }}</span>
-            </div>
-            <hr v-if="item.isSelect" style="background-color: rgb(239, 239, 239)" />
-            <div v-if="item.code === 'person' && item.isSelect" class="content-person">
-              <div class="person-list">
-                <div class="list-title">
-                  <NIcon :component="PersonCircleOutline" :depth="3" color="black" size="40" />
-                  <span>头像</span>
+          <div class="main-content">
+            <template v-for="(item, index) in menuArr" :key="index">
+              <div class="content-header" v-if="item.isSelect">
+                <span>{{ '/' + item.name }}</span>
+              </div>
+              <hr style="background-color: rgb(239, 239, 239)" v-if="item.isSelect" />
+
+              <div v-if="item.code === 'person' && item.isSelect" class="content-person">
+                <div class="person-title">
+                  <span class="title-span">账号管理</span>
+                  <div class="title-bg"></div>
                 </div>
-                <div class="list-info">
-                  <n-avatar :size="48" :src="store.getters.currentPictureUrl" round> </n-avatar>
-                </div>
-                <div class="list-controller">
-                  <NPopselect trigger="click">
-                    <span>更换头像</span>
-                    <template #empty>
-                      <NUpload
-                        action="https://test1.auni.top/api/user/updatePictrue"
-                        @finish="handleFinish"
-                        @before-upload="beforeUpload"
-                      >
-                        <NButton>上传图片</NButton>
-                      </NUpload>
+                <!--手机号-->
+                <div class="person-list">
+                  <div class="list-title">
+                    <!--                    <NIcon size="40" :component="PhonePortraitOutline" color="black" :depth="3" />-->
+                    <img :src="phonePng" alt="手机" />
+                    <span>绑定手机号</span>
+                  </div>
+                  <div class="list-info">
+                    {{ store.getters.currentPhone }}
+                  </div>
+                  <div class="list-controller">
+                    <span @click="handleShowModal(true)">更换号码</span>
+                  </div>
+                  <NModal
+                    v-model:show="showModal"
+                    :mask-closable="false"
+                    preset="dialog"
+                    title="Dialog"
+                  >
+                    <template #header>
+                      <div>更换号码</div>
                     </template>
-                  </NPopselect>
-                </div>
-              </div>
-
-              <div class="person-list">
-                <div class="list-title">
-                  <NIcon :component="IdCardSharp" :depth="3" color="black" size="40" />
-                  <span>账号</span>
-                </div>
-                <div class="list-info">
-                  {{ store.getters.currentUsername }}
-                </div>
-
-                <div class="list-controller">
-                  <span @click="handleShowModalUsername(true)">修改名称</span>
-                </div>
-                <NModal
-                  v-model:show="showModalUsername"
-                  :mask-closable="false"
-                  preset="dialog"
-                  title="Dialog"
-                >
-                  <template #header>
-                    <span>修改名称</span>
-                  </template>
-                  <div>
-                    <NInput v-model:value="username" placeholder="请输入新的名称"></NInput>
-                  </div>
-                  <template #action>
-                    <NButton type="primary" @click="handleUpdateUsername">确认</NButton>
-                    <NButton @click="handleShowModalUsername(false)">取消</NButton>
-                  </template>
-                </NModal>
-              </div>
-
-              <!--              <div class="person-list">-->
-              <!--                <div class="list-title">-->
-              <!--                  <NIcon size="40" :component="LockClosed" color="black" :depth="3"/>-->
-              <!--                  <span>密码</span>-->
-              <!--                </div>-->
-              <!--                <div class="list-info">-->
-              <!--                  ************-->
-              <!--                </div>-->
-              <!--                <div class="list-controller">修改密码</div>-->
-              <!--              </div>-->
-
-              <div class="person-list">
-                <div class="list-title">
-                  <NIcon :component="PhonePortraitOutline" :depth="3" color="black" size="40" />
-                  <span>绑定手机号</span>
-                </div>
-                <div class="list-info">
-                  {{ store.getters.currentPhone }}
-                </div>
-                <div class="list-controller">
-                  <span @click="handleShowModal(true)">更换号码</span>
-                </div>
-                <NModal
-                  v-model:show="showModal"
-                  :mask-closable="false"
-                  preset="dialog"
-                  title="Dialog"
-                >
-                  <template #header>
-                    <div>更换号码</div>
-                  </template>
-                  <div>
-                    <NInput v-model:value="phone" placeholder="请输入新的电话号码"></NInput>
-                  </div>
-                  <template #action>
-                    <NButton type="primary" @click="handleUpdatePhone">确认</NButton>
-                    <NButton @click="handleShowModal(false)">取消</NButton>
-                  </template>
-                </NModal>
-              </div>
-            </div>
-            <div v-else-if="item.code === 'Leaderboard' && item.isSelect" class="content-ranking">
-              <img :src="rankingBgPng" alt="排行榜" />
-            </div>
-            <div v-else-if="item.code === 'collect' && item.isSelect" class="content-collect">
-              <div>
-                <n-tabs animated type="line">
-                  <n-tab-pane name="Facebook" tab="Facebook">
-                    <div class="search-tool">
-                      <vxe-toolbar>
-                        <template #buttons>
-                          <vxe-input
-                            v-model="accountName"
-                            placeholder="输入账号名搜索"
-                            type="search"
-                            @search-click="searchName(accountName)"
-                          ></vxe-input>
-                          <div style="padding-left: 20px">
-                            <vxe-select
-                              v-model="areaValue"
-                              filterable
-                              placeholder="选择区域"
-                              @change="changeArea(areaValue, $event)"
-                            >
-                              <vxe-option
-                                v-for="area in areaData.data"
-                                :key="area.areaId"
-                                :label="area.areaName"
-                                :value="area.areaId"
-                              ></vxe-option>
-                            </vxe-select>
-                          </div>
-                          <div style="padding-left: 20px">
-                            <vxe-select
-                              v-model="categoryValue"
-                              filterable
-                              placeholder="全部"
-                              @change="changeCategory(categoryValue)"
-                            >
-                              <vxe-option
-                                v-for="cateGory in categoryData.data"
-                                :key="cateGory.categoryId"
-                                :label="cateGory.categoryName"
-                                :value="cateGory.categoryId"
-                              ></vxe-option>
-                            </vxe-select>
-                          </div>
-                        </template>
-                        <template #tools>
-                          <vxe-button @click="resetCollection">重置</vxe-button>
-                          <vxe-button status="primary" @click="cancelCollections"
-                            >取消收藏</vxe-button
-                          >
-                        </template>
-                      </vxe-toolbar>
+                    <div>
+                      <NInput v-model:value="phone" placeholder="请输入新的电话号码"></NInput>
                     </div>
-                    <vxe-table
-                      ref="xTable"
-                      :auto-resize="true"
-                      :column-config="{ resizable: true }"
-                      :data="accountData.data"
-                      :keep-source="true"
-                      :loading="loading"
-                      :radio-config="{ highlight: true }"
-                      :row-config="{ isHover: true }"
-                      border="inner"
-                      show-header-overflow
-                      show-overflow
-                      @checkbox-all="selectAllChangeEvent"
-                      @checkbox-change="selectChangeEvent"
-                    >
-                      <vxe-column type="checkbox" width="60"></vxe-column>
-                      <vxe-column align="center" title="账号">
-                        <template #default="{ row }">
-                          <div
-                            style="display: flex; flex-wrap: nowrap; width: 100%"
-                            @click="goToAccountPage(row)"
-                          >
-                            <div
-                              style="
-                                width: 50%;
-                                display: flex;
-                                justify-content: left;
-                                padding-left: 20%;
-                              "
+                    <template #action>
+                      <NButton @click="handleUpdatePhone" type="primary">确认</NButton>
+                      <NButton @click="handleShowModal(false)">取消</NButton>
+                    </template>
+                  </NModal>
+                </div>
+
+                <div class="person-list">
+                  <div class="list-title">
+                    <!--                    <NIcon size="40" :component="PhonePortraitOutline" color="black" :depth="3" />-->
+                    <img :src="memberPng" alt="等级" />
+                    <span>用户等级</span>
+                  </div>
+                  <div class="list-info">
+                    <div class="info-identification">
+                      <img :src="personGradePng" alt="用户等级" />
+                      <div class="identification-grade">普通用户</div>
+                    </div>
+                  </div>
+                  <div class="list-controller">
+                    <span>前去充值</span>
+                  </div>
+                  <NModal
+                    v-model:show="showModal"
+                    :mask-closable="false"
+                    preset="dialog"
+                    title="Dialog"
+                  >
+                    <template #header>
+                      <div>更换号码</div>
+                    </template>
+                    <div>
+                      <NInput v-model:value="phone" placeholder="请输入新的电话号码"></NInput>
+                    </div>
+                    <template #action>
+                      <NButton @click="handleUpdatePhone" type="primary">确认</NButton>
+                      <NButton @click="handleShowModal(false)">取消</NButton>
+                    </template>
+                  </NModal>
+                </div>
+
+                <div class="person-title" style="margin-top: 50px">
+                  <span class="title-span">我的资料</span>
+                  <div class="title-bg"></div>
+                </div>
+
+                <n-form
+                  ref="formRef"
+                  :model="model"
+                  :rules="rules"
+                  label-placement="left"
+                  label-width="auto"
+                  require-mark-placement="right-hanging"
+                  :size="size"
+                  :style="{
+                    maxWidth: '350px'
+                  }"
+                >
+                  <n-form-item label="头像" path="username">
+                    <div class="person-list" style="justify-content: flex-start">
+                      <div class="list-info">
+                        <n-avatar
+                          round
+                          :size="48"
+                          :src="store.getters?.currentPictureUrl"
+                        ></n-avatar>
+                      </div>
+                      <span style="width: 100px"></span>
+                      <div class="list-controller">
+                        <NPopselect trigger="click">
+                          <span>更换头像</span>
+                          <template #empty>
+                            <NUpload
+                              action="https://test1.auni.top/api/user/updatePictrue"
+                              @before-upload="beforeUpload"
+                              @finish="handleFinish"
                             >
-                              <n-avatar round size="small">{{ row.accountPictureUrl }}</n-avatar>
-                            </div>
-                            <div style="width: 50%; display: flex">
-                              <span>{{ row.accountName }}</span>
-                            </div>
-                          </div>
-                        </template>
-                      </vxe-column>
-                      <vxe-column align="center" field="areaName" title="地区"></vxe-column>
-                      <vxe-column align="center" field="categoryName" title="类别"></vxe-column>
-                      <vxe-column
-                        :visible="false"
-                        align="center"
-                        field="platformName"
-                        title="平台"
-                      ></vxe-column>
-                      <vxe-column align="center" field="recordFan" title="备注"></vxe-column>
-                      <vxe-column align="center" show-overflow title="操作" width="60">
-                        <template #default="{ row }">
-                          <NButton
-                            class="button_collection"
-                            ghost
-                            type="warning"
-                            @click="unCollection(row)"
-                          >
-                            <template #icon>
-                              <NIcon>
-                                <StarOutline />
-                              </NIcon>
-                            </template>
-                          </NButton>
-                        </template>
-                      </vxe-column> </vxe-table
-                  ></n-tab-pane>
-                  <n-tab-pane name="YouTube" tab="YouTube"> 正在制作 </n-tab-pane>
-                  <n-tab-pane name="Twitter" tab="Twitter"> 正在制作 </n-tab-pane>
-                  <n-tab-pane name="instagrams" tab="instagrams"> 正在制作 </n-tab-pane>
-                </n-tabs>
+                              <NButton>上传图片</NButton>
+                            </NUpload>
+                          </template>
+                        </NPopselect>
+                      </div>
+                    </div>
+                  </n-form-item>
+
+                  <n-form-item label="名称" path="username">
+                    <n-input v-model:value="model.username" placeholder="请输入名称" />
+                  </n-form-item>
+
+                  <n-form-item label="性别" path="gender">
+                    <n-radio-group v-model:value="model.gender" name="gender">
+                      <n-space>
+                        <n-radio value="男"> 男</n-radio>
+                        <n-radio value="女"> 女</n-radio>
+                      </n-space>
+                    </n-radio-group>
+                  </n-form-item>
+
+                  <n-form-item label="所在地" path="address">
+                    <n-cascader
+                      v-model:value="model.address"
+                      placeholder="请选择所在地"
+                      :options="cityOptions"
+                      check-strategy="child"
+                      size="medium"
+                    />
+                  </n-form-item>
+
+                  <n-form-item label="关注领域" path="focusCategory">
+                    <n-checkbox-group v-model:value="model.focusCategory">
+                      <n-space>
+                        <n-checkbox
+                          v-for="(item, index) in categoryData.data"
+                          :value="item.categoryId"
+                          :key="index"
+                        >
+                          {{ item.categoryName }}
+                        </n-checkbox>
+                      </n-space>
+                    </n-checkbox-group>
+                  </n-form-item>
+
+                  <n-form-item label="邮箱" path="mail">
+                    <n-input
+                      v-model:value="model.mail"
+                      placeholder="请输入邮箱"
+                      :options="autoCompleteOptions"
+                    />
+                  </n-form-item>
+                </n-form>
+
+                <div>
+                  <button @click="handleSave" class="pbtn-save">保存</button>
+                  <button @click="handleClose" class="pbtn-close">取消</button>
+                </div>
+
+                <div>
+                  <button @click="handleLogout" class="pbtn-logout">退出登录</button>
+                </div>
               </div>
-            </div>
-          </template>
+              <div v-else-if="item.code === 'Leaderboard' && item.isSelect" class="content-ranking">
+                <img :src="rankingBgPng" alt="排行榜" />
+              </div>
+              <div v-else-if="item.code === 'collect' && item.isSelect" class="content-collect">
+                <div>
+                  <n-tabs animated type="line">
+                    <n-tab-pane name="Facebook" tab="Facebook">
+                      <div class="search-tool">
+                        <vxe-toolbar>
+                          <template #buttons>
+                            <vxe-input
+                              v-model="accountName"
+                              placeholder="输入账号名搜索"
+                              type="search"
+                              @search-click="searchName(accountName)"
+                            ></vxe-input>
+                            <div style="padding-left: 20px">
+                              <vxe-select
+                                v-model="areaValue"
+                                filterable
+                                placeholder="选择区域"
+                                @change="changeArea(areaValue, $event)"
+                              >
+                                <vxe-option
+                                  v-for="area in areaData.data"
+                                  :key="area.areaId"
+                                  :label="area.areaName"
+                                  :value="area.areaId"
+                                ></vxe-option>
+                              </vxe-select>
+                            </div>
+                            <div style="padding-left: 20px">
+                              <vxe-select
+                                v-model="categoryValue"
+                                filterable
+                                placeholder="全部"
+                                @change="changeCategory(categoryValue)"
+                              >
+                                <vxe-option
+                                  v-for="cateGory in categoryData.data"
+                                  :key="cateGory.categoryId"
+                                  :label="cateGory.categoryName"
+                                  :value="cateGory.categoryId"
+                                ></vxe-option>
+                              </vxe-select>
+                            </div>
+                          </template>
+                          <template #tools>
+                            <vxe-button @click="resetCollection">重置</vxe-button>
+                            <vxe-button status="primary" @click="cancelCollections"
+                              >取消收藏</vxe-button
+                            >
+                          </template>
+                        </vxe-toolbar>
+                      </div>
+                      <vxe-table
+                        ref="xTable"
+                        :auto-resize="true"
+                        :column-config="{ resizable: true }"
+                        :data="accountData.data"
+                        :keep-source="true"
+                        :loading="loading"
+                        :radio-config="{ highlight: true }"
+                        :row-config="{ isHover: true }"
+                        border="inner"
+                        show-header-overflow
+                        show-overflow
+                        @checkbox-all="selectAllChangeEvent"
+                        @checkbox-change="selectChangeEvent"
+                      >
+                        <vxe-column type="checkbox" width="60"></vxe-column>
+                        <vxe-column align="center" title="账号">
+                          <template #default="{ row }">
+                            <div
+                              style="display: flex; flex-wrap: nowrap; width: 100%"
+                              @click="goToAccountPage(row)"
+                            >
+                              <div
+                                style="
+                                  width: 50%;
+                                  display: flex;
+                                  justify-content: left;
+                                  padding-left: 20%;
+                                "
+                              >
+                                <n-avatar round size="small">{{ row.accountPictureUrl }}</n-avatar>
+                              </div>
+                              <div style="width: 50%; display: flex">
+                                <span>{{ row.accountName }}</span>
+                              </div>
+                            </div>
+                          </template>
+                        </vxe-column>
+                        <vxe-column align="center" field="areaName" title="地区"></vxe-column>
+                        <vxe-column align="center" field="categoryName" title="类别"></vxe-column>
+                        <vxe-column
+                          :visible="false"
+                          align="center"
+                          field="platformName"
+                          title="平台"
+                        ></vxe-column>
+                        <vxe-column align="center" field="recordFan" title="备注"></vxe-column>
+                        <vxe-column align="center" show-overflow title="操作" width="60">
+                          <template #default="{ row }">
+                            <NButton
+                              class="button_collection"
+                              ghost
+                              type="warning"
+                              @click="unCollection(row)"
+                            >
+                              <template #icon>
+                                <NIcon>
+                                  <StarOutline />
+                                </NIcon>
+                              </template>
+                            </NButton>
+                          </template>
+                        </vxe-column> </vxe-table
+                    ></n-tab-pane>
+                    <n-tab-pane name="YouTube" tab="YouTube"> 正在制作 </n-tab-pane>
+                    <n-tab-pane name="Twitter" tab="Twitter"> 正在制作 </n-tab-pane>
+                    <n-tab-pane name="instagrams" tab="instagrams"> 正在制作 </n-tab-pane>
+                  </n-tabs>
+                </div>
+              </div>
+            </template>
+          </div>
         </div>
+        <!--        <img :src="personIconPng" alt="背景图标" class="maiNIcon1" />-->
+        <img :src="personIcon2Png" alt="背景图标" class="maiNIcon2" />
+        <img :src="personIcon3Png" alt="背景图标" class="maiNIcon3" />
       </div>
-      <img :src="personIconPng" alt="背景图标" class="maiNIcon1" />
-      <img :src="personIcon2Png" alt="背景图标" class="maiNIcon2" />
-      <img :src="personIcon3Png" alt="背景图标" class="maiNIcon3" />
-    </div>
+    </n-config-provider>
   </div>
 </template>
 
@@ -700,6 +939,13 @@ onMounted(() => {
         }
       }
 
+      .menu-ipaddress {
+        font-size: 12px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: rgba(187, 187, 187, 100);
+      }
+
       .menu-identification {
         display: flex;
         flex-direction: row;
@@ -728,7 +974,8 @@ onMounted(() => {
           padding-left: 15px;
           line-height: 30px;
           border-radius: 15px;
-          background: linear-gradient(to right, #f78b32, rgba(0, 0, 0, 0));
+          //background: linear-gradient(to right, #f78b32, rgba(0, 0, 0, 0));
+          background: linear-gradient(to right, #bbbbbb, rgba(0, 0, 0, 0));
           font-size: 16px;
           color: white;
           @media screen and (min-width: 320px) and (max-width: 480px) {
@@ -802,9 +1049,79 @@ onMounted(() => {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        margin: 100px;
+        margin: 50px;
         @media screen and (min-width: 320px) and (max-width: 480px) {
           margin: 2vw;
+        }
+
+        .pbtn-save {
+          border: none;
+          width: 150px;
+          height: 35px;
+          line-height: 35px;
+          border-radius: 8px;
+          background-color: rgba(112, 172, 255, 100);
+          color: rgba(255, 255, 255, 100);
+          font-size: 15px;
+          text-align: center;
+          cursor: pointer;
+          margin: 10px 5px;
+        }
+
+        .pbtn-close {
+          border: none;
+          width: 150px;
+          height: 35px;
+          line-height: 35px;
+          border-radius: 8px;
+          background-color: rgba(187, 187, 187, 100);
+          color: rgba(255, 255, 255, 100);
+          font-size: 15px;
+          text-align: center;
+          cursor: pointer;
+          margin: 10px 5px;
+        }
+
+        .pbtn-logout {
+          border: none;
+          width: 310px;
+          height: 35px;
+          line-height: 35px;
+          border-radius: 8px;
+          background-color: rgba(221, 53, 53, 100);
+          color: rgba(255, 255, 255, 100);
+          font-size: 15px;
+          text-align: center;
+          cursor: pointer;
+        }
+
+        .pbtn-save:hover,
+        .pbtn-close:hover,
+        .pbtn-logout:hover {
+          opacity: 0.7;
+        }
+
+        .person-title {
+          margin-bottom: 20px;
+          position: relative;
+          text-align: left;
+          margin-bottom: 50px;
+
+          .title-span {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 3px;
+          }
+
+          .title-bg {
+            position: absolute;
+            top: 20px;
+            left: -5px;
+            height: 20px;
+            border-radius: 10px;
+            width: 100px;
+            background: linear-gradient(to right, #bbbbbb, rgba(0, 0, 0, 0));
+          }
         }
 
         .person-list {
@@ -826,6 +1143,10 @@ onMounted(() => {
             @media screen and (min-width: 320px) and (max-width: 480px) {
               margin: 1vw 0;
             }
+            img {
+              width: 30px;
+              height: 30px;
+            }
 
             span {
               font-size: 16px;
@@ -842,6 +1163,49 @@ onMounted(() => {
             font-size: 16px;
             @media screen and (min-width: 320px) and (max-width: 480px) {
               font-size: 4vw;
+            }
+            .info-identification {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              justify-content: center;
+              margin: 25px 0;
+
+              @media screen and (min-width: 320px) and (max-width: 480px) {
+                flex-direction: column;
+                margin: 2vw 0;
+              }
+
+              img {
+                width: 30px;
+                height: 30px;
+                margin-right: 10px;
+                @media screen and (min-width: 320px) and (max-width: 480px) {
+                  margin-right: 0;
+                }
+              }
+
+              .identification-grade {
+                width: 100px;
+                height: 30px;
+                text-align: left;
+                padding-left: 15px;
+                line-height: 30px;
+                border-radius: 15px;
+                //background: linear-gradient(to right, #f78b32, rgba(0, 0, 0, 0));
+                background: linear-gradient(to right, #bbbbbb, rgba(0, 0, 0, 0));
+                font-size: 16px;
+                color: white;
+                @media screen and (min-width: 320px) and (max-width: 480px) {
+                  height: 6vw;
+                  line-height: 6vw;
+                  width: auto;
+                  font-size: 3vw;
+                  border-radius: 2vw;
+                  padding: 0 1vw;
+                  margin: 2vw 0;
+                }
+              }
             }
           }
 
@@ -1246,6 +1610,5 @@ onMounted(() => {
   font-size: 18px;
   font-weight: bold;
   opacity: 0.6;
-  font-family: SourceHanSansSC-bold;
 }
 </style>

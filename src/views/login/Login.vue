@@ -1,19 +1,40 @@
 <script lang="ts" setup>
-import { NCountdown, NSpace, NButton, useMessage } from 'naive-ui'
-import { reactive, ref } from 'vue'
-import { loginApi, getSmsApi } from '@service/user'
-import Cookies from 'js-cookie'
+import {
+  FormInst,
+  FormItemRule,
+  NCountdown,
+  NForm,
+  NSpace,
+  NButton,
+  NModal,
+  NFormItem,
+  NInput,
+  NSelect,
+  NCheckboxGroup,
+  NCheckbox,
+  NRadioGroup,
+  NRadio,
+  NPopover,
+  useMessage
+} from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { computed, reactive, ref } from 'vue'
+import { loginApi, getSmsApi, getCategoryAllApi, registerApi } from '@service/user'
+import { findAllCategoryApi } from '@service/account'
+import Cookies from 'js-cookie'
 
 const store = useStore()
 const showSmsCode = ref(false)
 const isSendSmsCode = ref(false)
+const registerModel = ref(false)
 const router = useRouter()
 const formData = reactive<API.LoginRequest>({
   phone: '',
+  password: '',
   smsCode: ''
 })
+const formRef = ref<FormInst | null>(null)
 const message = useMessage()
 const treatyCheck = ref<any>()
 
@@ -54,7 +75,24 @@ const validateSmsCode = (): boolean => {
   }
   return true
 }
+
+type LoginQuery = {
+  register: boolean
+  token: string
+}
+let loginData = reactive<LoginQuery>({
+  register: false,
+  token: ''
+})
+
+type CategoryData = {
+  data: API.Category[]
+}
+const categoryData = reactive<CategoryData>({
+  data: []
+})
 const handleLogin = async () => {
+  store.commit('SET_TEMP_PHONE', formData.phone)
   // 校验手机号码
   if (!validatePhone()) {
     return
@@ -72,12 +110,19 @@ const handleLogin = async () => {
   }
   try {
     const res = await loginApi(formData)
-    Cookies.set('token', res.data as unknown as string)
-    message.success('登录成功')
-    await store.dispatch('fetchCurrentUser')
-    await router.push({
-      name: 'Home'
-    })
+    loginData = res.data as LoginQuery
+    if (loginData.register) {
+      Cookies.set('token', loginData.token)
+      message.success('登录成功')
+      await store.dispatch('fetchCurrentUser')
+      await router.push({
+        name: 'Home'
+      })
+    } else {
+      const category = await getCategoryAllApi()
+      categoryData.data = category.data as API.Category[]
+      registerModel.value = true
+    }
   } catch (e) {
     console.log(e)
   }
@@ -94,6 +139,65 @@ const getSmsCode = async () => {
   } finally {
     showSmsCode.value = true
   }
+}
+const size = ref('medium')
+const model = reactive<API.RegisterRequest>({
+  username: '',
+  gender: '',
+  mail: '',
+  phone: '',
+  focusCategory: ''
+})
+const autoCompleteOptions = computed(() => {
+  return ['@gmail.com', '@163.com', '@qq.com'].map((suffix) => {
+    const prefix = model.mail.split('@')[0]
+    return {
+      label: prefix + suffix,
+      value: prefix + suffix
+    }
+  })
+})
+const rules = {
+  username: {
+    required: true,
+    trigger: ['blur', 'input'],
+    message: '请输入名称'
+  },
+  gender: {
+    required: true,
+    trigger: 'change',
+    message: '请选择性别'
+  },
+  focusCategory: {
+    type: 'array',
+    required: true,
+    trigger: 'change',
+    message: '请选择关注领域'
+  },
+  mail: {
+    required: true,
+    trigger: ['blur', 'input'],
+    message: '请输入邮箱'
+  }
+}
+const handleValidateButtonClick = (e: MouseEvent) => {
+  e.preventDefault()
+  formRef.value?.validate(async (errors) => {
+    if (!errors) {
+      message.success('验证成功')
+      model.phone = store.getters.currentTempPhone
+      model.focusCategory = model.focusCategory.join(',')
+      const res = await registerApi(model)
+      if (res.success) {
+        Cookies.set('token', res.data as unknown as string)
+        await store.dispatch('fetchCurrentUser')
+        router.push('/home')
+      }
+    } else {
+      console.log(errors)
+      message.error('验证失败')
+    }
+  })
 }
 </script>
 
@@ -129,6 +233,67 @@ const getSmsCode = async () => {
           >&nbsp;&nbsp;我已阅读并接受《注册申明》《版权声明》《隐私政策》</span
         >
       </div>
+      <NModal
+        v-model:show="registerModel"
+        preset="dialog"
+        title="注册"
+        :mask-closable="false"
+        :closable="true"
+      >
+        <template #header>
+          <div>注册</div>
+        </template>
+        <div>
+          <n-form
+            ref="formRef"
+            :model="model"
+            :rules="rules"
+            label-placement="left"
+            label-width="auto"
+            require-mark-placement="right-hanging"
+            :size="size"
+            :style="{
+              maxWidth: '640px'
+            }"
+          >
+            <n-form-item label="名称" path="username">
+              <n-input v-model:value="model.username" placeholder="请输入名称" />
+            </n-form-item>
+            <n-form-item label="性别" path="gender">
+              <n-radio-group v-model:value="model.gender" name="sexValue">
+                <n-space>
+                  <n-radio value="男"> 男</n-radio>
+                  <n-radio value="女"> 女</n-radio>
+                </n-space>
+              </n-radio-group>
+            </n-form-item>
+            <n-form-item label="关注领域" path="focusCategory">
+              <n-checkbox-group v-model:value="model.focusCategory">
+                <n-space>
+                  <n-checkbox
+                    v-for="(item, index) in categoryData.data"
+                    :value="item.categoryId"
+                    :key="index"
+                  >
+                    {{ item.categoryName }}
+                  </n-checkbox>
+                </n-space>
+              </n-checkbox-group>
+            </n-form-item>
+            <n-form-item label="邮箱" path="mail">
+              <n-input
+                v-model:value="model.mail"
+                placeholder="请输入邮箱"
+                :options="autoCompleteOptions"
+              />
+            </n-form-item>
+          </n-form>
+        </div>
+        <template #action>
+          <NButton type="primary" @click="handleValidateButtonClick">验证</NButton>
+          <NButton @click="registerModel = false">取消</NButton>
+        </template>
+      </NModal>
     </div>
   </div>
 </template>
@@ -232,6 +397,7 @@ const getSmsCode = async () => {
           font-size: 3vw;
         }
       }
+
       .login-verify-code:hover {
         opacity: 0.7;
       }

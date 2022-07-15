@@ -138,7 +138,7 @@ const handleExit = () => {
           <span>头像</span>
         </div>
         <div class="list-info">
-          <n-avatar round :size="48" :src="store.getters.currentPictureUrl"></n-avatar>
+          <n-avatar round :size="48" :src="store.getters?.currentPictureUrl"></n-avatar>
         </div>
         <div class="list-controller">
           <NPopselect trigger="click">

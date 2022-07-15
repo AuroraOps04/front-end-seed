@@ -48,14 +48,8 @@ const handleTo = (e: string) => {
         </div>
         <!-- 头像 -->
         <div class="home-top-menu-avatar">
-          <NAvatar
-            round
-            :size="40"
-            @click="handleTo('person')"
-            :src="store.getters.currentPictureUrl"
-          >
-          </NAvatar>
-          <span @click="handleTo('login')" v-if="!store.getters.currentPictureUrl">登录</span>
+          <NAvatar round :size="40" :src="store.getters?.currentPictureUrl"> </NAvatar>
+          <span @click="handleTo('login')" v-if="!store.getters.currentId">登录</span>
           <span @click="handleTo('person')" v-else>个人中心</span>
         </div>
       </div>

@@ -128,6 +128,23 @@ declare namespace API {
   type CharsParams = Partial<CharsQuery>
   type LoginRequest = {
     phone: string
+    password: string
     smsCode: string
+  }
+  type RegisterRequest = {
+    username: string
+    gender: string
+    mail: string
+    phone: string
+    focusCategory: any
+  }
+  type UserInfoRequest = {
+    id: number
+    username: string
+    gender: string
+    mail: string
+    phone: string
+    address: any
+    focusCategory: any
   }
 }
