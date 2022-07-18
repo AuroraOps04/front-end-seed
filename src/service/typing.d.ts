@@ -29,9 +29,9 @@ declare namespace API {
   } & Model
 
   type Account = {
-    area: string
-    category: string
-    platform: string
+    area: number | null
+    category: number | null
+    platform: number | null
     accountName: string
     startTime: string
     endTime: string
@@ -126,6 +126,37 @@ declare namespace API {
     platformCode: string
     platformDescription: string
   } & Model
+
+  type customListAffiliateParams = {
+    userId: number
+    customListId: number | null
+    userName: string | null
+    platformId: number | null
+    accountIsView: number | null
+  }
+
+  type CustomList = {
+    customListId: number
+    customListName: string
+    customListDescribe: string
+    sumAccount: number
+    platformName: string
+    createdAt: string
+  }
+
+  type CustomListAddOrUpdate = {
+    customListId: number
+    customListName: string
+    customListDescribe: string
+    userId: number
+    platformId: number
+  }
+
+  type CustomListFormData = {
+    customListName: string
+    platformId: number | null
+    userId: number
+  }
 
   type DictParams = Partial<Dict>
   type AccountParams = Partial<Account>

@@ -64,7 +64,7 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: '/admin/menu/propertyMenu',
             name: 'PropertyMenu',
-            component: () => import('@/components/property/PropertyMenu.vue'),
+            component: () => import('@/components/user/property/PropertyMenu.vue'),
             redirect: {
               path: '/admin/menu/propertyMenu/areaList'
             },
@@ -72,12 +72,12 @@ const routes: Array<RouteRecordRaw> = [
               {
                 path: '/admin/menu/propertyMenu/areaList',
                 name: 'areaList',
-                component: () => import('@/components/property/AreaList.vue')
+                component: () => import('@/components/user/property/AreaList.vue')
               },
               {
                 path: '/admin/menu/propertyMenu/categoryList',
                 name: 'categoryList',
-                component: () => import('@/components/property/CategoryList.vue')
+                component: () => import('@/components/user/property/CategoryList.vue')
               }
             ]
           }
@@ -94,43 +94,60 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: '/home',
-        component: () => import('@/views/home/Home.vue'),
+        component: () => import('@/views/user/home/Home.vue'),
         name: 'Home'
       },
       {
         path: '/login',
         name: 'Login',
-        component: () => import('@/views/login/Login.vue')
+        component: () => import('@/views/user/login/Login.vue')
       },
       {
         path: '/person',
-        component: () => import('@/views/person/Person.vue'),
-        name: 'Person'
+        component: () => import('@/views/user/person/Person.vue'),
+        name: 'Person',
+        children: [
+          {
+            path: '/person/person',
+            name: 'PersonPerson',
+            component: () => import('@/components/user/person/Person.vue')
+          },
+          {
+            path: '/person/leaderboard',
+            name: 'PersonLeaderboard',
+            component: () => import('@/components/user/person/Leaderboard.vue')
+          },
+          {
+            path: '/person/collect',
+            name: 'PersonCollect',
+            component: () => import('@/components/user/person/Collect.vue')
+          }
+        ]
       },
       {
         path: '/account',
-        component: () => import('@/views/accountAnalysis/Account.vue'),
+        component: () => import('@/views/user/accountAnalysis/Account.vue'),
         name: 'Account'
       },
       {
         path: '/header',
-        component: () => import('@/components/Header.vue'),
+        component: () => import('@/components/body/Header.vue'),
         name: 'Header'
       },
       {
         path: '/Leaderboard',
         name: 'Leaderboard',
-        component: () => import('@/views/leaderboard/Leaderboard.vue')
+        component: () => import('@/views/user/leaderboard/Leaderboard.vue')
       },
       {
         path: '/Account',
         name: 'Account',
-        component: () => import('@/views/accountAnalysis/Account.vue')
+        component: () => import('@/views/user/accountAnalysis/Account.vue')
       },
       {
         path: `/Account/:accountId`,
         name: 'Account',
-        component: () => import('@/views/accountAnalysis/Account.vue')
+        component: () => import('@/views/user/accountAnalysis/Account.vue')
       }
     ]
   }

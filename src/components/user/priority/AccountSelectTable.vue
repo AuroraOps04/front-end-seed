@@ -16,8 +16,8 @@ import {
   findAreaApi,
   listAccountByPageApi,
   updateAccountIsViewApi
-} from '@/service/account'
-import accountAddTable from '@/components/priority/AccountAddTable.vue'
+} from '@service/account'
+import AccountAddTable from '@/components/user/priority/AccountAddTable.vue'
 
 type AccountData = {
   count: number
@@ -67,9 +67,9 @@ const isNullOrEmpty = (obj: unknown): boolean => {
 // 账号名称
 const accountName = ref<string>('')
 // 地区
-const areaValue = ref<string>('')
+const areaValue = ref<number | null>()
 // 分类
-const categoryValue = ref<string>('')
+const categoryValue = ref<number | null>()
 // 定义批量删除的数组
 const accountArray: number[] = []
 // 账户信息
@@ -170,8 +170,8 @@ const submitEvent = () => {
 const params = reactive<API.AccountParams & API.PageParams>({
   pageSize: tablePage.pageSize,
   page: tablePage.currentPage,
-  area: '',
-  category: '',
+  area: null,
+  category: null,
   accountName: accountName.value,
   accountIsView: 1
 })
@@ -237,16 +237,16 @@ const formatterCategory: VxeColumnPropTypes.Formatter = ({ cellValue }) => {
 }
 
 // 地区下拉选项
-const changeArea = (value: string) => {
+const changeArea = (value: number) => {
   params.area = value
   findAccountSelectPage()
 }
 
 // 分类下拉选项
-const changeCategory = (value: string) => {
+const changeCategory = (value: number) => {
   params.category = value
-  if (value === '全部') {
-    params.category = ''
+  if (value === -1) {
+    params.category = null
   }
   findAccountSelectPage()
 }
@@ -261,12 +261,12 @@ const searchName = (value: string) => {
 const resetEvent = () => {
   params.pageSize = 10
   params.page = 1
-  params.area = ''
-  params.category = ''
+  params.area = null
+  params.category = null
   params.accountName = ''
   accountName.value = ''
-  areaValue.value = ''
-  categoryValue.value = ''
+  areaValue.value = null
+  categoryValue.value = null
   findAccountSelectPage()
 }
 
@@ -299,7 +299,7 @@ const deleteEvent = async () => {
 const removeEvent = async (row: any) => {
   const accountId = row.accountId as number
   accountArray.push(accountId)
-  deleteEvent()
+  await deleteEvent()
 }
 
 const closeModal = () => {
@@ -337,7 +337,7 @@ onMounted(() => {
                   v-for="area in areaData.data"
                   :key="area.areaId"
                   :label="area.areaName"
-                  :value="area.areaName"
+                  :value="area.areaId"
                 ></vxe-option>
               </vxe-select>
             </div>
@@ -352,7 +352,7 @@ onMounted(() => {
                   v-for="cateGory in categoryData.data"
                   :key="cateGory.categoryId"
                   :label="cateGory.categoryName"
-                  :value="cateGory.categoryName"
+                  :value="cateGory.categoryId"
                 ></vxe-option>
               </vxe-select>
             </div>
@@ -444,7 +444,7 @@ onMounted(() => {
       title="榜单账号添加"
       width="100%"
     >
-      <accountAddTable @close="closeModal" @selectData="findAccountSelectPage"></accountAddTable>
+      <AccountAddTable @close="closeModal" @selectData="findAccountSelectPage"></AccountAddTable>
     </vxe-modal>
   </div>
 </template>

@@ -13,26 +13,27 @@ const menuArr = reactive([
   },
   {
     name: 'YouTube',
-    path: '/',
+    path: '/priority/priorityFacebookPage',
     isSelect: false
   },
   {
     name: 'Twitter',
-    path: '/',
+    path: '/priority/priorityFacebookPage',
     isSelect: false
   },
   {
     name: 'Instagrams',
-    path: '/',
+    path: '/priority/priorityFacebookPage',
     isSelect: false
   }
 ])
 const handleClickMenu = (e: string) => {
   menuArr.forEach((item) => {
-    const b = item.name === e
-    item.isSelect = b
+    const tempItem: any = item
+    const b = tempItem.name === e
+    tempItem.isSelect = b
     if (b) {
-      router.push(item.path)
+      router.push(tempItem.path)
     }
   })
 }

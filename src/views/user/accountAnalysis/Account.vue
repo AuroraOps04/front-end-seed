@@ -5,22 +5,28 @@ import { useRouter } from 'vue-router'
 import moment from 'moment'
 import 'moment/locale/pt-br'
 import * as echarts from 'echarts'
-import { NButton, NAvatar, NGrid, NGi, NDivider, NIcon, NButtonGroup } from 'naive-ui'
+import { NButton, NAvatar, NGrid, NGi, NDivider, NIcon, NButtonGroup, NCard } from 'naive-ui'
 import { StarOutline } from '@vicons/ionicons5'
+import {
+  findAccountByAccountApi,
+  findRecordTotalApi,
+  findRecordCharsDataApi,
+  AccountCollectionApi,
+  accountCollectionStatueApi,
+  getPostTopApi,
+  getCommentTopApi
+} from '@service/account'
 import arrow from '@/assets/arrow.png'
 import up from '@/assets/up.png'
 import comment from '@/assets/comment.png'
 import forward from '@/assets/forward.png'
 import write from '@/assets/write.png'
 import textBg from '@/assets/text_bg.png'
-import {
-  findAccountByAccountApi,
-  findRecordTotalApi,
-  findRecordCharsDataApi,
-  AccountCollectionApi,
-  accountCollectionStatueApi
-} from '@/service/account'
-import Header from '@/components/Header.vue'
+import accountForward from '@/assets/account_forward.png'
+import accountComment from '@/assets/account_comment.png'
+import accountLike from '@/assets/account_like.png'
+import accountPost from '@/assets/account_post.png'
+import Header from '@/components/body/Header.vue'
 
 const store = useStore()
 
@@ -81,6 +87,8 @@ const seriesData = ref()
 
 const main = ref() // 使用ref创建虚拟DOM引用，使用时用main.value
 
+const postIndex = ref<string>('null')
+
 const eCharDate = reactive({
   dateList: [],
   data: []
@@ -124,6 +132,39 @@ const forwardPng = forward
 const upPng = up
 const textBgPng = textBg
 const echartsSelect = ref<string>('article')
+
+type Post = {
+  recordId: number
+  postId: string
+  attitudes: number
+  commentsCount: number
+  repostsCount: number
+  publishTime: string
+  content: string
+  commentUrl: string
+  accountId: number
+}
+type PostData = {
+  data: Post[]
+}
+const postData = reactive<PostData>({
+  data: []
+})
+
+type Comment = {
+  parentId: string
+  collectTime: string
+  commentId: string
+  text: string
+  author: string
+  authorUrl: string
+}
+type CommentData = {
+  data: Comment[]
+}
+const commentData = reactive<CommentData>({
+  data: []
+})
 
 function init() {
   // 基于准备好的dom，初始化echarts实例
@@ -265,11 +306,34 @@ const accountCollectionStatue = async () => {
   const res = await accountCollectionStatueApi(accountCollectionId, userId)
   collectionState.value = res.data as unknown as number
 }
+
+const getPostTop = async (e: number) => {
+  const res = await getPostTopApi(e)
+  postData.data = res.data as Post[]
+  console.log(postData.data)
+}
+
+const getCommentTop = async (e: string) => {
+  const res = await getCommentTopApi(e)
+  commentData.data = res.data as Comment[]
+  console.log(commentData.data)
+}
+
+const handleSelectPost = (e: string) => {
+  postIndex.value = e
+  getCommentTop(e)
+}
+
 onMounted(() => {
   findRecordCharsData(1)
   findAccountByAccount(1)
   findRecordTotal(accountId.value as number)
   accountCollectionStatue()
+  getPostTop(accountId.value as number)
+  setTimeout(() => {
+    postIndex.value = postData.data[0].postId
+    getCommentTop(postData.data[0].postId)
+  }, 1000)
 })
 </script>
 
@@ -400,6 +464,7 @@ onMounted(() => {
         </NGrid>
 
         <!--      榜单排行-->
+        <!--
         <NGrid :cols="1" style="margin-bottom: 20px" x-gap="24">
           <NGi>
             <div style="display: flex; align-items: center">
@@ -428,6 +493,7 @@ onMounted(() => {
 
           <NGi></NGi>
         </NGrid>
+-->
 
         <NDivider />
 
@@ -443,74 +509,75 @@ onMounted(() => {
 
         <NGrid :cols="4" style="margin-bottom: 80px" x-gap="24">
           <NGi class="body_center">
-            <div>
-              <text class="text_info1">
-                {{
-                  accountInfo.accountDetailInfo.recordArticle === null
-                    ? 0
-                    : accountInfo.accountDetailInfo.recordArticle
-                }}
-              </text>
-              <text class="text_info2"
-                >/<br />{{ accountInfo.recordTotal.recordArticleCount }}
-              </text>
-            </div>
-            <div class="center_detail">
-              <img :src="writePng" alt="发文数" class="img_arrow" />
-              <text class="text_info">发文数</text>
+            <div class="center_text">
+              <img :src="accountPost" alt="发帖数" />
+              <div>
+                <text class="text_info1">发帖数</text>
+                <text class="text_info2">{{ accountInfo.recordTotal.recordArticleCount }}</text>
+                <text class="text_info3">
+                  {{
+                    accountInfo.accountDetailInfo.recordArticle === null
+                      ? 0
+                      : accountInfo.accountDetailInfo.recordArticle
+                  }}
+                </text>
+              </div>
             </div>
           </NGi>
+
           <NGi class="body_center">
-            <div>
-              <text class="text_info1">
-                {{
-                  accountInfo.accountDetailInfo.recordLike === null
-                    ? 0
-                    : accountInfo.accountDetailInfo.recordLike
-                }}
-              </text>
-              <text class="text_info2">/<br />{{ accountInfo.recordTotal.recordLikeCount }}</text>
-            </div>
-            <div class="center_detail">
-              <img :src="upPng" alt="点赞数" class="img_arrow" />
-              <text class="text_info">点赞数</text>
+            <div class="center_text">
+              <img :src="accountLike" alt="点赞数" />
+              <div>
+                <text class="text_info1">评论数</text>
+                <text class="text_info2">{{ accountInfo.recordTotal.recordLikeCount }}</text>
+                <text class="text_info3">
+                  {{
+                    accountInfo.accountDetailInfo.recordLike === null
+                      ? 0
+                      : accountInfo.accountDetailInfo.recordLike
+                  }}
+                </text>
+              </div>
             </div>
           </NGi>
+
           <NGi class="body_center">
-            <div>
-              <text class="text_info1">
-                {{
-                  accountInfo.accountDetailInfo.recordComment === null
-                    ? 0
-                    : accountInfo.accountDetailInfo.recordComment
-                }}
-              </text>
-              <text class="text_info2"
-                >/<br />{{ accountInfo.recordTotal.recordCommentCount }}
-              </text>
-            </div>
-            <div class="center_detail">
-              <img :src="commentPng" alt="评论数" class="img_arrow" />
-              <text class="text_info">评论数</text>
+            <div class="center_text">
+              <img :src="accountComment" alt="评论数" />
+              <div>
+                <text class="text_info1">评论数</text>
+                <text class="text_info2">{{ accountInfo.recordTotal.recordCommentCount }}</text>
+                <text class="text_info3">
+                  {{
+                    accountInfo.accountDetailInfo.recordComment === null
+                      ? 0
+                      : accountInfo.accountDetailInfo.recordComment
+                  }}
+                </text>
+              </div>
             </div>
           </NGi>
+
           <NGi class="body_center">
-            <div>
-              <text class="text_info1">
-                {{
-                  accountInfo.accountDetailInfo.recordForward === null
-                    ? 0
-                    : accountInfo.accountDetailInfo.recordForward
-                }}
-              </text>
-              <text class="text_info2"
-                >/<br />{{ accountInfo.recordTotal.recordForwardCount }}
-              </text>
+            <div class="center_text">
+              <img :src="accountForward" alt="转发数" />
+              <div>
+                <text class="text_info1">转发数</text>
+                <text class="text_info2">{{ accountInfo.recordTotal.recordForwardCount }}</text>
+                <text class="text_info3">
+                  {{
+                    accountInfo.accountDetailInfo.recordForward === null
+                      ? 0
+                      : accountInfo.accountDetailInfo.recordForward
+                  }}
+                </text>
+              </div>
             </div>
-            <div class="center_detail">
-              <img :src="forwardPng" alt="转发数" class="img_arrow" />
-              <text class="text_info">转发数</text>
-            </div>
+            <!--            <div class="center_detail">-->
+            <!--              <img :src="forwardPng" alt="转发数" class="img_arrow" />-->
+            <!--              <text class="text_info">转发数</text>-->
+            <!--            </div>-->
           </NGi>
         </NGrid>
 
@@ -562,12 +629,217 @@ onMounted(() => {
             </div>
           </NGi>
         </NGrid>
+
+        <!--        账号内容-->
+        <NGrid :cols="1" x-gap="24">
+          <NGi>
+            <div style="display: flex; align-items: center">
+              <text class="text_italic">账号内容</text>
+              <img :src="arrowPng" alt="账号内容" class="img_arrow" />
+            </div>
+          </NGi>
+        </NGrid>
+
+        <NGrid :cols="1" x-gap="24">
+          <NGi>
+            <div class="account_post">
+              <!--              帖子列表-->
+              <div class="post_list">
+                <div style="display: flex; align-items: center">
+                  <text class="text_italic">最新贴文列表</text>
+                  <img :src="arrowPng" alt="账号内容" class="img_arrow" />
+                </div>
+                <NCard v-for="item in postData.data">
+                  <div
+                    class="list_content"
+                    :class="[item.postId === postIndex ? 'select' : '']"
+                    @click="handleSelectPost(item.postId)"
+                  >
+                    <div class="content_text">{{ item.content }}</div>
+                    <div class="content_data">
+                      <div>
+                        <img :src="up" alt="点赞" />
+                        <span>{{ item.attitudes }}</span>
+                      </div>
+
+                      <div>
+                        <img :src="comment" alt="评论" />
+                        <span>{{ item.commentsCount }}</span>
+                      </div>
+
+                      <div>
+                        <img :src="forward" alt="转发" />
+                        <span>{{ item.repostsCount }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </NCard>
+              </div>
+              <!--              帖子详情-->
+              <div
+                class="post_detail"
+                v-for="item in postData.data"
+                :class="[item.postId !== postIndex ? 'none' : '']"
+              >
+                <template v-if="item.postId === postIndex">
+                  <div style="display: flex; align-items: center">
+                    <text class="text_italic">传播概览</text>
+                    <img :src="arrowPng" alt="账号内容" class="img_arrow" />
+                  </div>
+
+                  <div class="detail_info">
+                    <div class="content_data">
+                      <div>
+                        <div><img :src="up" alt="点赞" /><span>点赞数</span></div>
+                        <span>{{ item.attitudes }}</span>
+                      </div>
+
+                      <div>
+                        <div><img :src="comment" alt="评论" /><span>评论数</span></div>
+                        <span>{{ item.commentsCount }}</span>
+                      </div>
+
+                      <div>
+                        <div><img :src="forward" alt="转发" /><span>转发数</span></div>
+                        <span>{{ item.repostsCount }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; align-items: center">
+                    <text class="text_italic">贴文内容</text>
+                    <img :src="arrowPng" alt="账号内容" class="img_arrow" />
+                  </div>
+
+                  <div class="detail_content">
+                    <NCard>{{ item.content }}</NCard>
+                  </div>
+
+                  <div style="display: flex; align-items: center">
+                    <text class="text_italic">热门评论</text>
+                    <img :src="arrowPng" alt="账号内容" class="img_arrow" />
+                  </div>
+
+                  <div class="detail_comment">
+                    <NCard v-for="item1 in commentData.data">
+                      <span>作者：{{ item1.author }}</span
+                      ><br />
+                      <span>{{ item1.text }}</span>
+                    </NCard>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </NGi>
+        </NGrid>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.account_post {
+  display: flex;
+  flex-direction: row;
+
+  .select {
+    background: rgba(140, 141, 144, 0.09);
+  }
+
+  .none {
+    display: none !important;
+  }
+
+  .post_list {
+    width: 300px;
+
+    .text_italic {
+      font-size: 15px;
+    }
+
+    .list_content {
+      display: flex;
+      flex-direction: column;
+
+      cursor: pointer;
+
+      .content_text {
+      }
+
+      .content_data {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+
+        div {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            flex-direction: column;
+          }
+        }
+      }
+    }
+
+    .list_content:hover {
+      opacity: 0.7;
+    }
+  }
+
+  .post_detail {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .text_italic {
+      font-size: 15px;
+    }
+
+    .detail_info {
+      .content_data {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+
+        div {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+
+          div {
+            display: flex;
+            flex-direction: row;
+
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              flex-direction: column;
+            }
+
+            span {
+              font-size: 15px;
+            }
+          }
+
+          span {
+            font-size: 25px;
+
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              font-size: 4vw;
+            }
+
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              font-size: 4vw;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 .box-card {
   width: 86%;
   margin: 5%;
@@ -703,6 +975,60 @@ onMounted(() => {
 .body_center {
   text-align: center;
   justify-content: center;
+  display: flex;
+  flex-direction: row;
+
+  .center_text {
+    display: flex;
+    flex-direction: row;
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    img {
+      width: 100px;
+      height: 100px;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        width: 10vw;
+        height: 10vw;
+      }
+    }
+
+    div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      .text_info1 {
+        color: rgba(11, 12, 20, 0.47) !important;
+        font-size: 18px;
+        font-weight: normal;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          font-size: 4vw;
+        }
+      }
+
+      .text_info2 {
+        color: rgba(63, 63, 70, 100);
+        font-size: 26px;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          font-size: 4vw;
+          margin-left: 0;
+        }
+      }
+
+      .text_info3 {
+        color: rgba(120, 150, 225, 100);
+        font-size: 18px;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          font-size: 4vw;
+        }
+      }
+    }
+  }
 
   .center_detail {
     display: flex;

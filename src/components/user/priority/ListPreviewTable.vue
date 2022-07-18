@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, onMounted } from 'vue'
 import { VxeColumnPropTypes, VxePagerEvents } from 'vxe-table'
-import { listAccountByPageApi } from '@/service/account'
+import { listAccountByPageApi } from '@service/account'
 
 type TablePage = {
   total: number

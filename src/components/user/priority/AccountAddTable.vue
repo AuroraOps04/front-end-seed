@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, toRefs } from 'vue'
 import { NButton } from 'naive-ui'
 
 import {
@@ -13,8 +13,18 @@ import {
   findAllCategoryApi,
   findAreaApi,
   listAccountByPageApi,
-  updateAccountIsViewApi
-} from '@/service/account'
+  updateAccountIsViewApi,
+  insertIntoCustomListApi
+} from '@service/account'
+
+const props = defineProps({
+  isUserAdd: {
+    type: Number,
+    required: false,
+    default: 0
+  }
+})
+const isUserAdd = toRefs(props)
 
 type AccountData = {
   count: number
@@ -64,13 +74,13 @@ const isNullOrEmpty = (obj: unknown): boolean => {
 // 账号名称
 const accountName = ref<string>('')
 // 地区
-const areaValue = ref<string>('')
+const areaValue = ref<number | null>()
 // 分类
-const categoryValue = ref<string>('')
+const categoryValue = ref<number | null>()
 // 定义批量删除的数组
 const accountArray: number[] = []
 // 获取父组件的modal关闭方法
-const emits = defineEmits(['close', 'selectData'])
+const emits = defineEmits(['close', 'selectData', 'findAllCustomListAffiliate'])
 // 账户信息
 const accountData = reactive<AccountData>({
   count: 0,
@@ -97,14 +107,17 @@ const xTable = ref<VxeTableInstance>()
 const params = reactive<API.AccountParams & API.PageParams>({
   pageSize: tablePage.pageSize,
   page: tablePage.currentPage,
-  area: '',
-  category: '',
+  area: null,
+  category: null,
   accountName: accountName.value,
   accountIsView: 0
 })
 
 // 分页查询所有数据
 const findAccountSelectPage = async () => {
+  if (isUserAdd.isUserAdd.value === 1) {
+    params.accountIsView = 1
+  }
   const res = await listAccountByPageApi(params)
   accountData.count = res.count
   tablePage.total = res.count
@@ -164,16 +177,16 @@ const formatterCategory: VxeColumnPropTypes.Formatter = ({ cellValue }) => {
 }
 
 // 地区下拉选项
-const changeArea = (value: string) => {
+const changeArea = (value: number) => {
   params.area = value
   findAccountSelectPage()
 }
 
 // 分类下拉选项
-const changeCategory = (value: string) => {
+const changeCategory = (value: number) => {
   params.category = value
-  if (value === '全部') {
-    params.category = ''
+  if (value === -1) {
+    params.category = null
   }
   findAccountSelectPage()
 }
@@ -188,19 +201,25 @@ const searchName = (value: string) => {
 const resetEvent = () => {
   params.pageSize = 10
   params.page = 1
-  params.area = ''
-  params.category = ''
+  params.area = null
+  params.category = null
   params.accountName = ''
   accountName.value = ''
-  areaValue.value = ''
-  categoryValue.value = ''
+  areaValue.value = null
+  categoryValue.value = null
   findAccountSelectPage()
 }
 // 添加
 const insertEvent = async () => {
-  const res = await updateAccountIsViewApi(accountArray, 1)
+  if (isUserAdd.isUserAdd.value === 1) {
+    // 从两个值 一个account_id一个custom_list_id
+    await insertIntoCustomListApi(accountArray, 1)
+    emits('findAllCustomListAffiliate')
+  } else {
+    await updateAccountIsViewApi(accountArray, 1)
+    emits('selectData')
+  }
   await VXETable.modal.message({ content: '添加成功！', status: 'success' })
-  emits('selectData')
   emits('close', false)
 }
 
@@ -240,7 +259,7 @@ onMounted(() => {
                   v-for="area in areaData.data"
                   :key="area.areaId"
                   :label="area.areaName"
-                  :value="area.areaName"
+                  :value="area.areaId"
                 ></vxe-option>
               </vxe-select>
             </div>
@@ -255,7 +274,7 @@ onMounted(() => {
                   v-for="cateGory in categoryData.data"
                   :key="cateGory.categoryId"
                   :label="cateGory.categoryName"
-                  :value="cateGory.categoryName"
+                  :value="cateGory.categoryId"
                 ></vxe-option>
               </vxe-select>
             </div>
