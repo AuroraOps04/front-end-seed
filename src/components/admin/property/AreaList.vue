@@ -7,7 +7,6 @@ import { onMounted, reactive, ref } from 'vue'
 import {
   addAreaApi,
   editAreaByNameApi,
-  editCategoryByNameApi,
   listAreaByPageApi,
   removeAreaBatchByIdsApi,
   removeAreaByIdApi
@@ -18,7 +17,7 @@ import AreaQueryParams = API.AreaQueryParams
 const underLinePng = underLine
 
 // 页面数据
-const adminData = reactive({
+const propertyData = reactive({
   // 表格数据
   tableData: [],
   tablePage: {
@@ -28,14 +27,14 @@ const adminData = reactive({
   }
 })
 
-// 查询管理员数据的条件参数
-const params = reactive<API.AdminQueryParams & API.PageParams>({
-  pageSize: adminData.tablePage.pageSize,
-  page: adminData.tablePage.currentPage,
-  userName: ''
+// 查询地区数据的条件参数
+const params = reactive<API.AreaQueryParams & API.PageParams>({
+  pageSize: propertyData.tablePage.pageSize,
+  page: propertyData.tablePage.currentPage,
+  areaName: ''
 })
 
-// 修改管理员数据的参数？？未做
+// 修改地区数据的参数
 const updateParams = reactive<API.AreaParams>({
   areaId: 0,
   areaCode: '',
@@ -44,32 +43,32 @@ const updateParams = reactive<API.AreaParams>({
 })
 
 // 根据参数分页查询所有数据
-const findAdminSelectPage = async () => {
+const findAreaSelectPage = async () => {
   const res = await listAreaByPageApi(params)
-  adminData.tableData = res.data! as any
-  adminData.tablePage.total = res.count! as any
-  console.log(adminData.tableData)
+  propertyData.tableData = res.data! as any
+  propertyData.tablePage.total = res.count! as any
+  console.log(propertyData.tableData)
 }
 
-// 搜索管理员名
+// 搜索地区名
 function changeAreaName(event: any) {
-  params.userName = event.value
+  params.areaName = event.value
   console.log(event.value)
-  findAdminSelectPage()
+  findAreaSelectPage()
 }
 
 // 重置参数
 const clickEvent = () => {
-  params.userName = ''
+  params.areaName = ''
   // propertyData.option.area = ''
-  findAdminSelectPage()
+  findAreaSelectPage()
 }
 
 // 页码切换
 function handleChangePage() {
-  params.pageSize = adminData.tablePage.pageSize
-  params.page = adminData.tablePage.currentPage
-  findAdminSelectPage()
+  params.pageSize = propertyData.tablePage.pageSize
+  params.page = propertyData.tablePage.currentPage
+  findAreaSelectPage()
 }
 
 // 添加框是否显示
@@ -77,26 +76,26 @@ const isShow = ref<boolean>(false)
 
 // 修改框是否显示
 const isShow2 = ref<boolean>(false)
-// 添加管理员名
+// 添加地区名
 const inputAreaName = ref<string>('')
 
 // 表格
 const xTable1 = ref<VxeTableInstance>()
 
-// 添加管理员数据
+// 添加地区数据
 const insertEvent = async () => {
   await addAreaApi(inputAreaName.value)
   isShow.value = false
-  await findAdminSelectPage()
+  await findAreaSelectPage()
 }
 
-// 修改管理员数据事件
+// 修改分类数据事件
 const updateEvent = async () => {
   // 修改参数
   updateParams.areaName = inputAreaName.value
   await editAreaByNameApi(updateParams)
   isShow2.value = false
-  await findAdminSelectPage()
+  await findAreaSelectPage()
 }
 
 function handleAddArea(event: any) {
@@ -117,7 +116,7 @@ const removeEvent = async (row: any) => {
   if (type === 'confirm') {
     const res = await removeAreaByIdApi(AreaId)
     if (res.success) {
-      await findAdminSelectPage()
+      await findAreaSelectPage()
       await VXETable.modal.message('删除成功')
     } else {
       await VXETable.modal.message('删除失败')
@@ -156,7 +155,7 @@ const deleteEvent = async () => {
   if (type === 'confirm') {
     const res = await removeAreaBatchByIdsApi(areaArray)
     if (res.data) {
-      await findAdminSelectPage()
+      await findAreaSelectPage()
       await VXETable.modal.message('删除成功')
     } else {
       await VXETable.modal.message('删除失败')
@@ -165,15 +164,15 @@ const deleteEvent = async () => {
 }
 
 onMounted(() => {
-  findAdminSelectPage()
+  findAreaSelectPage()
 })
 </script>
 
 <template>
   <div class="bg_box">
     <div class="bg_box2">
-      <h3>管理账号列表</h3>
-      <img class="text_png1" :src="underLinePng" />
+      <h3>地区管理</h3>
+      <img class="text_png1" :src="underLinePng" alt="下划线" />
       <n-grid :cols="4" x-gap="24">
         <n-gi span="4">
           <vxe-toolbar>
@@ -185,11 +184,11 @@ onMounted(() => {
                 @blur="changeAreaName"
               ></vxe-input>
 
-              <n-button ghost type="info" style="margin-left: 70px" @click="clickEvent">
+              <n-button ghost type="info" style="margin-left: 5px" @click="clickEvent">
                 重置
               </n-button>
 
-              <n-button type="info" style="margin-left: 350px" @click="handleAddArea">
+              <n-button type="info" style="margin-left: 5px" @click="handleAddArea">
                 <template #icon>
                   <n-icon>
                     <Add />
@@ -197,7 +196,7 @@ onMounted(() => {
                 </template>
                 添加
               </n-button>
-              <n-button type="error" style="margin-left: 20px" @click="deleteEvent">
+              <n-button type="error" style="margin-left: 5px" @click="deleteEvent">
                 <template #icon>
                   <n-icon>
                     <TrashOutline />
@@ -224,9 +223,8 @@ onMounted(() => {
               @checkbox-change="selectChangeEvent"
             >
               <vxe-column type="checkbox" width="60"></vxe-column>
-              <vxe-table-column field="userId" title="序号" width="100"></vxe-table-column>
-              <vxe-table-column field="userName" title="账号名称" width="300"></vxe-table-column>
-              <vxe-table-column field="createdAt" title="添加日期" width="300"></vxe-table-column>
+              <vxe-table-column field="areaId" title="序号" width="140"></vxe-table-column>
+              <vxe-table-column field="areaName" title="地区名称" width="350"></vxe-table-column>
               <vxe-column show-overflow title="操作">
                 <template #default="{ row }">
                   <div>
@@ -328,7 +326,7 @@ onMounted(() => {
               <vxe-button
                 content="取消"
                 status="info"
-                @click="isShow = false"
+                @click="isShow2 = false"
                 class="button_left"
               ></vxe-button>
               <vxe-button
@@ -348,25 +346,33 @@ onMounted(() => {
 <style lang="scss" scoped>
 .bg_box {
   display: flex;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  margin-left: 20px;
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    margin: 0;
+  }
 
   .bg_box2 {
-    height: 80%;
-    width: 80%;
-    margin: 2%;
-    margin-left: 80px;
+    float: right;
+    height: 625px;
+    width: 1080px;
     padding-left: 3%;
-    padding-right: 3%;
-    padding-top: 1%;
-    padding-bottom: 5%;
+    padding-right: 1%;
+    padding-bottom: 4%;
     border-radius: 15px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: auto;
+    }
 
     .text_png1 {
       position: absolute;
-      height: 16px;
-      width: 150px;
-      left: 335px;
-      bottom: 585px;
+      height: 17px;
+      width: 144px;
+      left: 395px;
+      bottom: 575px;
+      display: none;
     }
 
     .table1 {
