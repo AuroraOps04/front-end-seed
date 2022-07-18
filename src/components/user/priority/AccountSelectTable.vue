@@ -1,30 +1,23 @@
 <script lang="ts" setup>
-import { reactive, ref, onMounted, toRefs } from 'vue'
-import { NButton } from 'naive-ui'
-
+import { reactive, ref, onMounted } from 'vue'
+import { NButton, NSpace, NIcon } from 'naive-ui'
+import { TrashOutline, Add } from '@vicons/ionicons5'
 import {
+  VXETable,
   VxeTableInstance,
   VxeColumnPropTypes,
+  VxeFormPropTypes,
+  VxeFormItemPropTypes,
   VxeTableEvents,
-  VxePagerEvents,
-  VXETable
+  VxePagerEvents
 } from 'vxe-table'
 import {
   findAllCategoryApi,
   findAreaApi,
   listAccountByPageApi,
-  updateAccountIsViewApi,
-  insertIntoCustomListApi
-} from '@/service/account'
-
-const props = defineProps({
-  isUserAdd: {
-    type: Number,
-    required: false,
-    default: 0
-  }
-})
-const isUserAdd = toRefs(props)
+  updateAccountIsViewApi
+} from '@service/account'
+import AccountAddTable from '@/components/user/priority/AccountAddTable.vue'
 
 type AccountData = {
   count: number
@@ -79,8 +72,6 @@ const areaValue = ref<number | null>()
 const categoryValue = ref<number | null>()
 // 定义批量删除的数组
 const accountArray: number[] = []
-// 获取父组件的modal关闭方法
-const emits = defineEmits(['close', 'selectData', 'findAllCustomListAffiliate'])
 // 账户信息
 const accountData = reactive<AccountData>({
   count: 0,
@@ -100,8 +91,80 @@ const tablePage = reactive<TablePage>({
   currentPage: 1,
   pageSize: 10
 })
-
+// 表单
+const formDatas = reactive({
+  submitLoading: false,
+  tableData: [] as any[],
+  selectRow: null,
+  showEdit: false,
+  formData: {
+    name: '',
+    nickname: '',
+    role: '',
+    sex: '',
+    age: '',
+    num: '',
+    checkedList: [],
+    flag1: '',
+    date3: '',
+    address: ''
+  },
+  sexList: [
+    { label: '女', value: '0' },
+    { label: '男', value: '1' }
+  ],
+  formRules: {
+    name: [
+      { required: true, message: '请输入名称' },
+      { min: 3, max: 5, message: '长度在 3 到 5 个字符' }
+    ],
+    nickname: [{ required: true, message: '请输入昵称' }],
+    sex: [{ required: true, message: '请选择性别' }]
+  } as VxeFormPropTypes.Rules
+})
 const xTable = ref<VxeTableInstance>()
+
+// 弹窗可选信息
+const visibleMethod: VxeFormItemPropTypes.VisibleMethod = ({ data }) => {
+  return data.flag1 === 'Y'
+}
+
+const editEvent = (row: any) => {
+  formDatas.formData = {
+    name: row.name,
+    nickname: row.nickname,
+    role: row.role,
+    sex: row.sex,
+    age: row.age,
+    num: row.num,
+    checkedList: row.checkedList,
+    flag1: row.flag1,
+    date3: row.date3,
+    address: row.address
+  }
+  formDatas.selectRow = row
+  formDatas.showEdit = true
+}
+
+const cellDBLClickEvent: VxeTableEvents.CellDblclick = ({ row }) => {
+  editEvent(row)
+}
+
+const submitEvent = () => {
+  formDatas.submitLoading = true
+  setTimeout(() => {
+    const $table = xTable.value as any
+    formDatas.submitLoading = false
+    formDatas.showEdit = false
+    if (formDatas.selectRow) {
+      VXETable.modal.message({ content: '保存成功', status: 'success' })
+      Object.assign(formDatas.selectRow, formDatas.formData)
+    } else {
+      VXETable.modal.message({ content: '新增成功', status: 'success' })
+      $table.insert(formDatas.formData)
+    }
+  }, 500)
+}
 
 // 查询数据的条件参数
 const params = reactive<API.AccountParams & API.PageParams>({
@@ -110,14 +173,11 @@ const params = reactive<API.AccountParams & API.PageParams>({
   area: null,
   category: null,
   accountName: accountName.value,
-  accountIsView: 0
+  accountIsView: 1
 })
 
 // 分页查询所有数据
 const findAccountSelectPage = async () => {
-  if (isUserAdd.isUserAdd.value === 1) {
-    params.accountIsView = 1
-  }
   const res = await listAccountByPageApi(params)
   accountData.count = res.count
   tablePage.total = res.count
@@ -209,23 +269,41 @@ const resetEvent = () => {
   categoryValue.value = null
   findAccountSelectPage()
 }
-// 添加
-const insertEvent = async () => {
-  if (isUserAdd.isUserAdd.value === 1) {
-    // 从两个值 一个account_id一个custom_list_id
-    await insertIntoCustomListApi(accountArray, 1)
-    emits('findAllCustomListAffiliate')
-  } else {
-    const res = await updateAccountIsViewApi(accountArray, 1)
-    emits('selectData')
-  }
-  await VXETable.modal.message({ content: '添加成功！', status: 'success' })
-  emits('close', false)
+
+// 新增
+const insertEvent = () => {
+  formDatas.selectRow = null
+  formDatas.showEdit = true
 }
 
-// 取消
-const cancelEvent = () => {
-  emits('close', false)
+// 删除
+const deleteEvent = async () => {
+  if (accountArray.length === 0) {
+    await VXETable.modal.message('您未选择数据')
+    return
+  }
+  const type = await VXETable.modal.confirm('您确定要删除该数据?')
+  if (type === 'confirm') {
+    const res = await updateAccountIsViewApi(accountArray, 0)
+    if (res.data) {
+      await findAccountSelectPage()
+      await VXETable.modal.message({ content: '删除成功！', status: 'success' })
+    } else {
+      await VXETable.modal.message({ content: '删除失败！', status: 'error' })
+    }
+    accountArray.splice(0, accountArray.length)
+  }
+}
+
+// 表格中的删除
+const removeEvent = async (row: any) => {
+  const accountId = row.accountId as number
+  accountArray.push(accountId)
+  await deleteEvent()
+}
+
+const closeModal = () => {
+  formDatas.showEdit = false
 }
 
 onMounted(() => {
@@ -279,8 +357,28 @@ onMounted(() => {
               </vxe-select>
             </div>
             <div>
-              <n-button ghost type="info" @click="resetEvent()"> 重置 </n-button>
+              <n-button ghost type="info" @click="resetEvent()"> 重置</n-button>
             </div>
+          </div>
+          <div class="search_button">
+            <n-space align="center">
+              <n-button color="#70ACFF" round @click="insertEvent()">
+                <template #icon>
+                  <n-icon>
+                    <Add />
+                  </n-icon>
+                </template>
+                添加
+              </n-button>
+              <n-button color="#D76C54" round @click="deleteEvent()">
+                <template #icon>
+                  <n-icon>
+                    <TrashOutline />
+                  </n-icon>
+                </template>
+                删除
+              </n-button>
+            </n-space>
           </div>
         </div>
       </template>
@@ -293,14 +391,14 @@ onMounted(() => {
       :radio-config="{ highlight: true }"
       :row-config="{ isHover: true }"
       border="inner"
-      height="450vw"
+      height="400vw"
       show-overflow
       @checkbox-all="selectAllChangeEvent"
       @checkbox-change="selectChangeEvent"
     >
       <vxe-column type="checkbox" width="60"></vxe-column>
       <vxe-column field="accountName" title="账号"></vxe-column>
-      <vxe-column field="recordFan" sortable title="粉丝数"></vxe-column>
+      <vxe-column field="recordFan" title="粉丝数"></vxe-column>
       <vxe-column :formatter="formatterArea" field="areaName" title="地区"></vxe-column>
       <vxe-column
         :formatter="formatterCategory"
@@ -308,7 +406,13 @@ onMounted(() => {
         show-overflow
         title="所属分类"
       ></vxe-column>
-      <vxe-column field="accountId" show-overflow title="潮汐指数(暂用fans)"></vxe-column>
+      <vxe-column field="recordFan" show-overflow title="潮汐指数(暂用fans)"></vxe-column>
+      <vxe-column show-overflow title="操作" width="100">
+        <template #default="{ row }">
+          <vxe-button icon="vxe-icon--edit-outline" type="text"></vxe-button>
+          <vxe-button icon="vxe-icon--close" type="text" @click="removeEvent(row)"></vxe-button>
+        </template>
+      </vxe-column>
     </vxe-table>
 
     <vxe-pager
@@ -329,25 +433,34 @@ onMounted(() => {
       @page-change="handlePageChange"
     >
     </vxe-pager>
-    <div class="add_button">
-      <n-button
-        round
-        secondary
-        strong
-        style="width: 100px; margin-right: 5%"
-        @click="cancelEvent()"
-      >
-        取消
-      </n-button>
-      <n-button round type="info" @click="insertEvent()"> 确定添加 </n-button>
-    </div>
+
+    <vxe-modal
+      v-model="formDatas.showEdit"
+      :loading="formDatas.submitLoading"
+      destroy-on-close
+      min-height="300"
+      min-width="600"
+      resize
+      title="榜单账号添加"
+      width="100%"
+    >
+      <AccountAddTable @close="closeModal" @selectData="findAccountSelectPage"></AccountAddTable>
+    </vxe-modal>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .container {
   width: 100%;
+
+  .vxe-modal--box {
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: 100vw !important;
+      top: 10vw !important;
+    }
+  }
 }
+
 .toolbar {
   display: flex;
   flex-wrap: nowrap;
@@ -361,11 +474,25 @@ onMounted(() => {
 
     div {
       margin-left: 20px;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        margin-left: 0 !important;
+      }
     }
   }
-}
-.add_button {
-  text-align: center;
-  margin-top: 20px;
+
+  .search_button {
+    display: flex;
+    width: calc(50%);
+    justify-content: right;
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: auto;
+      justify-content: center;
+      margin: 2vw 0;
+    }
+
+    div {
+      margin-right: 20px;
+    }
+  }
 }
 </style>

@@ -131,6 +131,18 @@ export const cancelCollectionsApi = (params: number[], userId: number): Promise<
   })
 }
 
+export const getPostTopApi = (e: number) => {
+  return request(`/record/getPostTop/${e}`, {
+    method: 'GET'
+  })
+}
+
+export const getCommentTopApi = (e: string) => {
+  return request(`/record/getCommentTop/${e}`, {
+    method: 'GET'
+  })
+}
+
 export const findAllCustomListAffiliateApi = (
   customParams: API.customListAffiliateParams
 ): Promise<API.Response> => {

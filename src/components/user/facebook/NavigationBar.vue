@@ -2,7 +2,7 @@
 import { defineExpose, ref } from 'vue'
 import { NTabs, NTabPane } from 'naive-ui'
 
-import FaceBookList from '@/components/facebook/FaceBookList.vue'
+import FaceBookList from '@/components/user/facebook/FaceBookList.vue'
 
 const faceBookListRef = ref<any>()
 

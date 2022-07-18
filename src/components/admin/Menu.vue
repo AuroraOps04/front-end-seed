@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { NAvatar } from 'naive-ui'
@@ -9,6 +9,7 @@ import menuUser from '@/assets/menu_user.png'
 import menuMonitor from '@/assets/menu_monitor.png'
 import menuAnalysis from '@/assets/menu_analysis.png'
 import menuSetting from '@/assets/menu_setting.png'
+import menuController from '@/assets/menu_controller.png'
 
 const router = useRouter()
 const store = useStore()
@@ -39,28 +40,34 @@ const menuArr = reactive([
     isSelect: false
   },
   {
+    name: '系统参数管理',
+    icon: menuController,
+    path: '/admin/menu/propertyMenu',
+    isSelect: false
+  },
+  {
     name: '账号密码管理',
     icon: menuSetting,
     path: '/admin/menu/person',
     isSelect: false
-  },
-  {
-    name: '系统参数管理',
-    icon: menuSetting,
-    path: '/admin/menu/propertyMenu',
-    isSelect: false
   }
 ])
-const handleClickMenu = (e: string) => {
+const handleClickMenu = (e: string | null) => {
   menuArr.forEach((item) => {
-    const b = item.name === e
-    item.isSelect = b
+    const tempItem: any = item
+    const b = tempItem.name === e
+    tempItem.isSelect = b
     if (b) {
-      router.push(item.path)
+      router.push(tempItem.path)
       store.commit('SET_MENU', e)
+      localStorage.setItem('menu', e)
     }
   })
 }
+onMounted(() => {
+  const menu: string | null = localStorage.getItem('menu')
+  handleClickMenu(menu)
+})
 </script>
 
 <template>
@@ -247,6 +254,7 @@ const handleClickMenu = (e: string) => {
         @media screen and (min-width: 320px) and (max-width: 480px) {
           width: 20vw;
         }
+
         span {
           font-size: 15px;
           line-height: 40px;
