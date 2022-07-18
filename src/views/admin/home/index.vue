@@ -2,12 +2,9 @@
 import { NGrid, NGi } from 'naive-ui'
 import * as echarts from 'echarts'
 import { onMounted, reactive, ref } from 'vue'
-import { getMonthTrafficAPI, getTrafficCountApi, insertTrafficCount } from '@service/traffic'
+import { getMonthTrafficAPI, getTrafficCountApi } from '@service/traffic'
 import { getUserCountApi } from '@service/user'
 import { getAccountCountApi, getMonthAccountAPI } from '@service/account'
-import { listUserByPageApi } from '@service/userList'
-import UserList from '@/components/userlist/UserList.vue'
-import Menu from '@/components/admin/Menu.vue'
 import userNum from '@/assets/userNum.png'
 import accountNum from '@/assets/accountNum.png'
 import visitsNum from '@/assets/visitsNum.png'
@@ -81,7 +78,7 @@ const findUser = async () => {
   TrafficData.userData.historicalUser = res.count! as any
 }
 
-// 获取检测账户量
+// 获取监测账户量
 const findAccount = async () => {
   const res = await getAccountCountApi()
   TrafficData.accountDate.newAccount = res.data! as any
@@ -114,7 +111,7 @@ function init(dom: HTMLElement) {
   // 使用刚指定的配置项和数据显示图表。
   myChart.setOption(option)
 }
-// 检测表格初始化
+// 监测表格初始化
 function init1(dom: HTMLElement) {
   // 基于准备好的dom，初始化echarts实例
   const myChart = echarts.init(dom)
@@ -158,7 +155,7 @@ const findTrafficEcharts = async () => {
   init(main.value!)
 }
 
-// 获取检测账户echarts表格
+// 获取监测账户echarts表格
 const findAccountEcharts = async () => {
   const res = await getMonthAccountAPI()
 
@@ -184,14 +181,14 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div>
+  <div class="box_flex">
     <div class="box_bg1">
       <h3>数据看板</h3>
-      <img class="text_bg_png1" :src="underLinePng" />
-      <NGrid x-gap="12" :cols="3" style="margin-top: 35px">
+      <img :src="underLinePng" class="underline" alt="" />
+      <NGrid x-gap="12" :cols="3">
         <NGi>
-          <div style="display: flex; align-items: center">
-            <div><img :src="visitsNumPng" /></div>
+          <div class="bg1_box">
+            <div class="icon"><img :src="visitsNumPng" alt="" /></div>
 
             <div class="text_box">
               <text class="text_title">网站访问量</text>
@@ -200,14 +197,12 @@ onMounted(() => {
                 >今日+{{ TrafficData.trafficData.newTraffic }}</text
               >
             </div>
-            <img :src="verticalLinePng" style="padding-left: 80px" />
+            <img :src="verticalLinePng" class="line" alt="" />
           </div>
         </NGi>
         <NGi>
-          <div style="display: flex; align-items: center">
-            <div>
-              <img :src="userNumPng" />
-            </div>
+          <div class="bg1_box">
+            <div class="icon"><img :src="userNumPng" alt="" /></div>
 
             <div class="text_box">
               <text class="text_title">注册用户量</text>
@@ -216,17 +211,15 @@ onMounted(() => {
                 >今日+{{ TrafficData.userData.newUser }}</text
               >
             </div>
-            <img :src="verticalLinePng" style="padding-left: 80px" />
+            <img :src="verticalLinePng" class="line" alt="" />
           </div>
         </NGi>
         <NGi>
-          <div style="display: flex; align-items: center">
-            <div>
-              <img :src="accountNumPng" />
-            </div>
+          <div class="bg1_box">
+            <div class="icon"><img :src="accountNumPng" alt="" /></div>
 
             <div class="text_box">
-              <text class="text_title">检测账号数</text>
+              <text class="text_title">监测账号数</text>
               <text class="text_body_num">{{ TrafficData.accountDate.historicalAccount }}</text>
               <text class="text_title text_bottom_num"
                 >今日+{{ TrafficData.accountDate.newAccount }}</text
@@ -238,9 +231,9 @@ onMounted(() => {
     </div>
     <div class="box_bg2">
       <h3>数据趋势</h3>
-      <img class="text_bg_png2" :src="underLinePng" />
+      <img class="text_bg_png2" :src="underLinePng" alt="" />
 
-      <div style="padding-left: 10%; padding-right: 10%">
+      <div class="pan">
         <div ref="main" style="width: 300px; height: 300px; float: left"></div>
         <div ref="main1" style="width: 300px; height: 300px; float: right"></div>
       </div>
@@ -248,53 +241,160 @@ onMounted(() => {
   </div>
 </template>
 <style lang="scss" scoped>
-.box_bg1 {
-  height: 190px;
-  width: 80%;
-  margin: 2%;
-  margin-left: 80px;
-  padding: 2%;
-  border-radius: 15px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-.box_bg2 {
-  height: 400px;
-  width: 80%;
-  margin: 2%;
-  margin-left: 80px;
-  padding: 2%;
-  border-radius: 15px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-.text_title {
-  color: #798197;
-  margin-bottom: 7px;
-}
-.text_body_num {
-  font-size: 22px;
+.box_flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  .box_bg1 {
+    height: 40%;
+    width: 80%;
+    margin: 2%;
+    margin-left: 80px;
+    padding: 2%;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: calc(100% - 8vw);
+      height: 100%;
+      margin: 2vw;
+      margin-left: 0;
+      padding: 2vw;
+    }
+    .underline {
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        display: none;
+      }
+    }
+    .bg1_box {
+      display: flex;
+      align-items: center;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        flex-direction: column;
+        justify-content: center;
+      }
+      .icon {
+        img {
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            width: 10vw;
+            height: 10vw;
+          }
+        }
+      }
+
+      .text_box {
+        margin-left: 30px;
+        display: flex;
+        flex-direction: column;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          margin-left: 0;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .text_bg_png1 {
+          position: absolute;
+          height: 17px;
+          width: 144px;
+          left: 330px;
+          bottom: 571px;
+          display: none;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            display: none;
+          }
+        }
+
+        .text_bg_png2 {
+          position: absolute;
+          height: 17px;
+          width: 144px;
+          left: 330px;
+          bottom: 304px;
+          display: none;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            margin-left: 0;
+            justify-content: center;
+            align-items: center;
+            display: none;
+          }
+        }
+
+        .text_body_num {
+          font-size: 20px;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            font-size: 4vw;
+          }
+        }
+      }
+
+      .title {
+        h3 {
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            font-size: 4vw;
+          }
+        }
+      }
+
+      img {
+        padding-left: 80px;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          padding-left: 0;
+        }
+      }
+
+      .line {
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .box_bg2 {
+    height: 80%;
+    width: 80%;
+    margin: 2%;
+    margin-left: 80px;
+    padding: 3%;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: calc(100% - 8vw);
+      height: 100%;
+      margin: 2vw;
+      margin-left: 0;
+      padding: 2vw;
+    }
+    .text_bg_png2 {
+      position: absolute;
+      height: 17px;
+      width: 144px;
+      left: 330px;
+      bottom: 304px;
+      display: none;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        margin-left: 0;
+        justify-content: center;
+        align-items: center;
+        display: none;
+      }
+    }
+    .pan {
+      padding-left: 10%;
+      padding-right: 10%;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
 }
 .text_bottom_num {
   font-size: 5px;
   margin-top: 7px;
-}
-.text_box {
-  margin-left: 30px;
-  display: flex;
-  flex-direction: column;
-}
-.text_bg_png1 {
-  position: absolute;
-  height: 17px;
-  width: 144px;
-  left: 330px;
-  bottom: 571px;
-}
-
-.text_bg_png2 {
-  position: absolute;
-  height: 17px;
-  width: 144px;
-  left: 330px;
-  bottom: 304px;
 }
 </style>

@@ -21,10 +21,11 @@ const menuArr = reactive([
 ])
 const handleClickMenu = (e: string) => {
   menuArr.forEach((item) => {
-    const b = item.name === e
-    item.isSelect = b
+    const tempItem: any = item
+    const b = tempItem.name === e
+    tempItem.isSelect = b
     if (b) {
-      router.push(item.path)
+      router.push(tempItem.path)
       store.commit('SET_MENU', e)
     }
   })
@@ -55,18 +56,27 @@ const handleClickMenu = (e: string) => {
   display: flex;
   flex-direction: row;
   height: 100%;
-
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    flex-direction: column;
+  }
   .menu {
     margin-top: 50px;
     margin-left: 20px;
     width: 105px;
     border-radius: 12px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      margin: 0;
+      width: 100%;
+    }
 
     h3 {
       margin-left: 24px;
       margin-top: 20px;
       margin-bottom: 30px;
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        margin: 5vw;
+      }
     }
     .menu-item {
       width: calc(100% - 5px);

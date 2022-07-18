@@ -5,15 +5,13 @@ import { TrashOutline, Add } from '@vicons/ionicons5'
 import { EditRegular } from '@vicons/fa'
 import { onMounted, reactive, ref } from 'vue'
 import {
-  addAreaApi,
-  editAreaByNameApi,
+  addCategoryApi,
   editCategoryByNameApi,
-  listAreaByPageApi,
-  removeAreaBatchByIdsApi,
-  removeAreaByIdApi
+  listCategoryByPageApi,
+  removeCategoryBatchByIdsApi,
+  removeCategoryByIdApi
 } from '@service/property'
 import underLine from '@/assets/underLine.png'
-import AreaQueryParams = API.AreaQueryParams
 
 const underLinePng = underLine
 
@@ -28,48 +26,48 @@ const propertyData = reactive({
   }
 })
 
-// 查询地区数据的条件参数
-const params = reactive<API.AreaQueryParams & API.PageParams>({
+// 查询分类数据的条件参数
+const params = reactive<API.CategoryQueryParams & API.PageParams>({
   pageSize: propertyData.tablePage.pageSize,
   page: propertyData.tablePage.currentPage,
-  areaName: ''
+  categoryName: ''
 })
 
-// 修改地区数据的参数
-const updateParams = reactive<API.AreaParams>({
-  areaId: 0,
-  areaCode: '',
-  areaDescription: '',
-  areaName: ''
+// 修改分类数据的参数
+const updateParams = reactive<API.CategoryParams>({
+  categoryId: 0,
+  categoryName: '',
+  categoryCode: '',
+  categoryDescription: ''
 })
 
 // 根据参数分页查询所有数据
-const findAreaSelectPage = async () => {
-  const res = await listAreaByPageApi(params)
+const findCategorySelectPage = async () => {
+  const res = await listCategoryByPageApi(params)
   propertyData.tableData = res.data! as any
   propertyData.tablePage.total = res.count! as any
   console.log(propertyData.tableData)
 }
 
-// 搜索地区名
-function changeAreaName(event: any) {
-  params.areaName = event.value
+// 搜索分类名
+function changeCategoryName(event: any) {
+  params.categoryName = event.value
   console.log(event.value)
-  findAreaSelectPage()
+  findCategorySelectPage()
 }
 
 // 重置参数
 const clickEvent = () => {
-  params.areaName = ''
-  // propertyData.option.area = ''
-  findAreaSelectPage()
+  params.categoryName = ''
+  // propertyData.option.category = ''
+  findCategorySelectPage()
 }
 
 // 页码切换
 function handleChangePage() {
   params.pageSize = propertyData.tablePage.pageSize
   params.page = propertyData.tablePage.currentPage
-  findAreaSelectPage()
+  findCategorySelectPage()
 }
 
 // 添加框是否显示
@@ -77,47 +75,45 @@ const isShow = ref<boolean>(false)
 
 // 修改框是否显示
 const isShow2 = ref<boolean>(false)
-// 添加地区名
-const inputAreaName = ref<string>('')
+// 添加分类名
+const inputCategoryName = ref<string>('')
 
 // 表格
 const xTable1 = ref<VxeTableInstance>()
 
-// 添加地区数据
+// 添加分类数据
 const insertEvent = async () => {
-  await addAreaApi(inputAreaName.value)
+  await addCategoryApi(inputCategoryName.value)
   isShow.value = false
-  await findAreaSelectPage()
+  await findCategorySelectPage()
 }
-
 // 修改分类数据事件
 const updateEvent = async () => {
   // 修改参数
-  updateParams.areaName = inputAreaName.value
-  await editAreaByNameApi(updateParams)
+  updateParams.categoryName = inputCategoryName.value
+  await editCategoryByNameApi(updateParams)
   isShow2.value = false
-  await findAreaSelectPage()
+  await findCategorySelectPage()
 }
-
-function handleAddArea(event: any) {
-  inputAreaName.value = ''
+function handleAddCategory(event: any) {
+  inputCategoryName.value = ''
   isShow.value = true
 }
 
-function handleEditArea(row: any) {
+function handleEditCategory(row: any) {
   // 修改参数id
-  updateParams.areaId = row.areaId as number
+  updateParams.categoryId = row.categoryId as number
   isShow2.value = true
 }
 
 // 表格中的删除
 const removeEvent = async (row: any) => {
-  const AreaId = row.areaId as number
+  const CategoryId = row.categoryId as number
   const type = await VXETable.modal.confirm('您确定要删除该数据?')
   if (type === 'confirm') {
-    const res = await removeAreaByIdApi(AreaId)
+    const res = await removeCategoryByIdApi(CategoryId)
     if (res.success) {
-      await findAreaSelectPage()
+      await findCategorySelectPage()
       await VXETable.modal.message('删除成功')
     } else {
       await VXETable.modal.message('删除失败')
@@ -126,27 +122,27 @@ const removeEvent = async (row: any) => {
 }
 
 // 定义批量删除的数组
-const areaArray: number[] = []
+const CategoryIdArray: number[] = []
 
 // check全选
 const selectAllChangeEvent: VxeTableEvents.CheckboxAll = () => {
   // 置空数组
-  areaArray.length = 0
+  CategoryIdArray.length = 0
   const $table = xTable1.value as VxeTableInstance
   const records = $table.getCheckboxRecords()
   records.forEach((item) => {
-    areaArray.push(item.areaId)
+    CategoryIdArray.push(item.categoryId)
   })
 }
 
 // check单选
 const selectChangeEvent: VxeTableEvents.CheckboxChange = () => {
   // 置空数组
-  areaArray.length = 0
+  CategoryIdArray.length = 0
   const $table = xTable1.value as VxeTableInstance
   const records = $table.getCheckboxRecords()
   records.forEach((item) => {
-    areaArray.push(item.areaId)
+    CategoryIdArray.push(item.categoryId)
   })
 }
 
@@ -154,9 +150,9 @@ const selectChangeEvent: VxeTableEvents.CheckboxChange = () => {
 const deleteEvent = async () => {
   const type = await VXETable.modal.confirm('您确定要删除该数据?')
   if (type === 'confirm') {
-    const res = await removeAreaBatchByIdsApi(areaArray)
+    const res = await removeCategoryBatchByIdsApi(CategoryIdArray)
     if (res.data) {
-      await findAreaSelectPage()
+      await findCategorySelectPage()
       await VXETable.modal.message('删除成功')
     } else {
       await VXETable.modal.message('删除失败')
@@ -165,14 +161,14 @@ const deleteEvent = async () => {
 }
 
 onMounted(() => {
-  findAreaSelectPage()
+  findCategorySelectPage()
 })
 </script>
 
 <template>
   <div class="bg_box">
     <div class="bg_box2">
-      <h3>地区管理</h3>
+      <h3>分类管理</h3>
       <img class="text_png1" :src="underLinePng" />
       <n-grid :cols="4" x-gap="24">
         <n-gi span="4">
@@ -180,16 +176,16 @@ onMounted(() => {
             <template #buttons>
               <vxe-input
                 placeholder="输入关键词搜索"
-                v-model="params.areaName"
+                v-model="params.categoryName"
                 type="search"
-                @blur="changeAreaName"
+                @blur="changeCategoryName"
               ></vxe-input>
 
               <n-button ghost type="info" style="margin-left: 70px" @click="clickEvent">
                 重置
               </n-button>
 
-              <n-button type="info" style="margin-left: 350px" @click="handleAddArea">
+              <n-button type="info" style="margin-left: 350px" @click="handleAddCategory">
                 <template #icon>
                   <n-icon>
                     <Add />
@@ -224,15 +220,19 @@ onMounted(() => {
               @checkbox-change="selectChangeEvent"
             >
               <vxe-column type="checkbox" width="60"></vxe-column>
-              <vxe-table-column field="areaId" title="序号" width="140"></vxe-table-column>
-              <vxe-table-column field="areaName" title="地区名称" width="350"></vxe-table-column>
+              <vxe-table-column field="categoryId" title="序号" width="140"></vxe-table-column>
+              <vxe-table-column
+                field="categoryName"
+                title="分类名称"
+                width="350"
+              ></vxe-table-column>
               <vxe-column show-overflow title="操作">
                 <template #default="{ row }">
                   <div>
                     <n-button text>
                       <template #icon>
                         <n-icon :depth="3">
-                          <EditRegular @click="handleEditArea(row)" />
+                          <EditRegular @click="handleEditCategory(row)" />
                         </n-icon>
                       </template>
                     </n-button>
@@ -273,21 +273,21 @@ onMounted(() => {
           </vxe-pager>
         </n-gi>
       </n-grid>
-      <!--      新增地区弹出框-->
+      <!--      新增分类弹出框-->
       <vxe-modal
         v-model="isShow"
         destroy-on-close
         min-height="900"
         min-width="900"
         resize
-        title="添加地区"
+        title="添加分类"
         width="340"
         height="230"
       >
         <template #default>
           <div>
             <div class="input_text">
-              <vxe-input v-model="inputAreaName" placeholder="输入新增地区名称"></vxe-input>
+              <vxe-input v-model="inputCategoryName" placeholder="输入新增分类名称"></vxe-input>
             </div>
             <div class="input_button">
               <vxe-button
@@ -314,20 +314,20 @@ onMounted(() => {
         min-height="900"
         min-width="900"
         resize
-        title="编辑地区"
+        title="编辑分类"
         width="340"
         height="230"
       >
         <template #default>
           <div>
             <div class="input_text">
-              <vxe-input v-model="inputAreaName" placeholder="输入修改后的名称"></vxe-input>
+              <vxe-input v-model="inputCategoryName" placeholder="输入修改后的名称"></vxe-input>
             </div>
             <div class="input_button">
               <vxe-button
                 content="取消"
                 status="info"
-                @click="isShow = false"
+                @click="isShow2 = false"
                 class="button_left"
               ></vxe-button>
               <vxe-button
@@ -350,6 +350,9 @@ onMounted(() => {
   margin-top: 50px;
   margin-bottom: 50px;
   margin-left: 20px;
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    margin: 0;
+  }
 
   .bg_box2 {
     float: right;
@@ -360,6 +363,9 @@ onMounted(() => {
     padding-bottom: 4%;
     border-radius: 15px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      width: auto;
+    }
 
     .text_png1 {
       position: absolute;
@@ -367,17 +373,11 @@ onMounted(() => {
       width: 144px;
       left: 395px;
       bottom: 575px;
+      display: none;
     }
 
     .table1 {
       height: 445px;
-
-      .add_icon {
-        padding: 10px;
-      }
-      .delete_icon {
-        padding: 10px;
-      }
     }
 
     .input_text {

@@ -4,6 +4,7 @@ import { getCurrentApi } from '@/service/user'
 export type RootState = {
   user?: any
   menu: string
+  personMenu: string
   tempToken: string
   tempPhone: string
 }
@@ -19,25 +20,30 @@ export default createStore<RootState>({
       userRating: ''
     },
     menu: 'home',
+    personMenu: 'person',
     tempToken: '',
     tempPhone: ''
   },
   mutations: {
     SET_USER(state, payload) {
-      // eslint-disable-next-line no-param-reassign
-      state.user = payload
+      const tempState: any = state
+      tempState.user = payload
     },
     SET_MENU(state, payload) {
-      // eslint-disable-next-line no-param-reassign
-      state.menu = payload
+      const tempState: any = state
+      tempState.menu = payload
+    },
+    SET_PERSON_MENU(state, payload) {
+      const tempState: any = state
+      tempState.personMenu = payload
     },
     SET_TOKEN(state, payload) {
-      // eslint-disable-next-line no-param-reassign
-      state.tempToken = payload
+      const tempState: any = state
+      tempState.tempToken = payload
     },
     SET_TEMP_PHONE(state, payload) {
-      // eslint-disable-next-line no-param-reassign
-      state.tempPhone = payload
+      const tempState: any = state
+      tempState.tempPhone = payload
     }
   },
   actions: {
@@ -49,8 +55,9 @@ export default createStore<RootState>({
     async fetchCurrentUser({ commit }) {
       try {
         const res = await getCurrentApi()
-        localStorage.setItem('userId', res.data?.id)
-        commit('SET_USER', res.data)
+        const tempData: any = res.data
+        localStorage.setItem('userId', tempData.id)
+        commit('SET_USER', tempData)
       } catch (e) {
         commit('SET_USER', undefined)
       }
@@ -74,6 +81,9 @@ export default createStore<RootState>({
     },
     currentMenu(state) {
       return state.menu
+    },
+    currentPersonMenu(state) {
+      return state.personMenu
     },
     currentToken(state) {
       return state.tempToken

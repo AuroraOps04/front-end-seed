@@ -21,7 +21,6 @@ import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { computed, reactive, ref } from 'vue'
 import { loginApi, getSmsApi, getCategoryAllApi, registerApi } from '@service/user'
-import { findAllCategoryApi } from '@service/account'
 import Cookies from 'js-cookie'
 
 const store = useStore()
@@ -217,6 +216,7 @@ const handleValidateButtonClick = (e: MouseEvent) => {
           placeholder="请输入验证码"
           type="text"
         />
+        <div id="captcha"></div>
         <span v-if="!showSmsCode" class="login-verify-code" @click="getSmsCode">
           {{ messageCode }}
         </span>

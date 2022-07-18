@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { NAvatar } from 'naive-ui'
 import { VxeButtonEvents, VxePagerEvents, VxeTableInstance } from 'vxe-table'
 import moment from 'moment'
-import { listAccountByPageApi, findAllCategoryApi, findAreaApi } from '@/service/account'
+import { listAccountByPageApi, findAllCategoryApi, findAreaApi } from '@service/account'
 import 'moment/locale/pt-br'
 
 const router = useRouter()

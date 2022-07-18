@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import priorityMenu from '@/components/priority/PriorityMenu.vue'
+import PriorityMenu from '@/components/user/priority/PriorityMenu.vue'
 </script>
 <template>
   <div class="container">
     <div class="container_table">
       <div>
-        <priorityMenu></priorityMenu>
+        <PriorityMenu></PriorityMenu>
       </div>
     </div>
   </div>
