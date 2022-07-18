@@ -50,6 +50,12 @@ const menuArr = reactive([
     icon: menuSetting,
     path: '/admin/menu/person',
     isSelect: false
+  },
+  {
+    name: '账号密码管理',
+    icon: menuSetting,
+    path: '/admin/menu/adminList',
+    isSelect: false
   }
 ])
 const handleClickMenu = (e: string | null) => {

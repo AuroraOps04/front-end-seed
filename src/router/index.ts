@@ -80,6 +80,11 @@ const routes: Array<RouteRecordRaw> = [
                 component: () => import('@/components/user/property/CategoryList.vue')
               }
             ]
+          },
+          {
+            path: '/admin/menu/adminList',
+            name: 'adminList',
+            component: () => import('@/components/adminList/index.vue')
           }
         ]
       }

@@ -63,6 +63,12 @@ declare namespace API {
     categoryName: string
   } & Model
 
+  type Admin = {
+    username: string
+    passWord: string
+    phone: string
+  } & Model
+
   type AccountQuery = {
     accountId: number
     startTime: string
@@ -82,6 +88,10 @@ declare namespace API {
 
   type CategoryQuery = {
     categoryName: string
+  } & Model
+
+  type AdminQuery = {
+    userName: string
   } & Model
 
   type CharsQuery = {
@@ -162,11 +172,13 @@ declare namespace API {
   type AccountParams = Partial<Account>
   type AccountQueryParams = Partial<AccountQuery>
   type UserParams = Partial<User>
+  type AdminParams = Partial<Admin>
   type AreaParams = Partial<Area>
   type CategoryParams = Partial<Category>
   type UserQueryParams = Partial<UserQuery>
   type AreaQueryParams = Partial<AreaQuery>
   type CategoryQueryParams = Partial<CategoryQuery>
+  type AdminQueryParams = Partial<AdminQuery>
 
   type CharsParams = Partial<CharsQuery>
   type LoginRequest = {
