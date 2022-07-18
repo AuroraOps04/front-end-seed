@@ -12,16 +12,16 @@ export const listAdminByPageApi = (
   })
 }
 
-// 根据id删除管理员，降级为普通用户
-export const removeAdminByIdApi = (areaId: number): Promise<API.Response> => {
-  return request(`/area/deleteById/${areaId}`, {
+// 根据id删除管理员
+export const removeAdminByIdApi = (userId: number): Promise<API.Response> => {
+  return request(`/user/deleteById/${userId}`, {
     method: 'DELETE'
   })
 }
 
-// 批量删除管理员，降级为普通用户
+// 批量删除管理员
 export const removeAdminBatchByIdsApi = (params: number[]): Promise<API.Response> => {
-  return request('/area/removeAreaBatchByIds', {
+  return request('/user/removeAdminBatchByIds', {
     method: 'DELETE',
     params: {
       ids: params
@@ -30,15 +30,16 @@ export const removeAdminBatchByIdsApi = (params: number[]): Promise<API.Response
 }
 
 // 增加管理员
-export const addAdminApi = (areaName: string): Promise<API.Response> => {
-  return request(`/area/addAreaByName/${areaName}`, {
-    method: 'GET'
+export const addAdminApi = (params: AdminParams): Promise<API.Response> => {
+  return request(`/user/addAdmin`, {
+    method: 'POST',
+    params
   })
 }
 
 // 修改管理员信息
-export const editAreaByNameApi = (params: AdminParams): Promise<API.Response> => {
-  return request(`/area/editAreaByName`, {
+export const editAdminApi = (params: AdminParams): Promise<API.Response> => {
+  return request(`/user/editAdmin`, {
     method: 'POST',
     params
   })

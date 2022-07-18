@@ -64,6 +64,7 @@ declare namespace API {
   } & Model
 
   type Admin = {
+    userId: number
     username: string
     passWord: string
     phone: string
@@ -91,7 +92,7 @@ declare namespace API {
   } & Model
 
   type AdminQuery = {
-    userName: string
+    username: string
   } & Model
 
   type CharsQuery = {

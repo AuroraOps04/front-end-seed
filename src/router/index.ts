@@ -31,7 +31,7 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: '/admin/menu/userList',
             name: 'userList',
-            component: () => import('@/views/admin/userList/index.vue')
+            component: () => import('@/components/admin/userList/UserList.vue')
           },
           {
             path: '/admin/menu/home',
@@ -64,7 +64,7 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: '/admin/menu/propertyMenu',
             name: 'PropertyMenu',
-            component: () => import('@/components/user/property/PropertyMenu.vue'),
+            component: () => import('@/components/admin/property/PropertyMenu.vue'),
             redirect: {
               path: '/admin/menu/propertyMenu/areaList'
             },
@@ -72,19 +72,19 @@ const routes: Array<RouteRecordRaw> = [
               {
                 path: '/admin/menu/propertyMenu/areaList',
                 name: 'areaList',
-                component: () => import('@/components/user/property/AreaList.vue')
+                component: () => import('@/components/admin/property/AreaList.vue')
               },
               {
                 path: '/admin/menu/propertyMenu/categoryList',
                 name: 'categoryList',
-                component: () => import('@/components/user/property/CategoryList.vue')
+                component: () => import('@/components/admin/property/CategoryList.vue')
               }
             ]
           },
           {
             path: '/admin/menu/adminList',
             name: 'adminList',
-            component: () => import('@/components/adminList/index.vue')
+            component: () => import('@/components/admin/adminList/index.vue')
           }
         ]
       }
