@@ -156,16 +156,16 @@ declare namespace API {
   }
 
   type CustomListAddOrUpdate = {
-    customListId: number
+    customListId: number | string
     customListName: string
     customListDescribe: string
     userId: number
-    platformId: number
+    platformId: number | string
   }
 
   type CustomListFormData = {
     customListName: string
-    platformId: number | null
+    platformId: number | null | undefined
     userId: number
   }
 

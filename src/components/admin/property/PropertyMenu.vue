@@ -2,7 +2,6 @@
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { NAvatar } from 'naive-ui'
 
 const router = useRouter()
 const store = useStore()

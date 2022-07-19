@@ -184,8 +184,8 @@ onMounted(() => {
   <div class="box_flex">
     <div class="box_bg1">
       <h3>数据看板</h3>
-      <img :src="underLinePng" class="underline" alt="" />
-      <NGrid x-gap="12" :cols="3">
+      <img :src="underLinePng" alt="" class="underline" />
+      <NGrid :cols="3" x-gap="12">
         <NGi>
           <div class="bg1_box">
             <div class="icon"><img :src="visitsNumPng" alt="" /></div>
@@ -197,7 +197,7 @@ onMounted(() => {
                 >今日+{{ TrafficData.trafficData.newTraffic }}</text
               >
             </div>
-            <img :src="verticalLinePng" class="line" alt="" />
+            <img :src="verticalLinePng" alt="" class="line" />
           </div>
         </NGi>
         <NGi>
@@ -211,7 +211,7 @@ onMounted(() => {
                 >今日+{{ TrafficData.userData.newUser }}</text
               >
             </div>
-            <img :src="verticalLinePng" class="line" alt="" />
+            <img :src="verticalLinePng" alt="" class="line" />
           </div>
         </NGi>
         <NGi>
@@ -231,7 +231,7 @@ onMounted(() => {
     </div>
     <div class="box_bg2">
       <h3>数据趋势</h3>
-      <img class="text_bg_png2" :src="underLinePng" alt="" />
+      <img :src="underLinePng" alt="" class="text_bg_png2" />
 
       <div class="pan">
         <div ref="main" style="width: 300px; height: 300px; float: left"></div>
@@ -250,16 +250,14 @@ onMounted(() => {
   .box_bg1 {
     height: 40%;
     width: 80%;
-    margin: 2%;
-    margin-left: 80px;
+    margin: 2% 2% 2% 80px;
     padding: 2%;
     border-radius: 15px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     @media screen and (min-width: 320px) and (max-width: 480px) {
       width: calc(100% - 8vw);
       height: 100%;
-      margin: 2vw;
-      margin-left: 0;
+      margin: 2vw 2vw 2vw 0;
       padding: 2vw;
     }
     .underline {
@@ -354,16 +352,14 @@ onMounted(() => {
   .box_bg2 {
     height: 80%;
     width: 80%;
-    margin: 2%;
-    margin-left: 80px;
+    margin: 2% 2% 2% 80px;
     padding: 3%;
     border-radius: 15px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     @media screen and (min-width: 320px) and (max-width: 480px) {
       width: calc(100% - 8vw);
       height: 100%;
-      margin: 2vw;
-      margin-left: 0;
+      margin: 2vw 2vw 2vw 0;
       padding: 2vw;
     }
     .text_bg_png2 {

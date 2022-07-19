@@ -1,20 +1,16 @@
 <script lang="ts" setup>
 import {
   FormInst,
-  FormItemRule,
-  NCountdown,
   NForm,
   NSpace,
   NButton,
   NModal,
   NFormItem,
   NInput,
-  NSelect,
   NCheckboxGroup,
   NCheckbox,
   NRadioGroup,
   NRadio,
-  NPopover,
   useMessage
 } from 'naive-ui'
 import { useRouter } from 'vue-router'
@@ -190,7 +186,7 @@ const handleValidateButtonClick = (e: MouseEvent) => {
       if (res.success) {
         Cookies.set('token', res.data as unknown as string)
         await store.dispatch('fetchCurrentUser')
-        router.push('/home')
+        await router.push('/home')
       }
     } else {
       console.log(errors)
@@ -235,10 +231,10 @@ const handleValidateButtonClick = (e: MouseEvent) => {
       </div>
       <NModal
         v-model:show="registerModel"
+        :closable="true"
+        :mask-closable="false"
         preset="dialog"
         title="注册"
-        :mask-closable="false"
-        :closable="true"
       >
         <template #header>
           <div>注册</div>
@@ -248,13 +244,13 @@ const handleValidateButtonClick = (e: MouseEvent) => {
             ref="formRef"
             :model="model"
             :rules="rules"
-            label-placement="left"
-            label-width="auto"
-            require-mark-placement="right-hanging"
             :size="size"
             :style="{
               maxWidth: '640px'
             }"
+            label-placement="left"
+            label-width="auto"
+            require-mark-placement="right-hanging"
           >
             <n-form-item label="名称" path="username">
               <n-input v-model:value="model.username" placeholder="请输入名称" />
@@ -272,8 +268,8 @@ const handleValidateButtonClick = (e: MouseEvent) => {
                 <n-space>
                   <n-checkbox
                     v-for="(item, index) in categoryData.data"
-                    :value="item.categoryId"
                     :key="index"
+                    :value="item.categoryId"
                   >
                     {{ item.categoryName }}
                   </n-checkbox>
@@ -283,8 +279,8 @@ const handleValidateButtonClick = (e: MouseEvent) => {
             <n-form-item label="邮箱" path="mail">
               <n-input
                 v-model:value="model.mail"
-                placeholder="请输入邮箱"
                 :options="autoCompleteOptions"
+                placeholder="请输入邮箱"
               />
             </n-form-item>
           </n-form>

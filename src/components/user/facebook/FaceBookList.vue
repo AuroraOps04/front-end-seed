@@ -513,7 +513,7 @@ watch(
     </vxe-pager>
   </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .vxe-menu-date {
   margin-left: 25px;
   @media screen and (min-width: 320px) and (max-width: 480px) {
@@ -626,12 +626,12 @@ watch(
   }
 }
 
-.vxe-pager {
+:deep(.vxe-pager) {
   @media screen and (min-width: 320px) and (max-width: 480px) {
     height: 25vw;
   }
 }
-.vxe-cell {
+:deep(.vxe-cell) {
   display: flex;
   justify-content: center;
   align-items: center;

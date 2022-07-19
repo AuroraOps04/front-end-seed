@@ -60,7 +60,7 @@ const handleClickMenu = (e: string | null) => {
     if (b) {
       router.push(tempItem.path)
       store.commit('SET_MENU', e)
-      localStorage.setItem('menu', e)
+      localStorage.setItem('menu', e === null ? '' : e)
     }
   })
 }
@@ -81,7 +81,7 @@ onMounted(() => {
           :class="['menu-item', item.isSelect ? 'menu-active' : '']"
           @click="handleClickMenu(item.name)"
         >
-          <img :src="item.icon" :alt="item.name" />
+          <img :alt="item.name" :src="item.icon" />
           <span>
             {{ item.name }}
           </span>
@@ -94,7 +94,7 @@ onMounted(() => {
           <span>{{ store.getters.currentMenu.replaceAll('管理', '') }}</span>
         </div>
         <div class="header-right">
-          <NAvatar round :size="40" src=""></NAvatar>
+          <NAvatar :size="40" round src=""></NAvatar>
           <span class="title">管理端</span>
         </div>
       </div>

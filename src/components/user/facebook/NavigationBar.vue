@@ -26,8 +26,8 @@ defineExpose({ NavigationBarMethod })
     </NTabs>
   </div>
 </template>
-<style lang="scss">
-.n-tabs-rail {
+<style lang="scss" scoped>
+:deep(.n-tabs-rail) {
   @media screen and (min-width: 320px) and (max-width: 480px) {
     display: flex;
     flex-wrap: wrap;
@@ -40,12 +40,12 @@ defineExpose({ NavigationBarMethod })
   background-color: white;
 }
 
-.n-tabs .n-tabs-nav {
+:deep(.n-tabs .n-tabs-nav) {
   line-height: 2.2;
   border-radius: 10px;
 }
 
-.n-tabs .n-tabs-rail .n-tabs-tab-wrapper .n-tabs-tab {
+:deep(.n-tabs .n-tabs-rail .n-tabs-tab-wrapper .n-tabs-tab) {
   border-radius: 15px;
   @media screen and (min-width: 320px) and (max-width: 480px) {
     border-radius: 2vw;
@@ -53,14 +53,14 @@ defineExpose({ NavigationBarMethod })
   }
 }
 
-.n-tabs .n-tabs-rail {
+:deep(.n-tabs .n-tabs-rail) {
   border-radius: 15px;
   @media screen and (min-width: 320px) and (max-width: 480px) {
     border-radius: 2vw;
   }
 }
 
-.card-tabs .n-tabs-nav--bar-type {
+:deep(.card-tabs .n-tabs-nav--bar-type) {
   padding-left: 4px;
 }
 </style>

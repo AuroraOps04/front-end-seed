@@ -14,8 +14,8 @@ import Monitor from '@/components/admin/Monitor.vue'
     </n-tabs>
   </div>
 </template>
-<style lang="scss">
-.n-tabs-rail {
+<style lang="scss" scoped>
+:deep(.n-tabs-rail) {
   @media screen and (min-width: 320px) and (max-width: 480px) {
     border-radius: 10px !important;
     flex-direction: row;
@@ -23,12 +23,12 @@ import Monitor from '@/components/admin/Monitor.vue'
   }
 }
 
-.toolbar {
+:deep(.toolbar) {
   @media screen and (min-width: 320px) and (max-width: 480px) {
     flex-direction: column !important;
   }
 
-  .search_tool {
+  :deep(.search_tool) {
     @media screen and (min-width: 320px) and (max-width: 480px) {
       flex-direction: column !important;
     }
@@ -42,22 +42,22 @@ import Monitor from '@/components/admin/Monitor.vue'
   display: flex;
   box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
 
-  .n-tabs .n-tabs-nav {
+  :deep(.n-tabs .n-tabs-nav) {
     line-height: 1.4;
     border-radius: 50px;
     justify-content: center;
   }
 
-  .n-tabs .n-tabs-rail {
+  :deep(.n-tabs .n-tabs-rail) {
     border-radius: 15px;
     width: 50%;
   }
 
-  .n-tabs .n-tabs-rail .n-tabs-tab-wrapper .n-tabs-tab {
+  :deep(.n-tabs .n-tabs-rail .n-tabs-tab-wrapper .n-tabs-tab) {
     border-radius: 15px;
   }
 
-  .card-tabs .n-tabs-nav--bar-type {
+  :deep(.card-tabs .n-tabs-nav--bar-type) {
     padding-left: 4px;
   }
 }

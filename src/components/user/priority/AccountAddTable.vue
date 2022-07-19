@@ -145,7 +145,7 @@ const handlePageChange: VxePagerEvents.PageChange = ({ currentPage, pageSize }) 
 }
 
 // check全选
-const selectAllChangeEvent: VxeTableEvents.CheckboxAll = ({ checked }) => {
+const selectAllChangeEvent: VxeTableEvents.CheckboxAll = () => {
   // 置空数组
   accountArray.length = 0
   const $table = xTable.value as VxeTableInstance

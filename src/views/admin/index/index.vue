@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { NCountdown, NSpace, NButton, useMessage } from 'naive-ui'
+import { NSpace, NButton, useMessage } from 'naive-ui'
 import { reactive, ref } from 'vue'
 import { adminLoginApi, getSmsApi } from '@service/user'
 import Cookies from 'js-cookie'
@@ -76,8 +76,8 @@ const handleLogin = async () => {
     const res = await adminLoginApi(formData)
     Cookies.set('token', res.data as unknown as string)
     message.success('登录成功')
-    store.dispatch('fetchCurrentUser')
-    router.push('/admin/menu/home')
+    await store.dispatch('fetchCurrentUser')
+    await router.push('/admin/menu/home')
   } catch (e) {
     console.log(e)
   }
@@ -115,23 +115,23 @@ const getSmsCode = async () => {
     <div class="login">
       <div class="login-title">-管理端-</div>
       <input
-        type="text"
         v-model="formData.phone"
         class="login-username"
         placeholder="请输入手机号"
+        type="text"
       />
       <input
-        type="password"
         v-model="formData.password"
         class="login-password"
         placeholder="请输入密码"
+        type="password"
       />
       <div class="login-verify">
         <input
-          type="text"
           v-model="formData.smsCode"
           class="login-verify-password"
           placeholder="请输入验证码"
+          type="text"
         />
         <span v-if="!showSmsCode" class="login-verify-code" @click="getSmsCode">
           {{ messageCode }}
@@ -145,7 +145,7 @@ const getSmsCode = async () => {
       </div>
       <NButton class="login-btn" @click="handleLogin">登陆</NButton>
       <div class="login-agree">
-        <input type="checkbox" class="login-agree-check" ref="treatyCheck" />
+        <input ref="treatyCheck" class="login-agree-check" type="checkbox" />
         <span class="login-agree-text"
           >&nbsp;&nbsp;我已阅读并接受《注册申明》《版权声明》《隐私政策》</span
         >
@@ -190,7 +190,6 @@ const getSmsCode = async () => {
     }
 
     .login-username {
-      background: none;
       outline: none;
       border: none;
       width: 293px;
@@ -199,7 +198,7 @@ const getSmsCode = async () => {
       left: 426px;
       top: 130px;
       border-radius: 24px;
-      background-color: #eaeefe;
+      background: #eaeefe none;
       padding: 0 15px;
       font-size: 15px;
       @media screen and (min-width: 320px) and (max-width: 480px) {
@@ -210,7 +209,6 @@ const getSmsCode = async () => {
       }
     }
     .login-password {
-      background: none;
       outline: none;
       border: none;
       width: 293px;
@@ -219,7 +217,7 @@ const getSmsCode = async () => {
       left: 426px;
       top: 188px;
       border-radius: 24px;
-      background-color: #eaeefe;
+      background: #eaeefe none;
       padding: 0 15px;
       font-size: 15px;
       @media screen and (min-width: 320px) and (max-width: 480px) {
@@ -243,7 +241,6 @@ const getSmsCode = async () => {
       }
 
       .login-verify-password {
-        background: none;
         outline: none;
         border: none;
         width: 293px;
@@ -252,7 +249,7 @@ const getSmsCode = async () => {
         left: 426px;
         top: 248px;
         border-radius: 24px;
-        background-color: #eaeefe;
+        background: #eaeefe none;
         padding: 0 15px;
         font-size: 15px;
         @media screen and (min-width: 320px) and (max-width: 480px) {

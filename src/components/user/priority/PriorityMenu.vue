@@ -43,7 +43,7 @@ const handleClickMenu = (e: string) => {
   <div class="content">
     <div class="menu">
       <div class="menu-txt">榜单名称</div>
-      <template v-for="item in menuArr">
+      <template v-for="(item, index) in menuArr" :key="index">
         <div
           :class="['menu-item', item.isSelect ? 'menu-active' : '']"
           @click="handleClickMenu(item.name)"
@@ -54,7 +54,7 @@ const handleClickMenu = (e: string) => {
         </div>
       </template>
       <n-divider dashed></n-divider>
-      <vxe-button class="buttonStyle" type="text" icon="vxe-icon--circle-plus">新增榜单</vxe-button>
+      <vxe-button class="buttonStyle" icon="vxe-icon--circle-plus" type="text">新增榜单</vxe-button>
     </div>
     <div class="main">
       <router-view></router-view>
