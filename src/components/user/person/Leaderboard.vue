@@ -5,10 +5,12 @@ import { TrashOutline, Add } from '@vicons/ionicons5'
 import {
   AccountCollectionApi,
   cancelCustomCollectionApi,
-  customListAffiliateByIdApi,
-  findAllCustomListAffiliateApi,
   findAllPlatFormApi
 } from '@service/account'
+import {
+  customListAffiliateByIdApi,
+  findAllCustomListAffiliateApi
+} from '@service/customListAffiliate'
 import {
   deleteCustomsApi,
   insertOrUpdateCustomsApi,
@@ -42,7 +44,7 @@ type CustomTablePage = {
 }
 // 获取当前登录用户Id
 const userId = Number(localStorage.getItem('userId'))
-// 榜单名称
+// 榜单名称，用于搜索
 const customListName = ref<string>('')
 // 控制榜单添加修改模态框显隐
 const customModalIsView = ref<boolean>(false)
@@ -65,6 +67,10 @@ const cTable = ref<any>()
 const cusLoading = ref<boolean>(false)
 // 定义批量删除的数组
 const accountArray: number[] = []
+// 榜单名称，子页面标题显示
+const customListNameByTitle = ref<string>('')
+// 榜单类型，子页面标题显示
+const customListPlatformNameByTitle = ref<string>('')
 
 type CustomAffiliateDetail = {
   accountId: number
@@ -82,10 +88,13 @@ type CustomAffiliateDetailData = {
 }
 
 const showEditModal = ref<boolean>(false)
-// const submitLoading = ref<boolean>(false)
 
 // 添加榜单账号弹框
 const userAdd = ref<number>(1)
+// 添加榜单账号弹框,传入的平台id
+const userAddPlatformId = ref<number>(1)
+// 添加榜单账号中，用于将账号加入某一个自定义榜单中的自定义榜单id
+const userAddCustomListId = ref<number>(1)
 // 添加
 const addListAccount = () => {
   showEditModal.value = true
@@ -121,7 +130,6 @@ const findAllPlatform = async () => {
 // 分页查询所有榜单数据
 const selectAllCustomList = async () => {
   const res = await selectAllCustomListApi(selectCustomParams)
-  console.log(res)
   customData.count = res.count
   customTablePage.total = res.count
   const tempData: any = res.data
@@ -133,7 +141,7 @@ const searchByCustomListName = (searchValue: string) => {
   selectAllCustomList()
 }
 // 按榜单类型搜索点击事件（下拉框）
-const searchByPlatform = (searchValue: number) => {
+const searchByPlatform = (searchValue: number | null | undefined) => {
   selectCustomParams.platformId = searchValue
   selectAllCustomList()
 }
@@ -153,18 +161,18 @@ const customParams = reactive<API.customListAffiliateParams>({
   customListId: 1,
   userId,
   userName: '',
-  platformId: null,
+  platformId: 2,
   accountIsView: 1
 })
 // 添加修改modal表单
 const customModalData = reactive({
   loading: false,
   formData: {
-    customListId: '',
+    customListId: null,
     customListName: '',
     customListDescribe: '',
     userId,
-    platformId: ''
+    platformId: null
   },
   formRules: {
     customListName: [
@@ -178,7 +186,7 @@ const customModalData = reactive({
     platformId: [{ required: true, message: '请选择榜单类型' }]
   } as VxeFormPropTypes.Rules
 })
-// 添加榜单账号弹框结束
+
 // 子界面数据
 const customAffiliateData = reactive<CustomAffiliateDetailData>({
   data: []
@@ -202,7 +210,7 @@ const deleteCustom = async (row: any) => {
   const customListAffiliateId = row.customListAffiliateId as number
   const type = await VXETable.modal.confirm('您确定要删除该数据?')
   if (type === 'confirm') {
-    const $table = cTable.value[0] as VxeTableInstance
+    const $table = cTable.value as VxeTableInstance
     cusLoading.value = true
     const res = await customListAffiliateByIdApi(customListAffiliateId)
     if (res.data) {
@@ -254,7 +262,7 @@ const formatterTime: VxeColumnPropTypes.Formatter = ({ cellValue }) => {
 const selectCustomListAllChangeEvent: VxeTableEvents.CheckboxAll = () => {
   // 置空数组
   customListIds.length = 0
-  const $table = customListTable.value[0] as VxeTableInstance
+  const $table = customListTable.value as VxeTableInstance
   const records = $table.getCheckboxRecords()
   records.forEach((item) => {
     customListIds.push(item.customListId)
@@ -265,7 +273,7 @@ const selectCustomListAllChangeEvent: VxeTableEvents.CheckboxAll = () => {
 const selectCustomListChangeEvent: VxeTableEvents.CheckboxChange = () => {
   // 置空数组
   customListIds.length = 0
-  const $table = customListTable.value[0] as VxeTableInstance
+  const $table = customListTable.value as VxeTableInstance
   const records = $table.getCheckboxRecords()
   records.forEach((item) => {
     customListIds.push(item.customListId)
@@ -300,16 +308,15 @@ const removeCustomListEvent = async (row: any) => {
 
 // 打开添加用户自定义榜单模态框
 const openAddCustomListEvent = () => {
-  customModalData.formData.customListId = ''
+  customModalData.formData.customListId = null
   customModalData.formData.customListName = ''
   customModalData.formData.customListDescribe = ''
-  customModalData.formData.platformId = ''
+  customModalData.formData.platformId = null
   addOrEdit.value = true
   customModalIsView.value = true
 }
 // 打开编辑用户自定义榜单信息
 const editCustomListEvent = (row: any) => {
-  console.log(row.customListId)
   customModalData.formData.customListId = row.customListId
   customModalData.formData.customListName = row.customListName
   customModalData.formData.customListDescribe = row.customListDescribe
@@ -336,11 +343,21 @@ const cancelModalEvent = () => {
 
 // 跳转子页面
 const goToCustomChildPage = (row: any) => {
+  customListNameByTitle.value = row.customListName
+  customListPlatformNameByTitle.value = row.platformName
   customParams.customListId = row.customListId
   findAllCustomListAffiliate()
+  userAddCustomListId.value = row.customListId
+  userAddPlatformId.value = row.platformId
   customGoToChild.value = true
 }
-// --------------榜单部分 结束--------------
+
+// 榜单列表页面表格中的添加
+const customListAffiliateAdd = (row: any) => {
+  userAddPlatformId.value = row.platformId
+  userAddCustomListId.value = row.customListId
+  showEditModal.value = true
+}
 onMounted(() => {
   findAllCustomListAffiliate()
   findAllPlatform()
@@ -350,9 +367,8 @@ onMounted(() => {
 
 <template>
   <div class="content-ranking">
-    <!--      -------------zjystart------------          -->
+    <!-- ---------------------榜单列表开始--------------------- -->
     <div v-if="!customGoToChild">
-      <!-- ---------------------榜单列表开始--------------------- -->
       <div class="leaderboard_title">
         <h3 class="leaderboard_txt">榜单列表</h3>
         <img :src="underLine" alt="下划线" class="leaderboard_title_png" />
@@ -457,7 +473,7 @@ onMounted(() => {
               <vxe-button
                 icon="vxe-icon--circle-plus"
                 type="text"
-                @click="showEditModal = true"
+                @click="customListAffiliateAdd(row)"
               ></vxe-button>
             </template>
           </vxe-column>
@@ -524,14 +540,14 @@ onMounted(() => {
           </vxe-form-item>
         </vxe-form>
       </vxe-modal>
-      <!-- <img :src="rankingBgPng" alt="排行榜" /> -->
-      <!-- ---------------------榜单列表结束--------------------- -->
     </div>
-
-    <!--      -------------zjyend------------          -->
-    <!--     ------------------ygx----------------         -->
-    <!--              我的榜单子界面-->
+    <!-- ---------------------榜单列表结束--------------------- -->
+    <!--              我的榜单子界面               -->
     <div v-if="customGoToChild" class="custom-list-sub-interface">
+      <div style="text-align: left; font-size: 20px; margin: 2vh 0 2vh 0">
+        <span style="color: 1c294f">榜单名：{{ customListNameByTitle }}</span>
+        <span style="color: #b8b8b8">- {{ customListPlatformNameByTitle }}榜单</span>
+      </div>
       <!--                工具栏-->
       <div class="search-tool">
         <vxe-toolbar>
@@ -605,17 +621,14 @@ onMounted(() => {
       >
         <AccountAddTable
           :isUserAdd="userAdd"
+          :platformId="userAddPlatformId"
+          :customListId="userAddCustomListId"
           @close="closeModal"
           @findAllCustomListAffiliate="findAllCustomListAffiliate"
         ></AccountAddTable>
-        <!--                  @close="closeModal"-->
-        <!--                  @selectData="findAccountSelectPage"-->
       </vxe-modal>
     </div>
-    <!--              子榜单的添加按钮弹框结束,引入AccountAddTable界面-->
-    <!--            我的榜单子界面结束-->
-    <!--          我的榜单结束-->
-    <!--     ------------------ygx----------------         -->
+    <!--            我的榜单子界面结束            -->
   </div>
 </template>
 
@@ -665,6 +678,7 @@ onMounted(() => {
   }
 
   .custom-list-sub-interface {
+    margin-left: 3vw;
     width: 90%;
   }
 }

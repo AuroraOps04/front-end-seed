@@ -130,7 +130,9 @@ const params = reactive<API.AccountParams & API.PageParams>({
   area: null,
   category: null,
   accountName: accountName.value,
-  accountIsView: 1
+  accountIsView: 1,
+  // 先写死1为facebook，后期左侧栏点击对应的平台需要根据对应平台查询
+  platform: 1
 })
 
 // 分页查询所有数据
@@ -194,13 +196,13 @@ const formatterCategory: VxeColumnPropTypes.Formatter = ({ cellValue }) => {
 }
 
 // 地区下拉选项
-const changeArea = (value: number) => {
+const changeArea = (value: number | null | undefined) => {
   params.area = value
   findAccountSelectPage()
 }
 
 // 分类下拉选项
-const changeCategory = (value: number) => {
+const changeCategory = (value: number | null | undefined) => {
   params.category = value
   if (value === -1) {
     params.category = null
