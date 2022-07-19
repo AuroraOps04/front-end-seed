@@ -84,18 +84,28 @@ const xTable1 = ref<VxeTableInstance>()
 
 // 添加地区数据
 const insertEvent = async () => {
-  await addAreaApi(inputAreaName.value)
+  const res = await addAreaApi(inputAreaName.value)
   isShow.value = false
-  await findAreaSelectPage()
+  if (res.success) {
+    await findAreaSelectPage()
+    await VXETable.modal.message('添加成功')
+  } else {
+    await VXETable.modal.message('添加失败')
+  }
 }
 
 // 修改分类数据事件
 const updateEvent = async () => {
   // 修改参数
   updateParams.areaName = inputAreaName.value
-  await editAreaByNameApi(updateParams)
+  const res = await editAreaByNameApi(updateParams)
   isShow2.value = false
-  await findAreaSelectPage()
+  if (res.success) {
+    await findAreaSelectPage()
+    await VXETable.modal.message('修改成功')
+  } else {
+    await VXETable.modal.message('修改失败')
+  }
 }
 
 function handleAddArea(event: any) {
@@ -104,6 +114,7 @@ function handleAddArea(event: any) {
 }
 
 function handleEditArea(row: any) {
+  inputAreaName.value = ''
   // 修改参数id
   updateParams.areaId = row.areaId as number
   isShow2.value = true
