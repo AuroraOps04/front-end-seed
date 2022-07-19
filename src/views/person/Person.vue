@@ -1,49 +1,36 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import {
-  TrashOutline,
-  Add,
-  PersonOutline,
-  StarOutline,
-  BarChartOutline,
-  PersonCircleOutline,
-  IdCardSharp,
-  PhonePortraitOutline
-} from '@vicons/ionicons5'
+import { Add, BarChartOutline, PersonOutline, StarOutline, TrashOutline } from '@vicons/ionicons5'
 import { useStore } from 'vuex'
 
 import {
   FormInst,
+  GlobalThemeOverrides,
   NAvatar,
-  NIcon,
-  NPopselect,
   NButton,
-  NInput,
-  NUpload,
-  NModal,
-  FormItemRule,
-  NCountdown,
-  NForm,
-  NSpace,
-  NFormItem,
-  NSelect,
-  NCheckboxGroup,
-  NCheckbox,
-  NRadioGroup,
-  NRadio,
   NCascader,
-  CascaderOption,
-  useMessage,
-  NTabs,
-  NTabPane,
-  UploadFileInfo,
+  NCheckbox,
+  NCheckboxGroup,
   NConfigProvider,
-  GlobalThemeOverrides
+  NForm,
+  NFormItem,
+  NIcon,
+  NInput,
+  NModal,
+  NPopselect,
+  NRadio,
+  NRadioGroup,
+  NSpace,
+  NTabPane,
+  NTabs,
+  NUpload,
+  UploadFileInfo,
+  useMessage
 } from 'naive-ui'
 import Cookies from 'js-cookie'
-import { getCategoryAllApi, registerApi, getCurrentApi, updateUserInfoApi } from '@service/user'
-import { updatePhoneApi, updateUsernameApi } from '@service/person'
+import { getCategoryAllApi, getCurrentApi, updateUserInfoApi } from '@service/user'
+import { updatePhoneApi } from '@service/person'
 import {
   VxeColumnPropTypes,
   VxeFormEvents,
@@ -54,31 +41,29 @@ import {
 } from 'vxe-table'
 
 import personLogoPng from '@/assets/person_logo.png'
-import personIconPng from '@/assets/person_icon.png'
 import personIcon2Png from '@/assets/person_icon2.png'
 import personIcon3Png from '@/assets/person_icon3.png'
 import personGradePng from '@/assets/person_grade.png'
-import rankingBgPng from '@/assets/ranking_bg.png'
 import phonePng from '@/assets/phone.png'
 import memberPng from '@/assets/member.png'
 import Header from '@/components/Header.vue'
 import underLine from '@/assets/underLine.png'
 
 import {
-  accountCollectionListApi,
   AccountCollectionApi,
-  findAreaApi,
-  findAllCategoryApi,
+  accountCollectionListApi,
   cancelCollectionsApi,
-  findAllCustomListAffiliateApi,
-  customListAffiliateByIdApi,
   cancelCustomCollectionApi,
-  findAllPlatFormApi
+  customListAffiliateByIdApi,
+  findAllCategoryApi,
+  findAllCustomListAffiliateApi,
+  findAllPlatFormApi,
+  findAreaApi
 } from '@/service/account'
 import {
-  selectAllCustomListApi,
   deleteCustomsApi,
-  insertOrUpdateCustomsApi
+  insertOrUpdateCustomsApi,
+  selectAllCustomListApi
 } from '@/service/customList'
 
 import AccountAddTable from '@/components/priority/AccountAddTable.vue'
@@ -290,7 +275,6 @@ const handleClick = (e: string) => {
   })
 }
 const showModal = ref(false)
-const showModalUsername = ref(false)
 const validatePhone = (): boolean => {
   if (phone.value === '') {
     message.error('请输入手机号')
@@ -302,13 +286,7 @@ const validatePhone = (): boolean => {
   }
   return true
 }
-const validateUsername = (): boolean => {
-  if (username.value === '') {
-    message.error('请输入新的昵称')
-    return false
-  }
-  return true
-}
+
 const handleUpdatePhone = async () => {
   // 校验手机号码
   if (!validatePhone()) {
@@ -316,8 +294,7 @@ const handleUpdatePhone = async () => {
   }
 
   try {
-    const res = await updatePhoneApi(phone.value)
-    console.log(res)
+    await updatePhoneApi(phone.value)
     message.success('修改成功')
     showModal.value = false
     router.go(0)
@@ -325,21 +302,7 @@ const handleUpdatePhone = async () => {
     console.log(e)
   }
 }
-const handleUpdateUsername = async () => {
-  // 校验昵称输入
-  if (!validateUsername()) {
-    return
-  }
 
-  try {
-    const res = await updateUsernameApi(username.value)
-    message.success('修改成功')
-    showModalUsername.value = false
-    router.go(0)
-  } catch (e) {
-    console.log(e)
-  }
-}
 const beforeUpload = async (data: { file: UploadFileInfo; fileList: UploadFileInfo[] }) => {
   if (data.file.file?.type !== 'image/png') {
     message.error('只能上传png格式的图片文件，请重新上传')
@@ -357,10 +320,7 @@ const handleFinish = ({ file, event }: { file: UploadFileInfo; event?: ProgressE
   // file.url = '__HTTPS__://www.mocky.io/v2/5e4bafc63100007100d8b70f'
   return file
 }
-const handleShowModalUsername = (e: boolean) => {
-  showModalUsername.value = e
-  username.value = ''
-}
+
 const handleShowModal = (e: boolean) => {
   showModal.value = e
   phone.value = ''
@@ -519,7 +479,7 @@ const handleSave = async (e: MouseEvent) => {
   // })
 }
 const handleClose = async () => {
-  getUserInfo()
+  await getUserInfo()
 }
 const handleLogout = () => {
   Cookies.remove('token')
@@ -537,7 +497,7 @@ const searchName = (value: string) => {
 }
 
 // 地区下拉选项
-const changeArea = (value: number, event: any) => {
+const changeArea = (value: number) => {
   loading.value = true
   params.area = value
   selectUserCollectionList()
@@ -661,14 +621,19 @@ const findAllPlatform = async () => {
   const res = await findAllPlatFormApi()
   platformData.data = res.data as API.Platform[]
 }
+type customObjectData = {
+  count: number
+  total: number
+  data: API.CustomList[]
+}
 
 // 分页查询所有榜单数据
 const selectAllCustomList = async () => {
   const res = await selectAllCustomListApi(selectCustomParams)
-  console.log(res)
-  customData.count = res.count
-  customTablePage.total = res.count
-  customData.data = res.data.data as API.CustomList[]
+  const data = res.data as customObjectData
+  customData.count = data.count
+  customTablePage.total = data.count
+  customData.data = data.data as API.CustomList[]
 }
 
 // 按榜单名称搜索点击事件
@@ -700,12 +665,11 @@ const formatterTime: VxeColumnPropTypes.Formatter = ({ cellValue }) => {
   const year = date.getFullYear()
   const month = (date.getMonth() + 1).toString().padStart(2, '0')
   const day = date.getDate().toString().padStart(2, '0')
-  const timeValue = `${year}-${month}-${day}`
-  return timeValue
+  return `${year}-${month}-${day}`
 }
 
 // check全选
-const selectCustomListAllChangeEvent: VxeTableEvents.CheckboxAll = ({ checked }) => {
+const selectCustomListAllChangeEvent: VxeTableEvents.CheckboxAll = () => {
   // 置空数组
   customListIds.length = 0
   const $table = customListTable.value[0] as VxeTableInstance
@@ -749,7 +713,7 @@ const deleteCustomListEvent = async () => {
 const removeCustomListEvent = async (row: any) => {
   const customListId = row.customListId as number
   customListIds.push(customListId)
-  deleteCustomListEvent()
+  await deleteCustomListEvent()
 }
 
 // 添加修改modal表单
@@ -800,10 +764,10 @@ const submitCustomListEvent: VxeFormEvents.Submit = async () => {
   customModalData.loading = true
   const res = await insertOrUpdateCustomsApi(customModalData.formData)
   if (res) {
-    selectAllCustomList()
+    await selectAllCustomList()
     customModalData.loading = false
     customModalIsView.value = false
-    VXETable.modal.message({ content: '保存成功', status: 'success' })
+    await VXETable.modal.message({ content: '保存成功', status: 'success' })
   }
 }
 
@@ -1077,23 +1041,23 @@ onMounted(() => {
                   <!-- ---------------------榜单列表开始--------------------- -->
                   <div class="leaderboard_title">
                     <h3 class="leaderboard_txt">榜单列表</h3>
-                    <img class="leaderboard_title_png" :src="underLine" />
+                    <img :src="underLine" alt="logo" class="leaderboard_title_png" />
                   </div>
                   <div class="toolbar">
                     <div class="search_tool">
                       <div style="margin: 0 40px 0 3vw">
                         <vxe-input
+                          v-model="customListName"
                           placeholder="输入榜单名称搜索"
                           type="search"
-                          v-model="customListName"
                           @search-click="searchByCustomListName(customListName)"
                         ></vxe-input>
                       </div>
                       <div>
                         <vxe-select
+                          v-model="platformId"
                           filterable
                           placeholder="请选择榜单类型"
-                          v-model="platformId"
                           @change="searchByPlatform(platformId)"
                         >
                           <vxe-option
@@ -1121,8 +1085,8 @@ onMounted(() => {
                         <n-button
                           color="#D76C54"
                           round
-                          @click="deleteCustomListEvent()"
                           style="margin: 0 40px 0 20px"
+                          @click="deleteCustomListEvent()"
                         >
                           <template #icon>
                             <n-icon>
@@ -1192,32 +1156,32 @@ onMounted(() => {
                   <vxe-modal
                     v-model="customModalIsView"
                     destroy-on-close
+                    height="500px"
                     min-height="300"
                     min-width="600"
                     resize
                     title="新增榜单"
-                    height="500px"
                   >
                     <vxe-form
-                      title-colon
                       :data="customModalData.formData"
-                      :rules="customModalData.formRules"
                       :loading="customModalData.loading"
+                      :rules="customModalData.formRules"
+                      title-colon
                       @submit="submitCustomListEvent"
                     >
                       <vxe-form-gather>
                         <vxe-form-item
-                          title="榜单类型"
-                          field="platformId"
-                          :item-render="{}"
-                          title-overflow
                           v-if="addOrEdit"
+                          :item-render="{}"
+                          field="platformId"
+                          title="榜单类型"
+                          title-overflow
                         >
                           <template #default="{ data }">
                             <vxe-select
+                              v-model="data.platformId"
                               filterable
                               placeholder="请选择榜单类型"
-                              v-model="data.platformId"
                             >
                               <vxe-option
                                 v-for="platform in platformData.data"
@@ -1228,37 +1192,37 @@ onMounted(() => {
                             </vxe-select>
                           </template>
                         </vxe-form-item>
-                        <vxe-form-item title="榜单名称" field="customListName" :item-render="{}">
+                        <vxe-form-item :item-render="{}" field="customListName" title="榜单名称">
                           <template #default="{ data }">
                             <vxe-input
                               v-model="data.customListName"
-                              placeholder="请输入榜单名称"
                               clearable
+                              placeholder="请输入榜单名称"
                             ></vxe-input>
                           </template>
                         </vxe-form-item>
                         <vxe-form-item
-                          title="榜单描述"
-                          field="customListDescribe"
                           :item-render="{}"
+                          field="customListDescribe"
+                          title="榜单描述"
                         >
                           <template #default="{ data }">
                             <vxe-textarea
                               v-model="data.customListDescribe"
-                              placeholder="请输入榜单描述"
                               :autosize="{ minRows: 6, maxRows: 10 }"
                               clearable
+                              placeholder="请输入榜单描述"
                             ></vxe-textarea>
                           </template>
                         </vxe-form-item>
                       </vxe-form-gather>
                       <vxe-form-item align="center">
                         <vxe-button
+                          content="取消"
                           type="button"
                           @click="cancelModalEvent()"
-                          content="取消"
                         ></vxe-button>
-                        <vxe-button type="submit" status="primary" content="保存"></vxe-button>
+                        <vxe-button content="保存" status="primary" type="submit"></vxe-button>
                       </vxe-form-item>
                     </vxe-form>
                   </vxe-modal>
@@ -1491,7 +1455,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .person-top {
   height: 120px;
   display: flex;
@@ -1747,7 +1711,6 @@ onMounted(() => {
         }
 
         .person-title {
-          margin-bottom: 20px;
           position: relative;
           text-align: left;
           margin-bottom: 50px;

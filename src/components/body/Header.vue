@@ -27,7 +27,7 @@ const handleTo = (e: string) => {
 <template>
   <div class="header-bg">
     <div class="title">
-      <template v-for="item in menuArr">
+      <template v-for="(item, index) in menuArr" :key="index">
         <span
           :style="{ backgroundColor: item.code === store.state.menu ? '#113691' : 'black' }"
           @click="handleTo(item.code)"
@@ -38,10 +38,10 @@ const handleTo = (e: string) => {
     <div class="avatar">
       <NAvatar :size="35" :src="store.getters?.currentPictureUrl" round></NAvatar>
       <!--      <span style="margin: 0 5px">个人中心</span>-->
-      <span @click="handleTo('login')" style="margin: 0 5px" v-if="!store.getters.currentId">
+      <span v-if="!store.getters.currentId" style="margin: 0 5px" @click="handleTo('login')">
         登录
       </span>
-      <span @click="handleTo('person')" style="margin: 0 5px" v-else>个人中心</span>
+      <span v-else style="margin: 0 5px" @click="handleTo('person')">个人中心</span>
     </div>
   </div>
 </template>

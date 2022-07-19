@@ -40,6 +40,7 @@ const menuArr = reactive([
 ])
 const handleClick = (e: string) => {
   menuArr.forEach((item) => {
+    // eslint-disable-next-line no-param-reassign
     item.isSelect = item.code === e
   })
 }
@@ -134,11 +135,11 @@ const handleExit = () => {
     <div class="content-person">
       <div class="person-list">
         <div class="list-title">
-          <NIcon size="40" :component="PersonCircleOutline" color="black" :depth="3" />
+          <NIcon :component="PersonCircleOutline" :depth="3" color="black" size="40" />
           <span>头像</span>
         </div>
         <div class="list-info">
-          <n-avatar round :size="48" :src="store.getters?.currentPictureUrl"></n-avatar>
+          <n-avatar :size="48" :src="store.getters?.currentPictureUrl" round></n-avatar>
         </div>
         <div class="list-controller">
           <NPopselect trigger="click">
@@ -146,8 +147,8 @@ const handleExit = () => {
             <template #empty>
               <NUpload
                 action="https://test1.auni.top/api/user/updatePictrue"
-                @before-upload="beforeUpload"
                 @finish="handleFinish"
+                @before-upload="beforeUpload"
               >
                 <NButton>上传图片</NButton>
               </NUpload>
@@ -158,7 +159,7 @@ const handleExit = () => {
 
       <div class="person-list">
         <div class="list-title">
-          <NIcon size="40" :component="IdCardSharp" color="black" :depth="3" />
+          <NIcon :component="IdCardSharp" :depth="3" color="black" size="40" />
           <span>账号</span>
         </div>
         <div class="list-info">
@@ -181,7 +182,7 @@ const handleExit = () => {
             <NInput v-model:value="username" placeholder="请输入新的名称"></NInput>
           </div>
           <template #action>
-            <NButton @click="handleUpdateUsername" type="primary">确认</NButton>
+            <NButton type="primary" @click="handleUpdateUsername">确认</NButton>
             <NButton @click="handleShowModalUsername(false)">取消</NButton>
           </template>
         </NModal>
@@ -200,7 +201,7 @@ const handleExit = () => {
 
       <div class="person-list">
         <div class="list-title">
-          <NIcon size="40" :component="PhonePortraitOutline" color="black" :depth="3" />
+          <NIcon :component="PhonePortraitOutline" :depth="3" color="black" size="40" />
           <span>绑定手机号</span>
         </div>
         <div class="list-info">
@@ -217,7 +218,7 @@ const handleExit = () => {
             <NInput v-model:value="phone" placeholder="请输入新的电话号码"></NInput>
           </div>
           <template #action>
-            <NButton @click="handleUpdatePhone" type="primary">确认</NButton>
+            <NButton type="primary" @click="handleUpdatePhone">确认</NButton>
             <NButton @click="handleShowModal(false)">取消</NButton>
           </template>
         </NModal>

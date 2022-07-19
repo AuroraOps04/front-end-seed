@@ -3,29 +3,21 @@ import { computed, reactive, ref, onMounted } from 'vue'
 import {
   FormInst,
   NAvatar,
-  NIcon,
   NPopselect,
   NButton,
   NInput,
   NUpload,
   NModal,
-  FormItemRule,
-  NCountdown,
   NForm,
   NSpace,
   NFormItem,
-  NSelect,
   NCheckboxGroup,
   NCheckbox,
   NRadioGroup,
   NRadio,
   NCascader,
-  CascaderOption,
   useMessage,
-  NTabs,
-  NTabPane,
   UploadFileInfo,
-  NConfigProvider,
   GlobalThemeOverrides
 } from 'naive-ui'
 import { updatePhoneApi, updateUsernameApi } from '@service/person'
@@ -188,7 +180,7 @@ const handleSave = async (e: MouseEvent) => {
   // })
 }
 const handleClose = async () => {
-  getUserInfo()
+  await getUserInfo()
 }
 const handleLogout = () => {
   Cookies.remove('token')

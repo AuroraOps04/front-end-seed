@@ -248,20 +248,20 @@ onMounted(() => {
         <n-gi span="4">
           <vxe-table
             ref="xTable1"
-            size="small"
-            align="center"
             :data="userData.tableData"
             :export-config="{}"
             :row-config="{ isHover: true }"
+            align="center"
+            size="small"
           >
             <vxe-column type="checkbox" width="60"></vxe-column>
-            <vxe-table-column field="userName" title="姓名"></vxe-table-column>
-            <vxe-table-column field="gender" title="性别"></vxe-table-column>
-            <vxe-table-column field="categoryName" title="关注领域"></vxe-table-column>
-            <vxe-table-column field="areaName" title="所在地"></vxe-table-column>
-            <vxe-table-column field="phone" title="手机号"></vxe-table-column>
-            <vxe-table-column field="mail" title="邮箱"></vxe-table-column>
-            <vxe-table-column field="userRating" title="用户等级"></vxe-table-column>
+            <vxe-column field="userName" title="姓名"></vxe-column>
+            <vxe-column field="gender" title="性别"></vxe-column>
+            <vxe-column field="categoryName" title="关注领域"></vxe-column>
+            <vxe-column field="areaName" title="所在地"></vxe-column>
+            <vxe-column field="phone" title="手机号"></vxe-column>
+            <vxe-column field="mail" title="邮箱"></vxe-column>
+            <vxe-column field="userRating" title="用户等级"></vxe-column>
           </vxe-table>
         </n-gi>
       </n-grid>
@@ -291,20 +291,18 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .bg1 {
   height: 80%;
   width: 80%;
-  margin: 2%;
-  margin-left: 80px;
+  margin: 2% 2% 2% 80px;
   padding: 3%;
   border-radius: 15px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   @media screen and (min-width: 320px) and (max-width: 480px) {
     width: calc(100% - 8vw);
     height: auto;
-    margin: 2vw;
-    margin-left: 0;
+    margin: 2vw 2vw 2vw 0;
     padding: 2vw;
   }
 

@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { NCard, NTabs, NTabPane } from 'naive-ui'
+import { NTabs, NTabPane } from 'naive-ui'
 import AccountSelectTable from '@/components/user/priority/AccountSelectTable.vue'
 import ListPreviewTable from '@/components/user/priority/ListPreviewTable.vue'
 </script>
 <template>
   <div class="bgStyle">
-    <n-tabs type="line" animated>
+    <n-tabs animated type="line">
       <n-tab-pane name="accountSelectTable" tab="账号选择">
         <AccountSelectTable></AccountSelectTable>
       </n-tab-pane>

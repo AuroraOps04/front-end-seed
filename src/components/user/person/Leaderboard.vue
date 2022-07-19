@@ -251,7 +251,7 @@ const formatterTime: VxeColumnPropTypes.Formatter = ({ cellValue }) => {
   return `${year}-${month}-${day}`
 }
 // check全选
-const selectCustomListAllChangeEvent: VxeTableEvents.CheckboxAll = ({ checked }) => {
+const selectCustomListAllChangeEvent: VxeTableEvents.CheckboxAll = () => {
   // 置空数组
   customListIds.length = 0
   const $table = customListTable.value[0] as VxeTableInstance
@@ -295,7 +295,7 @@ const deleteCustomListEvent = async () => {
 const removeCustomListEvent = async (row: any) => {
   const customListId = row.customListId as number
   customListIds.push(customListId)
-  deleteCustomListEvent()
+  await deleteCustomListEvent()
 }
 
 // 打开添加用户自定义榜单模态框
@@ -323,10 +323,10 @@ const submitCustomListEvent: VxeFormEvents.Submit = async () => {
   customModalData.loading = true
   const res = await insertOrUpdateCustomsApi(customModalData.formData)
   if (res) {
-    selectAllCustomList()
+    await selectAllCustomList()
     customModalData.loading = false
     customModalIsView.value = false
-    VXETable.modal.message({ content: '保存成功', status: 'success' })
+    await VXETable.modal.message({ content: '保存成功', status: 'success' })
   }
 }
 
@@ -355,23 +355,23 @@ onMounted(() => {
       <!-- ---------------------榜单列表开始--------------------- -->
       <div class="leaderboard_title">
         <h3 class="leaderboard_txt">榜单列表</h3>
-        <img class="leaderboard_title_png" :src="underLine" alt="下划线" />
+        <img :src="underLine" alt="下划线" class="leaderboard_title_png" />
       </div>
       <div class="toolbar">
         <div class="search_tool">
           <div style="margin: 0 40px 0 3vw">
             <vxe-input
+              v-model="customListName"
               placeholder="输入榜单名称搜索"
               type="search"
-              v-model="customListName"
               @search-click="searchByCustomListName(customListName)"
             ></vxe-input>
           </div>
           <div>
             <vxe-select
+              v-model="platformId"
               filterable
               placeholder="请选择榜单类型"
-              v-model="platformId"
               @change="searchByPlatform(platformId)"
             >
               <vxe-option
@@ -399,8 +399,8 @@ onMounted(() => {
             <n-button
               color="#D76C54"
               round
-              @click="deleteCustomListEvent()"
               style="margin: 0 40px 0 20px"
+              @click="deleteCustomListEvent()"
             >
               <template #icon>
                 <n-icon>
@@ -466,29 +466,29 @@ onMounted(() => {
       <vxe-modal
         v-model="customModalIsView"
         destroy-on-close
+        height="500px"
         min-height="300"
         min-width="600"
         resize
         title="新增榜单"
-        height="500px"
       >
         <vxe-form
-          title-colon
           :data="customModalData.formData"
-          :rules="customModalData.formRules"
           :loading="customModalData.loading"
+          :rules="customModalData.formRules"
+          title-colon
           @submit="submitCustomListEvent"
         >
           <vxe-form-gather>
             <vxe-form-item
-              title="榜单类型"
-              field="platformId"
-              :item-render="{}"
-              title-overflow
               v-if="addOrEdit"
+              :item-render="{}"
+              field="platformId"
+              title="榜单类型"
+              title-overflow
             >
               <template #default="{ data }">
-                <vxe-select filterable placeholder="请选择榜单类型" v-model="data.platformId">
+                <vxe-select v-model="data.platformId" filterable placeholder="请选择榜单类型">
                   <vxe-option
                     v-for="platform in platformData.data"
                     :key="platform.platformId"
@@ -498,29 +498,29 @@ onMounted(() => {
                 </vxe-select>
               </template>
             </vxe-form-item>
-            <vxe-form-item title="榜单名称" field="customListName" :item-render="{}">
+            <vxe-form-item :item-render="{}" field="customListName" title="榜单名称">
               <template #default="{ data }">
                 <vxe-input
                   v-model="data.customListName"
-                  placeholder="请输入榜单名称"
                   clearable
+                  placeholder="请输入榜单名称"
                 ></vxe-input>
               </template>
             </vxe-form-item>
-            <vxe-form-item title="榜单描述" field="customListDescribe" :item-render="{}">
+            <vxe-form-item :item-render="{}" field="customListDescribe" title="榜单描述">
               <template #default="{ data }">
                 <vxe-textarea
                   v-model="data.customListDescribe"
-                  placeholder="请输入榜单描述"
                   :autosize="{ minRows: 6, maxRows: 10 }"
                   clearable
+                  placeholder="请输入榜单描述"
                 ></vxe-textarea>
               </template>
             </vxe-form-item>
           </vxe-form-gather>
           <vxe-form-item align="center">
-            <vxe-button type="button" @click="cancelModalEvent()" content="取消"></vxe-button>
-            <vxe-button type="submit" status="primary" content="保存"></vxe-button>
+            <vxe-button content="取消" type="button" @click="cancelModalEvent()"></vxe-button>
+            <vxe-button content="保存" status="primary" type="submit"></vxe-button>
           </vxe-form-item>
         </vxe-form>
       </vxe-modal>

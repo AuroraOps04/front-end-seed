@@ -1,5 +1,4 @@
 import request from '@service/_requests'
-import AreaQuery = API.AreaQuery
 import PageParams = API.PageParams
 import AreaQueryParams = API.AreaQueryParams
 import CategoryQueryParams = API.CategoryQueryParams
