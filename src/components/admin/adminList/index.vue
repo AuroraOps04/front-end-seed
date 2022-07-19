@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NButton, NGrid, NGi, NIcon } from 'naive-ui'
+import { NButton, NGrid, NGi, NIcon, useMessage } from 'naive-ui'
 import { VxeButtonEvents, VXETable, VxeTableEvents, VxeTableInstance } from 'vxe-table'
 import { TrashOutline, Add } from '@vicons/ionicons5'
 import { EditRegular } from '@vicons/fa'
@@ -14,6 +14,8 @@ import { onMounted, reactive, ref } from 'vue'
 import underLine from '@/assets/underLine.png'
 
 const underLinePng = underLine
+
+const message = useMessage()
 
 // 页面数据
 const adminData = reactive({
@@ -47,6 +49,9 @@ const updateParams = reactive<API.AdminParams>({
   passWord: '',
   phone: ''
 })
+
+// 重复输入密码
+const repeatPwd = ref<string>('')
 
 // 根据参数分页查询所有数据
 const findAdminSelectPage = async () => {
@@ -87,17 +92,27 @@ const xTable1 = ref<VxeTableInstance>()
 
 // 添加管理员数据
 const insertEvent = async () => {
-  await addAdminApi(addParams)
+  const res = await addAdminApi(addParams)
   isShow.value = false
-  await findAdminSelectPage()
+  if (res.success) {
+    await findAdminSelectPage()
+    await VXETable.modal.message('添加成功')
+  } else {
+    await VXETable.modal.message('添加失败')
+  }
 }
 
 // 修改管理员数据事件
 const updateEvent = async () => {
   // 修改参数
-  await editAdminApi(updateParams)
+  const res = await editAdminApi(updateParams)
   isShow2.value = false
-  await findAdminSelectPage()
+  if (res.success) {
+    await findAdminSelectPage()
+    await VXETable.modal.message('修改成功')
+  } else {
+    await VXETable.modal.message('修改失败')
+  }
 }
 
 function handleAddAdmin(event: any) {
@@ -231,9 +246,9 @@ onMounted(() => {
               @checkbox-change="selectChangeEvent"
             >
               <vxe-column type="checkbox" width="60"></vxe-column>
-              <vxe-table-column field="userId" title="序号" width="100"></vxe-table-column>
-              <vxe-table-column field="userName" title="账号名称" width="300"></vxe-table-column>
-              <vxe-table-column field="createdAt" title="添加日期" width="300"></vxe-table-column>
+              <vxe-column field="userId" title="序号" width="100"></vxe-column>
+              <vxe-column field="userName" title="账号名称" width="300"></vxe-column>
+              <vxe-column field="createdAt" title="添加日期" width="300"></vxe-column>
               <vxe-column show-overflow title="操作">
                 <template #default="{ row }">
                   <div>
@@ -294,18 +309,18 @@ onMounted(() => {
       >
         <template #default>
           <div>
-            <div class="input_text">
-              <div>
+            <div class="input_wrapper">
+              <div class="input_box">
                 <text>账号名字</text>
                 <vxe-input v-model="addParams.username" placeholder="输入账户名称"></vxe-input>
               </div>
 
-              <div>
+              <div class="input_box">
                 <text>手机号</text>
                 <vxe-input v-model="addParams.phone" placeholder="输入新的手机号"></vxe-input>
               </div>
 
-              <div>
+              <div class="input_box">
                 <text>密码</text>
                 <vxe-input v-model="addParams.passWord" placeholder="输入新的密码"></vxe-input>
               </div>
@@ -341,27 +356,27 @@ onMounted(() => {
       >
         <template #default>
           <div>
-            <div class="input_text">
-              <div>
-                <tex>手机号</tex>
+            <div class="input_wrapper">
+              <div class="input_box">
+                <text>手机号</text>
                 <vxe-input v-model="updateParams.phone" placeholder="输入新的手机号"></vxe-input>
               </div>
 
-              <div>
+              <div class="input_box">
                 <text>密码</text>
                 <vxe-input v-model="updateParams.passWord" placeholder="输入新的密码"></vxe-input>
               </div>
 
-              <div>
+              <div class="input_box">
                 <text>确认密码</text>
-                <vxe-input v-model="updateParams.passWord" placeholder="请确认新的密码"></vxe-input>
+                <vxe-input v-model="repeatPwd" placeholder="请确认新的密码"></vxe-input>
               </div>
             </div>
             <div class="input_button">
               <vxe-button
                 content="取消"
                 status="info"
-                @click="isShow = false"
+                @click="isShow2 = false"
                 class="button_left"
               ></vxe-button>
               <vxe-button
@@ -412,14 +427,24 @@ onMounted(() => {
         padding: 10px;
       }
     }
+    .input_wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
 
-    .input_text {
-      margin-top: 30px;
-      margin-left: 60px;
-      margin-bottom: 30px;
+      .input_box {
+        margin-top: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 70%;
+      }
     }
     .input_button {
       margin-left: 30px;
+      margin-top: 20px;
       .button_left {
         width: 110px;
         margin-right: 45px;
