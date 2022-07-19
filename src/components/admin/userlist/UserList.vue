@@ -255,13 +255,13 @@ onMounted(() => {
             :row-config="{ isHover: true }"
           >
             <vxe-column type="checkbox" width="60"></vxe-column>
-            <vxe-table-column field="userName" title="姓名"></vxe-table-column>
-            <vxe-table-column field="gender" title="性别"></vxe-table-column>
-            <vxe-table-column field="categoryName" title="关注领域"></vxe-table-column>
-            <vxe-table-column field="areaName" title="所在地"></vxe-table-column>
-            <vxe-table-column field="phone" title="手机号"></vxe-table-column>
-            <vxe-table-column field="mail" title="邮箱"></vxe-table-column>
-            <vxe-table-column field="userRating" title="用户等级"></vxe-table-column>
+            <vxe-column field="userName" title="姓名"></vxe-column>
+            <vxe-column field="gender" title="性别"></vxe-column>
+            <vxe-column field="categoryName" title="关注领域"></vxe-column>
+            <vxe-column field="areaName" title="所在地"></vxe-column>
+            <vxe-column field="phone" title="手机号"></vxe-column>
+            <vxe-column field="mail" title="邮箱"></vxe-column>
+            <vxe-column field="userRating" title="用户等级"></vxe-column>
           </vxe-table>
         </n-gi>
       </n-grid>

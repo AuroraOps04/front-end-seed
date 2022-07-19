@@ -231,12 +231,8 @@ onMounted(() => {
               @checkbox-change="selectChangeEvent"
             >
               <vxe-column type="checkbox" width="60"></vxe-column>
-              <vxe-table-column field="categoryId" title="序号" width="140"></vxe-table-column>
-              <vxe-table-column
-                field="categoryName"
-                title="分类名称"
-                width="350"
-              ></vxe-table-column>
+              <vxe-column field="categoryId" title="序号" width="140"></vxe-column>
+              <vxe-column field="categoryName" title="分类名称" width="350"></vxe-column>
               <vxe-column show-overflow title="操作">
                 <template #default="{ row }">
                   <div>
