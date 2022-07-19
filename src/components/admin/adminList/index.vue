@@ -104,6 +104,10 @@ const insertEvent = async () => {
 
 // 修改管理员数据事件
 const updateEvent = async () => {
+  if (updateParams.passWord !== repeatPwd.value) {
+    message.warning('密码不一致')
+    return
+  }
   // 修改参数
   const res = await editAdminApi(updateParams)
   isShow2.value = false
