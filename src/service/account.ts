@@ -181,3 +181,9 @@ export const insertIntoCustomListApi = (
     }
   })
 }
+
+export const getErrorCorrectionApi = (text: string | null): Promise<API.Response> => {
+  return request(`/textErrorCorrection/getErrorCorrection/${text}/`, {
+    method: 'GET'
+  })
+}

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { reactive, onMounted } from 'vue'
 import { VxeColumnPropTypes, VxePagerEvents } from 'vxe-table'
 import { listAccountByPageApi } from '@service/account'
@@ -13,12 +13,6 @@ type AccountData = {
   count: number
   data: API.AccountData[]
 }
-
-// 账户信息
-const accountData = reactive<AccountData>({
-  count: 0,
-  data: []
-})
 
 /**
  * 判断参数是否为null或者undefined或者""或者" "；(除去0的情况)
@@ -45,6 +39,12 @@ const isNullOrEmpty = (obj: unknown): boolean => {
   }
   return flag
 }
+
+// 账户信息
+const accountData = reactive<AccountData>({
+  count: 0,
+  data: []
+})
 
 // 表格分页
 const tablePage = reactive<TablePage>({
@@ -86,9 +86,6 @@ const formatterCategory: VxeColumnPropTypes.Formatter = ({ cellValue }) => {
   return isNullOrEmpty(cellValue) ? '暂未录入地区' : cellValue
 }
 
-// 排序
-const sortEvent = () => {}
-
 onMounted(() => {
   findAccountSelectPage()
 })
@@ -96,35 +93,32 @@ onMounted(() => {
 <template>
   <div class="container">
     <vxe-table
-      border="inner"
-      show-overflow
       ref="xTable"
-      height="475vw"
       :align="'center'"
       :column-config="{ resizable: true }"
       :data="accountData.data"
       :radio-config="{ highlight: true }"
       :row-config="{ isHover: true }"
+      border="inner"
+      height="475vw"
+      show-overflow
     >
-      <vxe-column type="seq" title="排名" width="60"></vxe-column>
+      <vxe-column title="排名" type="seq" width="60"></vxe-column>
       <vxe-column field="accountName" title="账号"></vxe-column>
       <vxe-column field="recordFan" title="粉丝数"></vxe-column>
       <vxe-column :formatter="formatterArea" field="areaName" title="地区"></vxe-column>
       <vxe-column
         :formatter="formatterCategory"
         field="categoryName"
-        title="所属分类"
         show-overflow
+        title="所属分类"
       ></vxe-column>
-      <vxe-column field="recordFan" title="潮汐指数(暂用fans)" show-overflow></vxe-column>
+      <vxe-column field="recordFan" show-overflow title="潮汐指数(暂用fans)"></vxe-column>
     </vxe-table>
 
     <vxe-pager
-      background
       v-model:current-page="tablePage.currentPage"
       v-model:page-size="tablePage.pageSize"
-      :total="tablePage.total"
-      @page-change="handlePageChange"
       :layouts="[
         'PrevJump',
         'PrevPage',
@@ -135,12 +129,15 @@ onMounted(() => {
         'FullJump',
         'Total'
       ]"
+      :total="tablePage.total"
+      background
+      @page-change="handlePageChange"
     >
     </vxe-pager>
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .container {
   width: 100%;
   /*background-color: #0E1222;*/

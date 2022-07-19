@@ -7,7 +7,6 @@ import {
   VxeTableInstance,
   VxeColumnPropTypes,
   VxeFormPropTypes,
-  VxeFormItemPropTypes,
   VxeTableEvents,
   VxePagerEvents
 } from 'vxe-table'
@@ -124,48 +123,6 @@ const formDatas = reactive({
 })
 const xTable = ref<VxeTableInstance>()
 
-// 弹窗可选信息
-const visibleMethod: VxeFormItemPropTypes.VisibleMethod = ({ data }) => {
-  return data.flag1 === 'Y'
-}
-
-const editEvent = (row: any) => {
-  formDatas.formData = {
-    name: row.name,
-    nickname: row.nickname,
-    role: row.role,
-    sex: row.sex,
-    age: row.age,
-    num: row.num,
-    checkedList: row.checkedList,
-    flag1: row.flag1,
-    date3: row.date3,
-    address: row.address
-  }
-  formDatas.selectRow = row
-  formDatas.showEdit = true
-}
-
-const cellDBLClickEvent: VxeTableEvents.CellDblclick = ({ row }) => {
-  editEvent(row)
-}
-
-const submitEvent = () => {
-  formDatas.submitLoading = true
-  setTimeout(() => {
-    const $table = xTable.value as any
-    formDatas.submitLoading = false
-    formDatas.showEdit = false
-    if (formDatas.selectRow) {
-      VXETable.modal.message({ content: '保存成功', status: 'success' })
-      Object.assign(formDatas.selectRow, formDatas.formData)
-    } else {
-      VXETable.modal.message({ content: '新增成功', status: 'success' })
-      $table.insert(formDatas.formData)
-    }
-  }, 500)
-}
-
 // 查询数据的条件参数
 const params = reactive<API.AccountParams & API.PageParams>({
   pageSize: tablePage.pageSize,
@@ -205,7 +162,7 @@ const handlePageChange: VxePagerEvents.PageChange = ({ currentPage, pageSize }) 
 }
 
 // check全选
-const selectAllChangeEvent: VxeTableEvents.CheckboxAll = ({ checked }) => {
+const selectAllChangeEvent: VxeTableEvents.CheckboxAll = () => {
   // 置空数组
   accountArray.length = 0
   const $table = xTable.value as VxeTableInstance

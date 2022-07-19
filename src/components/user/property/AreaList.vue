@@ -1,19 +1,17 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { NButton, NGrid, NGi, NIcon } from 'naive-ui'
-import { VxeButtonEvents, VXETable, VxeTableEvents, VxeTableInstance } from 'vxe-table'
+import { VXETable, VxeTableEvents, VxeTableInstance } from 'vxe-table'
 import { TrashOutline, Add } from '@vicons/ionicons5'
 import { EditRegular } from '@vicons/fa'
 import { onMounted, reactive, ref } from 'vue'
 import {
   addAreaApi,
   editAreaByNameApi,
-  editCategoryByNameApi,
   listAreaByPageApi,
   removeAreaBatchByIdsApi,
   removeAreaByIdApi
 } from '@service/property'
 import underLine from '@/assets/underLine.png'
-import AreaQueryParams = API.AreaQueryParams
 
 const underLinePng = underLine
 
@@ -99,7 +97,7 @@ const updateEvent = async () => {
   await findAreaSelectPage()
 }
 
-function handleAddArea(event: any) {
+function handleAddArea() {
   inputAreaName.value = ''
   isShow.value = true
 }
@@ -173,23 +171,23 @@ onMounted(() => {
   <div class="bg_box">
     <div class="bg_box2">
       <h3>地区管理</h3>
-      <img class="text_png1" :src="underLinePng" alt="下划线" />
+      <img :src="underLinePng" alt="下划线" class="text_png1" />
       <n-grid :cols="4" x-gap="24">
         <n-gi span="4">
           <vxe-toolbar>
             <template #buttons>
               <vxe-input
-                placeholder="输入关键词搜索"
                 v-model="params.areaName"
+                placeholder="输入关键词搜索"
                 type="search"
                 @blur="changeAreaName"
               ></vxe-input>
 
-              <n-button ghost type="info" style="margin-left: 5px" @click="clickEvent">
+              <n-button ghost style="margin-left: 5px" type="info" @click="clickEvent">
                 重置
               </n-button>
 
-              <n-button type="info" style="margin-left: 5px" @click="handleAddArea">
+              <n-button style="margin-left: 5px" type="info" @click="handleAddArea">
                 <template #icon>
                   <n-icon>
                     <Add />
@@ -197,7 +195,7 @@ onMounted(() => {
                 </template>
                 添加
               </n-button>
-              <n-button type="error" style="margin-left: 5px" @click="deleteEvent">
+              <n-button style="margin-left: 5px" type="error" @click="deleteEvent">
                 <template #icon>
                   <n-icon>
                     <TrashOutline />
@@ -215,17 +213,17 @@ onMounted(() => {
           <n-gi span="4">
             <vxe-table
               ref="xTable1"
-              size="small"
-              align="center"
               :data="propertyData.tableData"
               :export-config="{}"
               :row-config="{ isHover: true }"
+              align="center"
+              size="small"
               @checkbox-all="selectAllChangeEvent"
               @checkbox-change="selectChangeEvent"
             >
               <vxe-column type="checkbox" width="60"></vxe-column>
-              <vxe-table-column field="areaId" title="序号" width="140"></vxe-table-column>
-              <vxe-table-column field="areaName" title="地区名称" width="350"></vxe-table-column>
+              <vxe-column field="areaId" title="序号" width="140"></vxe-column>
+              <vxe-column field="areaName" title="地区名称" width="350"></vxe-column>
               <vxe-column show-overflow title="操作">
                 <template #default="{ row }">
                   <div>
@@ -277,12 +275,12 @@ onMounted(() => {
       <vxe-modal
         v-model="isShow"
         destroy-on-close
+        height="230"
         min-height="900"
         min-width="900"
         resize
         title="添加地区"
         width="340"
-        height="230"
       >
         <template #default>
           <div>
@@ -291,16 +289,16 @@ onMounted(() => {
             </div>
             <div class="input_button">
               <vxe-button
+                class="button_left"
                 content="取消"
                 status="info"
                 @click="isShow = false"
-                class="button_left"
               ></vxe-button>
               <vxe-button
+                class="button_right"
                 content="确定添加"
                 status="primary"
                 @click="insertEvent()"
-                class="button_right"
               ></vxe-button>
             </div>
           </div>
@@ -311,12 +309,12 @@ onMounted(() => {
       <vxe-modal
         v-model="isShow2"
         destroy-on-close
+        height="230"
         min-height="900"
         min-width="900"
         resize
         title="编辑地区"
         width="340"
-        height="230"
       >
         <template #default>
           <div>
@@ -325,16 +323,16 @@ onMounted(() => {
             </div>
             <div class="input_button">
               <vxe-button
+                class="button_left"
                 content="取消"
                 status="info"
                 @click="isShow2 = false"
-                class="button_left"
               ></vxe-button>
               <vxe-button
+                class="button_right"
                 content="保存"
                 status="primary"
                 @click="updateEvent()"
-                class="button_right"
               ></vxe-button>
             </div>
           </div>

@@ -20,7 +20,6 @@ import arrow from '@/assets/arrow.png'
 import up from '@/assets/up.png'
 import comment from '@/assets/comment.png'
 import forward from '@/assets/forward.png'
-import write from '@/assets/write.png'
 import textBg from '@/assets/text_bg.png'
 import accountForward from '@/assets/account_forward.png'
 import accountComment from '@/assets/account_comment.png'
@@ -126,10 +125,6 @@ const getDate = () => {
 // 设置实例参数
 const currentDate = getDate()
 const arrowPng = arrow
-const writePng = write
-const commentPng = comment
-const forwardPng = forward
-const upPng = up
 const textBgPng = textBg
 const echartsSelect = ref<string>('article')
 
@@ -295,14 +290,14 @@ const DateListButtonChange = (typeButton: number) => {
 
 const AccountCollection = async () => {
   const accountCollectionId = accountId.value as number
-  const userId = store.getters.currentId
+  const userId = Number(localStorage.getItem('userId'))
   const res = await AccountCollectionApi(accountCollectionId, userId)
   collectionState.value = res.data as unknown as number
 }
 
 const accountCollectionStatue = async () => {
   const accountCollectionId = accountId.value as number
-  const userId = store.getters.currentId
+  const userId = Number(localStorage.getItem('userId'))
   const res = await accountCollectionStatueApi(accountCollectionId, userId)
   collectionState.value = res.data as unknown as number
 }
@@ -310,13 +305,11 @@ const accountCollectionStatue = async () => {
 const getPostTop = async (e: number) => {
   const res = await getPostTopApi(e)
   postData.data = res.data as Post[]
-  console.log(postData.data)
 }
 
 const getCommentTop = async (e: string) => {
   const res = await getCommentTopApi(e)
   commentData.data = res.data as Comment[]
-  console.log(commentData.data)
 }
 
 const handleSelectPost = (e: string) => {
@@ -649,10 +642,10 @@ onMounted(() => {
                   <text class="text_italic">最新贴文列表</text>
                   <img :src="arrowPng" alt="账号内容" class="img_arrow" />
                 </div>
-                <NCard v-for="item in postData.data">
+                <NCard v-for="(item, index) in postData.data" :key="index">
                   <div
-                    class="list_content"
                     :class="[item.postId === postIndex ? 'select' : '']"
+                    class="list_content"
                     @click="handleSelectPost(item.postId)"
                   >
                     <div class="content_text">{{ item.content }}</div>
@@ -677,9 +670,10 @@ onMounted(() => {
               </div>
               <!--              帖子详情-->
               <div
-                class="post_detail"
-                v-for="item in postData.data"
+                v-for="(item, index) in postData.data"
+                :key="index"
                 :class="[item.postId !== postIndex ? 'none' : '']"
+                class="post_detail"
               >
                 <template v-if="item.postId === postIndex">
                   <div style="display: flex; align-items: center">
@@ -721,7 +715,7 @@ onMounted(() => {
                   </div>
 
                   <div class="detail_comment">
-                    <NCard v-for="item1 in commentData.data">
+                    <NCard v-for="(item1, index) in commentData.data" :key="index">
                       <span>作者：{{ item1.author }}</span
                       ><br />
                       <span>{{ item1.text }}</span>
