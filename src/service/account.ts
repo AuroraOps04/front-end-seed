@@ -143,47 +143,11 @@ export const getCommentTopApi = (e: string) => {
   })
 }
 
-export const findAllCustomListAffiliateApi = (
-  customParams: API.customListAffiliateParams
-): Promise<API.Response> => {
-  return request(`/customListAffiliate/findAllCustomListAffiliate`, {
-    method: 'GET',
-    params: customParams
-  })
-}
-
-export const customListAffiliateByIdApi = (
-  customListAffiliateId: number
-): Promise<API.Response> => {
-  return request(`/customListAffiliate/deleteCustomListAffiliateById/${customListAffiliateId}`, {
-    method: 'DELETE'
-  })
-}
-
 export const cancelCustomCollectionApi = (
   userId: number,
   accountId: number
 ): Promise<API.Response> => {
   return request(`/userCollect/cancelCustomCollection/${userId}/${accountId}`, {
     method: 'DELETE'
-  })
-}
-
-export const insertIntoCustomListApi = (
-  params: number[],
-  customListId: number
-): Promise<API.Response> => {
-  return request('/customListAffiliate/insertIntoCustomList', {
-    method: 'POST',
-    params: {
-      ids: params,
-      customListId
-    }
-  })
-}
-
-export const getErrorCorrectionApi = (text: string | null): Promise<API.Response> => {
-  return request(`/textErrorCorrection/getErrorCorrection/${text}/`, {
-    method: 'GET'
   })
 }

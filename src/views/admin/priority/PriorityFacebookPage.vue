@@ -10,12 +10,12 @@ import ListPreviewTable from '@/components/user/priority/ListPreviewTable.vue'
         <AccountSelectTable></AccountSelectTable>
       </n-tab-pane>
       <n-tab-pane name="listPreviewTable" tab="榜单预览">
-        <listPreviewTable></listPreviewTable>
+        <ListPreviewTable></ListPreviewTable>
       </n-tab-pane>
     </n-tabs>
   </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .bgStyle {
   height: 100%;
   width: 92%;

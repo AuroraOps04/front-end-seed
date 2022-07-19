@@ -57,6 +57,8 @@ const tablePage = reactive<TablePage>({
 const params = reactive<API.AccountParams & API.PageParams>({
   pageSize: tablePage.pageSize,
   page: tablePage.currentPage,
+  // 先写死1为facebook，后期左侧栏点击对应的平台需要根据对应平台查询
+  platform: 1,
   accountIsView: 1
 })
 

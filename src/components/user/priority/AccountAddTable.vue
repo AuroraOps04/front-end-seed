@@ -7,24 +7,38 @@ import {
   VxeColumnPropTypes,
   VxeTableEvents,
   VxePagerEvents,
-  VXETable
+  VXETable,
+  VxeTablePropTypes
 } from 'vxe-table'
 import {
   findAllCategoryApi,
   findAreaApi,
   listAccountByPageApi,
-  updateAccountIsViewApi,
-  insertIntoCustomListApi
+  updateAccountIsViewApi
 } from '@service/account'
+import {
+  insertIntoCustomListApi,
+  selectAllAccountIdByCustomListIdApi
+} from '@service/customListAffiliate'
 
 const props = defineProps({
   isUserAdd: {
     type: Number,
     required: false,
     default: 0
+  },
+  platformId: {
+    type: Number,
+    required: false,
+    default: null
+  },
+  customListId: {
+    type: Number,
+    required: false,
+    defalult: null
   }
 })
-const isUserAdd = toRefs(props)
+const propsRef = toRefs(props)
 
 type AccountData = {
   count: number
@@ -79,6 +93,8 @@ const areaValue = ref<number | null>()
 const categoryValue = ref<number | null>()
 // 定义批量删除的数组
 const accountArray: number[] = []
+// 定义获取该自定义榜单customListId下的所有账号【accoutId】的数组
+let accountIdListByCustomListId: number[] = []
 // 获取父组件的modal关闭方法
 const emits = defineEmits(['close', 'selectData', 'findAllCustomListAffiliate'])
 // 账户信息
@@ -110,13 +126,15 @@ const params = reactive<API.AccountParams & API.PageParams>({
   area: null,
   category: null,
   accountName: accountName.value,
-  accountIsView: 0
+  accountIsView: 0,
+  platform: null
 })
 
 // 分页查询所有数据
 const findAccountSelectPage = async () => {
-  if (isUserAdd.isUserAdd.value === 1) {
+  if (propsRef.isUserAdd.value === 1) {
     params.accountIsView = 1
+    params.platform = propsRef.platformId.value
   }
   const res = await listAccountByPageApi(params)
   accountData.count = res.count
@@ -177,13 +195,13 @@ const formatterCategory: VxeColumnPropTypes.Formatter = ({ cellValue }) => {
 }
 
 // 地区下拉选项
-const changeArea = (value: number) => {
+const changeArea = (value: number | null | undefined) => {
   params.area = value
   findAccountSelectPage()
 }
 
 // 分类下拉选项
-const changeCategory = (value: number) => {
+const changeCategory = (value: number | null | undefined) => {
   params.category = value
   if (value === -1) {
     params.category = null
@@ -209,13 +227,27 @@ const resetEvent = () => {
   categoryValue.value = null
   findAccountSelectPage()
 }
+
+// 根据customListId查询出该自定义榜单下的所有账号id
+const selectAllAccountIdByCustomListId = async () => {
+  const res = await selectAllAccountIdByCustomListIdApi(propsRef.customListId.value)
+  accountIdListByCustomListId = res.data as number[]
+  console.log(accountIdListByCustomListId)
+}
+
+// 用于表格判断复选框是否禁用
+const checkboxIsAvailable = ({ row }) => {
+  return !accountIdListByCustomListId.includes(row.accountId)
+}
+
 // 添加
 const insertEvent = async () => {
-  if (isUserAdd.isUserAdd.value === 1) {
+  if (propsRef.isUserAdd.value === 1) {
     // 从两个值 一个account_id一个custom_list_id
-    await insertIntoCustomListApi(accountArray, 1)
+    await insertIntoCustomListApi(accountArray, propsRef.customListId.value)
     emits('findAllCustomListAffiliate')
   } else {
+    // 用于后台重点榜单的添加账号中将用户显示状态修改为显示，即isView的值为1
     await updateAccountIsViewApi(accountArray, 1)
     emits('selectData')
   }
@@ -229,6 +261,9 @@ const cancelEvent = () => {
 }
 
 onMounted(() => {
+  if (propsRef.isUserAdd.value === 1) {
+    selectAllAccountIdByCustomListId()
+  }
   findAccountSelectPage()
   findAllCategory()
   findAllArea()
@@ -297,6 +332,7 @@ onMounted(() => {
       show-overflow
       @checkbox-all="selectAllChangeEvent"
       @checkbox-change="selectChangeEvent"
+      :checkbox-config="{ checkMethod: checkboxIsAvailable }"
     >
       <vxe-column type="checkbox" width="60"></vxe-column>
       <vxe-column field="accountName" title="账号"></vxe-column>

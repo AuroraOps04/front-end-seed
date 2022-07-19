@@ -40,6 +40,10 @@ import {
   VxeTableInstance
 } from 'vxe-table'
 
+import {
+  customListAffiliateByIdApi,
+  findAllCustomListAffiliateApi
+} from '@service/customListAffiliate'
 import personLogoPng from '@/assets/person_logo.png'
 import personIcon2Png from '@/assets/person_icon2.png'
 import personIcon3Png from '@/assets/person_icon3.png'
@@ -54,9 +58,7 @@ import {
   accountCollectionListApi,
   cancelCollectionsApi,
   cancelCustomCollectionApi,
-  customListAffiliateByIdApi,
   findAllCategoryApi,
-  findAllCustomListAffiliateApi,
   findAllPlatFormApi,
   findAreaApi
 } from '@/service/account'
