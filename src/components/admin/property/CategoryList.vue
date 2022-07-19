@@ -83,17 +83,27 @@ const xTable1 = ref<VxeTableInstance>()
 
 // 添加分类数据
 const insertEvent = async () => {
-  await addCategoryApi(inputCategoryName.value)
+  const res = await addCategoryApi(inputCategoryName.value)
   isShow.value = false
-  await findCategorySelectPage()
+  if (res.success) {
+    await findCategorySelectPage()
+    await VXETable.modal.message('添加成功')
+  } else {
+    await VXETable.modal.message('添加失败')
+  }
 }
 // 修改分类数据事件
 const updateEvent = async () => {
   // 修改参数
   updateParams.categoryName = inputCategoryName.value
-  await editCategoryByNameApi(updateParams)
+  const res = await editCategoryByNameApi(updateParams)
   isShow2.value = false
-  await findCategorySelectPage()
+  if (res.success) {
+    await findCategorySelectPage()
+    await VXETable.modal.message('修改成功')
+  } else {
+    await VXETable.modal.message('修改失败')
+  }
 }
 function handleAddCategory() {
   inputCategoryName.value = ''
@@ -101,6 +111,7 @@ function handleAddCategory() {
 }
 
 function handleEditCategory(row: any) {
+  inputCategoryName.value = ''
   // 修改参数id
   updateParams.categoryId = row.categoryId as number
   isShow2.value = true

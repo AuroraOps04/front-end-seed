@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AreaList from '@/components/user/property/AreaList.vue'
+import AreaList from '@/components/admin/property/AreaList.vue'
 </script>
 
 <template>
