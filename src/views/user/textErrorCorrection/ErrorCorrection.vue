@@ -9,6 +9,8 @@ import correctionPng from '@/assets/correction.png'
 import textInput from '@/assets/textinput.png'
 import iec from '@/assets/iec.png'
 import imgIec from '@/assets/img_ice.png'
+import tidalNebula from '@/assets/tidal-nebula.png'
+import intelligentText from '@/assets/intelligent-text.png'
 
 const router = useRouter()
 const store = useStore()
@@ -68,7 +70,7 @@ const clearText = () => {
 </script>
 <template>
   <div class="container">
-    <div class="header-bg">
+    <div class="text-error-menu">
       <div class="title">
         <template v-for="(item, index) in menuArr" :key="index">
           <span
@@ -86,88 +88,92 @@ const clearText = () => {
         <span v-else style="margin: 0 5px" @click="handleTo('person')">个人中心</span>
       </div>
     </div>
-    <div class="body-bg">
-      <div class="tidal-title">
-        <div class="tidal-top-menu-logo">
-          <img alt="logo" src="@/assets/logo.png" />
-          <span></span>
-          <div class="home-title">
-            <span style="color: #1c294f">潮汐</span>
-            <span>星云</span>
-            <br />
-            <span style="font-size: 15px; margin-left: 35px">智能文本纠错系统</span>
+
+    <div class="text-error-logo">
+      <div class="text-logo-tidalNebula">
+        <img :src="tidalNebula" alt="潮汐星云" />
+      </div>
+      <div class="text-logo-hint">
+        <img :src="intelligentText" alt="智能文本纠错系统" />
+      </div>
+    </div>
+
+    <div class="text-error-content">
+      <div class="text-content-input">
+        <div class="text-content-logo">
+          <div class="text-logo-input">
+            <span class="text-logo-img"><img :src="textInput" alt="文本输入" /></span>
+            <span class="text-span-text">文本输入</span>
+          </div>
+          <div class="text-logo-button">
+            <span class="text-button-img"><img :src="correctionPng" alt="中英文切换" /></span>
+            <span class="text-button-input">中文纠错</span>
           </div>
         </div>
-      </div>
-      <!--      <div class="tidal-hint">智能文本纠错系统</div>-->
-    </div>
-    <div class="body-correction">
-      <div class="text-input">
-        <div class="input-title">
-          <span class="text-correction"><img :src="textInput" alt="logo" />文本输入</span
-          ><span class="text-correction"><img :src="correctionPng" alt="logo" />中文纠错</span>
-        </div>
-        <div v-if="showInput">
+        <div v-if="showInput" class="text-content-areaText">
           <n-space vertical>
             <n-input
               v-model:value="textValue"
-              :maxlength="500"
               autosize
               placeholder="请在此处粘贴标题"
-              style="min-width: 1000px; min-height: 400px"
+              size="large"
+              style="min-height: 54.49vh"
               type="textarea"
             />
           </n-space>
         </div>
         <div v-else class="textArea-show" v-html="errorMessage.errorText"></div>
-        <div class="button-input">
-          <n-space>
-            <n-button type="warning" @click="clearText">清空文字 </n-button>
-            <n-button type="error" @click="submitText">开始纠错 </n-button>
-          </n-space>
-        </div>
-      </div>
-      <!--      v-html="returnTextValue"-->
-      <div v-if="errorMessage.correctList.length !== 0" class="text-result">
-        <div class="text-result-title">
-          <span class="text-style"><img :src="iec" alt="logo" />智能纠错</span>
-        </div>
-        <div class="text-result-input">
-          <div class="text-result-one">
-            <span>全部风险</span>
-            <br />
-            <span class="text-result-number">{{ errorMessage.correctList.length }}</span>
-          </div>
-          <div class="text-result-one">
-            <span>文字纠错</span>
-            <br />
-            <span class="text-result-number">{{ errorMessage.correctList.length }}</span>
-          </div>
-          <div class="text-result-one">
-            <span>铭感审核</span>
-            <br />
-            <span class="text-result-number">{{ errorMessage.correctList.length }}</span>
-          </div>
-        </div>
-        <div class="text-result-advice">
-          <div><span>已采纳</span><span>采纳全部</span></div>
-          <div><span>已忽略</span><span>忽略全部</span></div>
-        </div>
-        <div class="text-result-list">
-          <div v-for="(item, index) in errorMessage.correctList" :key="index" class="result-list">
-            <span class="red-round"></span><span style="color: red">{{ item.ori_frag }}</span> ->{{
-              item.correct_frag
-            }}
+        <div class="text-content-button">
+          <div class="text-button-button">
+            <n-space>
+              <n-button type="warning" @click="clearText">清空文字</n-button>
+              <n-button type="error" @click="submitText">开始纠错</n-button>
+            </n-space>
           </div>
         </div>
       </div>
-      <div v-else class="text-result">
-        <div class="text-result-title">
-          <span class="text-style"><img :src="iec" alt="logo" />智能纠错</span>
+      <div class="text-content-show">
+        <div class="text-show-correction">
+          <div class="text-logo-input">
+            <span class="text-logo-img"><img :src="iec" alt="智能纠错" /></span>
+            <span class="text-span-text">智能纠错</span>
+          </div>
         </div>
-        <div class="text-result-else">
-          <img :src="imgIec" alt="logo" />
+        <div v-if="errorMessage.correctList.length !== 0" class="text-areaText-show">
+          <div class="text-areaText-result">
+            <div class="text-result-results">
+              <div class="text-result-front">
+                全部风险
+                <div class="text-result-total">8</div>
+              </div>
+            </div>
+            <div class="text-result-results">
+              <div class="text-result-front">
+                文字纠错
+                <div class="text-result-total">8</div>
+              </div>
+            </div>
+            <div class="text-result-results">
+              <div class="text-result-front">
+                铭感审核
+                <div class="text-result-total">8</div>
+              </div>
+            </div>
+          </div>
+          <div class="text-areaText-suggest">
+            <div></div>
+            <div></div>
+          </div>
+          <div class="text-areaText-revise">
+            <div v-for="(item, index) in errorMessage.correctList" :key="index" class="result-list">
+              <div class="red-round"></div>
+              <div style="padding-top: 4px">
+                <span style="color: red">{{ item.ori_frag }}</span> ->{{ item.correct_frag }}
+              </div>
+            </div>
+          </div>
         </div>
+        <div v-else class="text-content-areaText"><img :src="imgIec" alt="logo" /></div>
       </div>
     </div>
   </div>
@@ -176,20 +182,21 @@ const clearText = () => {
 <style lang="scss" scoped>
 .container {
   background-color: #f2f6f7;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 
-  .header-bg {
-    background-color: black;
-    height: 60px;
-    width: 100%;
+  .text-error-menu {
     display: flex;
+    width: 100vw;
+    height: 6.02vh;
+    background-color: black;
+    flex-wrap: nowrap;
+    justify-content: end;
     flex-direction: row;
     align-items: center;
-    justify-content: end;
-    @media screen and (min-width: 320px) and (max-width: 480px) {
-      height: 10vw;
-    }
 
     .title {
       display: flex;
@@ -197,313 +204,317 @@ const clearText = () => {
       justify-content: center;
       color: white;
       height: 100%;
-
-      span {
-        height: 100%;
-        padding: 0 10px;
-        margin: 0 10px;
-        text-align: center;
-        line-height: 60px;
-        cursor: pointer;
-        @media screen and (min-width: 320px) and (max-width: 480px) {
-          padding: 0 2vw;
-          margin: 0 2vw;
-          line-height: 10vw;
-        }
-      }
-
-      span:hover {
-        background-color: #113691;
-        opacity: 0.7;
-      }
-    }
-
-    .avatar {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      width: 150px;
-      @media screen and (min-width: 320px) and (max-width: 480px) {
-        width: 40vw;
-      }
-
-      span {
-        color: white;
-        cursor: pointer;
-      }
-
-      span:hover {
-        opacity: 0.7;
-      }
     }
   }
 
-  .body-bg {
+  .text-error-logo {
     display: flex;
+    width: 100vw;
+    height: 13.89vh;
     background-color: #ffffff;
-    height: 20vh;
-    width: 100%;
-    flex-direction: column;
-    align-items: center;
-    justify-content: end;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    @media screen and (min-width: 320px) and (max-width: 480px) {
-      height: 10vw;
-    }
+    flex-direction: row;
+    flex-wrap: wrap;
 
-    .tidal-title {
-      width: 100%;
-      height: 82%;
-      line-height: 66px;
-      color: #243055;
-      font-size: 28px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      text-align: left;
-      display: flex;
-      flex-direction: row;
-      padding-top: 15px;
+    .text-logo-tidalNebula {
+      width: 100vw;
+      height: 50%;
 
-      @media screen and (min-width: 320px) and (max-width: 480px) {
-        width: 20vw;
-        font-size: 4vw;
-        height: 5vw;
-        line-height: 5vw;
-      }
-
-      .tidal-top-menu-logo {
-        display: flex;
-        flex-direction: row;
-        margin-left: 100px;
-        cursor: pointer;
-
-        @media screen and (min-width: 320px) and (max-width: 480px) {
-          margin-left: 1vw;
-        }
-
-        img {
-          width: 40px;
-          height: 40px;
-
-          @media screen and (min-width: 320px) and (max-width: 480px) {
-            width: 7vw;
-            height: 7vw;
-          }
-        }
-
-        span {
-          width: 20px;
-
-          @media screen and (min-width: 320px) and (max-width: 480px) {
-            width: 1vw;
-          }
-        }
-
-        .home-title {
-          width: 100%;
-          height: 100%;
-          line-height: 40px;
-          color: #f78b32ff;
-          font-size: 24px;
-          font-weight: bold;
-          letter-spacing: 2px;
-          text-align: left;
-
-          @media screen and (min-width: 320px) and (max-width: 480px) {
-            width: 20vw;
-            font-size: 4vw;
-            height: 5vw;
-            line-height: 5vw;
-          }
-        }
+      img {
+        height: 4.17vh;
+        width: 11.67vw;
+        padding-top: 1.3vh;
+        padding-left: 5.83vw;
       }
     }
 
-    .tidal-hint {
-      width: 100%;
-      line-height: 0;
-      left: 215px;
-      top: 150px;
-      height: 29px;
-      color: rgba(249, 167, 101, 100);
-      font-size: 20px;
-      font-family: SourceHanSansSC-medium, serif;
-      letter-spacing: 2px;
-      display: flex;
-      flex-direction: row;
-      color: #f9a765;
+    .text-logo-hint {
+      width: 100vw;
+      height: 50%;
 
-      @media screen and (min-width: 320px) and (max-width: 480px) {
-        width: 20vw;
-        font-size: 4vw;
-        height: 5vw;
-        line-height: 5vw;
+      img {
+        width: 11.98vw;
+        height: 2.78vh;
+        padding-left: 11.2vw;
       }
     }
   }
 
-  .body-correction {
-    margin-top: 20px;
+  .text-error-content {
+    width: 100px;
+    height: 80vh;
+    flex-direction: column;
+    -webkit-flex-wrap: wrap;
     display: flex;
-    flex-direction: row;
-    height: 600px;
-    width: 100%;
 
-    .text-input {
+    .text-content-input {
+      flex-wrap: wrap;
       display: flex;
-      flex-direction: column;
-      width: 70%;
-      height: 100%;
-      background-color: #ffffff;
-      align-content: center;
-      align-items: center;
-      margin-left: 80px;
-      margin-right: 50px;
-      border-radius: 20px;
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-      .textArea-show {
-        width: 1000px;
-        height: 400px;
-        border: 1px solid #36ad6a;
-      }
-      .input-title {
-        height: 34px;
-        color: rgba(28, 41, 79, 100);
-        font-size: 20px;
-        font-family: SourceHanSansSC-bold, serif;
-        width: 80%;
-        display: flex;
+      flex-direction: row;
+      margin-top: 1.39vh;
+      width: 44.17vw;
+      height: 72.13vh;
+      background-color: rgba(255, 255, 255, 100);
+      //box-shadow: 0px 2px 22px 5px rgba(17, 54, 145, 12);
+      border-radius: 10px;
+      margin-left: 16.05vw;
+
+      .text-content-logo {
         justify-content: space-between;
-        .text-correction {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 8.8vh;
+
+        .text-logo-input {
+          margin-top: 1.57vh;
+          margin-left: 3.59vw;
+          display: flex;
+          width: 6.77vw;
+          height: 3.7vh;
+          background-color: white;
+
+          .text-logo-img {
+            width: 1.72vw;
+            height: 100%;
+
+            img {
+              padding-top: 0.37vh;
+              width: 1.56vw;
+              height: 2.78vh;
+            }
+          }
+
+          .text-span-text {
+            height: 100%;
+            color: rgba(28, 41, 79, 100);
+            font-size: 1.25em;
+            text-align: left;
+            font-family: SourceHanSansSC-bold, sans-serif;
+            font-weight: bold;
+          }
+        }
+
+        .text-logo-button {
           border-radius: 10px;
-          border: 1px solid orange;
-          color: orange;
-          font-size: 14px;
-          height: 25px;
-          margin-top: 5px;
-          width: 80px;
-          img {
-            width: 20px;
-            height: 20px;
+          background-color: rgba(255, 255, 255, 100);
+          font-size: 1em;
+          text-align: center;
+          box-shadow: 0 3px 7px -1px rgba(253, 218, 188, 64);
+          border: 1px solid rgba(249, 167, 101, 100);
+          margin-top: 1.48vh;
+          margin-right: 3.59vw;
+          display: flex;
+          width: 7.14vw;
+          height: 3.7vh;
+          background-color: white;
+
+          .text-button-img {
+            width: 1.72vw;
+            height: 100%;
+
+            img {
+              padding-top: 0.37vh;
+              width: 1.56vw;
+              height: 2.78vh;
+            }
+          }
+
+          .text-button-input {
+            padding-left: 0.21vw;
+            height: 100%;
+            font-size: 1.25em;
+            text-align: left;
+            color: #f9a765;
+            font-family: Roboto, sans-serif;
+            font-weight: bold;
           }
         }
       }
 
-      .button-input {
-        margin-top: 20px;
-        display: flex;
-        justify-items: right;
-        width: 80%;
-        justify-content: right;
-      }
-    }
-
-    .text-result {
-      display: flex;
-      flex-direction: column;
-      width: 20%;
-      height: 100%;
-      align-content: center;
-      align-items: center;
-      border-radius: 20px;
-      background-color: #f2f6f7;
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-      .text-result-else {
-        height: 100%;
+      .textArea-show {
         width: 100%;
-        img {
+        height: calc(100% - 17.59vh);
+        border: 1px solid rgba(10, 10, 10, 0.1);
+      }
+
+      .text-content-areaText {
+        flex-direction: row;
+        display: flex;
+        width: 100%;
+        height: calc(100% - 17.59vh);
+        background-color: #0e1222;
+
+        :deep(.n-space) {
           width: 100%;
           height: 100%;
         }
-      }
-      .text-result-title {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        background-color: #ffffff;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-      }
-      .text-style {
-        top: 244px;
-        width: 117px;
-        height: 38px;
-        color: rgb(28, 41, 79);
-        font-size: 15px;
-        text-align: left;
-        font-family: SourceHanSansSC-bold, serif;
-        img {
-          padding-right: 6px;
-          padding-top: 4px;
-          width: 20px;
-          height: 20px;
+
+        :deep(.n-space:nth-child(1)) {
+          height: 100%;
         }
       }
 
-      .text-result-input {
-        display: flex;
-        border-radius: 10px;
+      .text-content-button {
         flex-direction: row;
-        justify-content: space-around;
-        height: 20%;
-        margin-top: 10px;
+        display: flex;
         width: 100%;
-        background-color: #ffffff;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        .text-result-one {
-          width: 20%;
+        height: 8.8vh;
+        background-color: white;
+
+        .text-button-button {
+          width: 100%;
+          justify-content: right;
+          padding-right: 1.82vw;
+          display: flex;
+          margin-top: 2vh;
+        }
+      }
+    }
+
+    .text-content-show {
+      border-radius: 10px;
+      margin-left: 0.78vw;
+      margin-top: 1.39vh;
+      display: flex;
+      width: 17.4vw;
+      height: 72.13vh;
+      background-color: rgba(255, 255, 255, 100);
+      flex-wrap: wrap;
+      //文本返回
+      .text-areaText-show {
+        align-content: flex-start;
+        flex-direction: row;
+        border-radius: 10px;
+        flex-wrap: wrap;
+        display: flex;
+        width: 100%;
+        height: calc(100% - 8.8vh);
+        background-color: rgba(14, 14, 14, 0.3);
+
+        .text-areaText-result {
+          border-bottom: 1px solid;
+          border-color: rgba(10, 10, 10, 0.1);
           border-radius: 10px;
-          height: 75%;
-          margin: 6px;
-          background-color: #ffccae;
-          text-align: center;
-          .text-result-number {
-            width: 50px;
-            height: 50px;
-            color: red;
-          }
-        }
-      }
-      .text-result-advice {
-        display: flex;
-        border-radius: 10px;
-        flex-direction: row;
-        height: 15%;
-        margin-top: 10px;
-        width: 100%;
-        background-color: #f2f6f7;
-      }
-
-      .text-result-list {
-        display: flex;
-        border-radius: 10px;
-        flex-direction: column;
-        height: 100%;
-        margin-top: 10px;
-        width: 100%;
-
-        .result-list {
           display: flex;
           flex-direction: row;
-          width: 80%;
-          height: 40px;
-          line-height: 3;
-          padding-left: 27px;
-          background-color: #ffffff;
-          border-radius: 10px;
-          margin: 10px;
-          box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+          width: 100%;
+          height: 8.8vh;
+          background-color: white;
+
+          .text-result-results {
+            width: 30%;
+            height: 80%;
+            border-radius: 10px;
+            margin: 10px;
+            background-color: orange;
+
+            .text-result-front {
+              width: 100%;
+              height: 100%;
+              text-align: center;
+              padding-top: 13px;
+
+              .text-result-total {
+                margin-left: 20px;
+                width: 45px;
+                border-radius: 10px;
+                height: 20px;
+                background-color: red;
+              }
+            }
+          }
         }
 
-        .red-round {
-          height: 15px;
-          width: 15px;
-          margin-top: 13px;
-          margin-right: 10px;
-          border-radius: 50%;
-          background-color: red;
+        .text-areaText-suggest {
+          border-bottom: 1px solid;
+          border-color: rgba(10, 10, 10, 0.1);
+          border-radius: 10px;
+          display: flex;
+          flex-direction: row;
+          width: 100%;
+          height: 8.8vh;
+          background-color: black;
+        }
+
+        .text-areaText-revise {
+          border-bottom: 1px solid;
+          border-color: rgba(10, 10, 10, 0.1);
+          border-radius: 10px;
+          display: flex;
+          flex-direction: row;
+          width: 100%;
+          height: calc(100% - 17.6vh);
+          background-color: white;
+          .result-list {
+            border-radius: 10px;
+            background-color: white;
+            margin: 8px;
+            width: 95%;
+            height: 3vh;
+            display: flex;
+            flex-wrap: nowrap;
+            .red-round {
+              height: 15px;
+              width: 15px;
+              margin: 8px;
+              border-radius: 50%;
+              background-color: red;
+            }
+          }
+        }
+      }
+
+      .text-content-areaText {
+        flex-direction: row;
+        display: flex;
+        width: 100%;
+        height: calc(100% - 8.8vh);
+        background-color: rgba(14, 14, 14, 0.3);
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      //box-shadow: 0px 2px 22px 5px rgba(17, 54, 145, 12);
+      .text-show-correction {
+        border-bottom: 1px solid;
+        border-color: rgba(10, 10, 10, 0.1);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 8.8vh;
+
+        .text-logo-input {
+          margin-top: 1.57vh;
+          margin-left: 1.04vw;
+          display: flex;
+          width: 6.77vw;
+          height: 3.7vh;
+          background-color: white;
+
+          .text-logo-img {
+            width: 1.72vw;
+            height: 100%;
+
+            img {
+              padding-top: 0.37vh;
+              width: 1.56vw;
+              height: 2.78vh;
+            }
+          }
+
+          .text-span-text {
+            height: 100%;
+            padding-left: 0.16vw;
+            color: rgba(28, 41, 79, 100);
+            font-size: 1.25em;
+            text-align: left;
+            font-family: SourceHanSansSC-bold, sans-serif;
+            font-weight: bold;
+          }
         }
       }
     }
