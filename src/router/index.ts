@@ -153,6 +153,21 @@ const routes: Array<RouteRecordRaw> = [
         path: `/Account/:accountId`,
         name: 'Account',
         component: () => import('@/views/user/accountAnalysis/Account.vue')
+      },
+      {
+        path: '/search',
+        name: 'Search',
+        component: () => import('@/views/user/search/Search.vue')
+      },
+      {
+        path: '/searchDetail',
+        name: 'SearchDetail',
+        component: () => import('@/views/user/search/SearchDetail.vue')
+      },
+      {
+        path: '/errorCorrection',
+        name: 'ErrorCorrection',
+        component: () => import('@/views/user/textErrorCorrection/ErrorCorrection.vue')
       }
     ]
   }

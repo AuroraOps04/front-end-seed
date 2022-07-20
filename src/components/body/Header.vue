@@ -41,7 +41,7 @@ const handleTo = (e: string) => {
       <span v-if="!store.getters.currentId" style="margin: 0 5px" @click="handleTo('login')">
         登录
       </span>
-      <span v-else style="margin: 0 5px" @click="handleTo('person')">个人中心</span>
+      <span v-else style="margin: 0 5px" @click="handleTo('person/person')">个人中心</span>
     </div>
   </div>
 </template>

@@ -26,6 +26,8 @@ import ListPreviewTable from '@/components/user/priority/ListPreviewTable.vue'
 
   @media screen and (min-width: 320px) and (max-width: 480px) {
     height: auto;
+    width: auto;
+    margin: 0;
   }
 }
 .card-tabs .n-tabs-nav--bar-type {

@@ -11,6 +11,7 @@ import iec from '@/assets/iec.png'
 import imgIec from '@/assets/img_ice.png'
 import tidalNebula from '@/assets/tidal-nebula.png'
 import intelligentText from '@/assets/intelligent-text.png'
+import Header from '@/components/body/Header.vue'
 
 const router = useRouter()
 const store = useStore()
@@ -70,7 +71,8 @@ const clearText = () => {
 </script>
 <template>
   <div class="container">
-    <div class="text-error-menu">
+    <Header />
+    <!--    <div class="text-error-menu">
       <div class="title">
         <template v-for="(item, index) in menuArr" :key="index">
           <span
@@ -87,7 +89,7 @@ const clearText = () => {
         </span>
         <span v-else style="margin: 0 5px" @click="handleTo('person')">个人中心</span>
       </div>
-    </div>
+    </div>-->
 
     <div class="text-error-logo">
       <div class="text-logo-tidalNebula">

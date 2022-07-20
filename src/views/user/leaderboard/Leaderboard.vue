@@ -19,11 +19,11 @@ const getNavigationBar = () => {
         <div class="tide">
           <div class="home-top-menu-logo">
             <img alt="logo" src="@/assets/logo.png" />
-            <span></span>
+            <!--            <span></span>
             <div class="home-title">
               <span>潮汐</span>
               <span style="color: white">指数</span>
-            </div>
+            </div>-->
           </div>
           <div class="rightTide">
             <div>
@@ -85,11 +85,11 @@ const getNavigationBar = () => {
   }
 
   img {
-    width: 40px;
+    width: auto;
     height: 40px;
 
     @media screen and (min-width: 320px) and (max-width: 480px) {
-      width: 7vw;
+      width: auto;
       height: 7vw;
     }
   }

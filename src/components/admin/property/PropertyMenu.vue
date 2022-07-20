@@ -66,7 +66,7 @@ const handleClickMenu = (e: string) => {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     @media screen and (min-width: 320px) and (max-width: 480px) {
       margin: 0;
-      width: 100%;
+      width: auto;
     }
 
     h3 {
@@ -80,6 +80,7 @@ const handleClickMenu = (e: string) => {
     .menu-item {
       width: calc(100% - 5px);
       height: 40px;
+      line-height: 40px;
       position: relative;
       border-left: 5px solid rgba(0, 0, 0, 0);
       flex-direction: row;
