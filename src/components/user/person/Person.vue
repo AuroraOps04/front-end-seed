@@ -17,8 +17,7 @@ import {
   NRadio,
   NCascader,
   useMessage,
-  UploadFileInfo,
-  GlobalThemeOverrides
+  UploadFileInfo
 } from 'naive-ui'
 import { updatePhoneApi, updateUsernameApi } from '@service/person'
 import { useStore } from 'vuex'
@@ -35,14 +34,6 @@ type CategoryData = {
 const categoryData = reactive<CategoryData>({
   data: []
 })
-const themeOverrides: GlobalThemeOverrides = {
-  common: {
-    primaryColor: '#1684FC'
-  },
-  Button: {
-    textColor: '#1684FC'
-  }
-}
 const router = useRouter()
 const message = useMessage()
 const store = useStore()

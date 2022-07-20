@@ -669,6 +669,9 @@ onMounted(() => {
     .search_tool {
       display: flex;
       width: calc(50%);
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        flex-direction: column;
+      }
 
       div {
         margin-left: 20px;

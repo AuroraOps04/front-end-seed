@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { NAvatar } from 'naive-ui'
+import { NAvatar, NInput, NIcon, NButton } from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { onMounted } from 'vue'
 import { insertTrafficCount } from '@service/traffic'
+import { Search, BriefcaseOutline } from '@vicons/ionicons5'
 import rankingPng from '@/assets/ranking.png'
 import analysisPng from '@/assets/analysis.png'
 import rightPng from '@/assets/right.png'
@@ -15,10 +16,9 @@ import fastPng from '@/assets/fast.png'
 import professionalPng from '@/assets/professional.png'
 import authoritativePng from '@/assets/authoritative.png'
 import stablePng from '@/assets/stable.png'
-
-onMounted(() => {
-  insertTrafficCount()
-})
+import logoWhitePng from '@/assets/logo_white.png'
+import weiboPng from '@/assets/weibo.png'
+import wechatPng from '@/assets/wechat.png'
 
 const router = useRouter()
 const store = useStore()
@@ -26,6 +26,9 @@ const handleTo = (e: string) => {
   store.commit('SET_MENU', e)
   router.push(`/${e}`)
 }
+onMounted(() => {
+  insertTrafficCount()
+})
 </script>
 
 <template>
@@ -36,10 +39,39 @@ const handleTo = (e: string) => {
         <div class="home-top-menu-logo">
           <img src="@/assets/logo.png" alt="logo" />
           <span></span>
-          <div class="home-title">
-            <span>潮汐</span>
-            <span style="color: white">指数</span>
-          </div>
+          <!--          <div class="home-title">
+            <span style="color: #113691">潮汐</span>
+            <span style="color: #f78b32">星云</span>
+          </div>-->
+        </div>
+        <div class="home-top-menu-search">
+          <n-input
+            placeholder="输入搜索词进入全网搜索"
+            round
+            class="search"
+            style="background-color: rgba(0, 0, 0, 0); border-color: rgba(0, 0, 0, 0)"
+            @click="handleTo('search')"
+          >
+            <template #prefix>
+              <n-icon color="#FF7C40">
+                <search />
+              </n-icon>
+            </template>
+          </n-input>
+          <n-button
+            @click="handleTo('errorCorrection')"
+            ghost="search"
+            color="white"
+            size="small"
+            class=""
+          >
+            <template #icon>
+              <n-icon>
+                <BriefcaseOutline />
+              </n-icon>
+            </template>
+            <span class="errorCorrection">纠错</span>
+          </n-button>
         </div>
         <!-- 菜单栏 -->
         <div class="home-top-menu-list">
@@ -48,15 +80,19 @@ const handleTo = (e: string) => {
         </div>
         <!-- 头像 -->
         <div class="home-top-menu-avatar">
-          <NAvatar round :size="40" :src="store.getters?.currentPictureUrl"> </NAvatar>
-          <span @click="handleTo('login')" v-if="!store.getters.currentId">登录</span>
-          <span @click="handleTo('person')" v-else>个人中心</span>
+          <span @click="handleTo('login')" v-if="!store.getters.currentId" class="btn-login">
+            登陆
+          </span>
+          <div class="info" v-else>
+            <NAvatar round :size="40" :src="store.getters?.currentPictureUrl" />
+            <span @click="handleTo('person')" class="person-text">个人中心</span>
+          </div>
         </div>
       </div>
 
       <div class="home-top-main">
         <div class="main-content">
-          <div class="title1">新媒体平台榜单定制服务</div>
+          <div class="title1">全球大数据舆情监测平台</div>
           <div class="title2">
             基于网络公开数据、融媒体及舆论大数据人工智能，<br />
             制定系统化的新媒体大数据评价体系和影响力标准，<br />
@@ -144,14 +180,41 @@ const handleTo = (e: string) => {
     </div>
 
     <div class="home-bottom">
-      <div class="bottom-left">
-        <span>潮汐指数</span>
+      <div class="bottom-main">
+        <div class="bottom-left">
+          <img :src="logoWhitePng" alt="logo" />
+          <div class="left-text">
+            <span class="text1">潮汐星云</span>
+            <span class="text2">www.cxxy.com</span>
+          </div>
+        </div>
+        <div class="bottom-right">
+          <div class="right-detail">
+            <span class="text1">关于我们</span>
+            <span class="text2">企业简介</span>
+            <span class="text2">合作单位</span>
+            <span class="text2">加入潮汐</span>
+          </div>
+          <div class="right-detail">
+            <span class="text1">产品产品</span>
+            <span class="text2">产品地图</span>
+            <span class="text2">产品文档</span>
+            <span class="text2">榜单公式</span>
+            <span class="text2">在线反馈</span>
+          </div>
+          <div class="right-detail">
+            <span class="text1">联系我们</span>
+            <div class="icon">
+              <img :src="wechatPng" alt="微信" />
+              <img :src="weiboPng" alt="微博" />
+            </div>
+            <span class="text2">使用咨询：在线客服</span>
+            <span class="text2">咨询热线：xx-xxx-xxxx</span>
+            <span class="text2">联系邮箱：xxx@xxxxx</span>
+          </div>
+        </div>
       </div>
-      <div class="bottom-right">
-        <span>关于</span>
-        <span>产品</span>
-        <span>客服</span>
-      </div>
+      <span class="bottom-pic">@2022 潮汐星云 — 全球大数据舆情监测平台 备案号XXX 网安备案号 </span>
     </div>
   </div>
 </template>
@@ -199,11 +262,13 @@ const handleTo = (e: string) => {
       }
 
       img {
-        width: 40px;
+        //width: 40px;
+        //height: 40px;
+        width: auto;
         height: 40px;
 
         @media screen and (min-width: 320px) and (max-width: 480px) {
-          width: 7vw;
+          width: auto;
           height: 7vw;
         }
       }
@@ -235,6 +300,23 @@ const handleTo = (e: string) => {
       }
     }
 
+    .home-top-menu-search {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      .search {
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          width: 10vw;
+        }
+      }
+      .errorCorrection {
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          display: none;
+        }
+      }
+    }
+
     .home-top-menu-list {
       display: flex;
       flex-direction: row;
@@ -260,6 +342,7 @@ const handleTo = (e: string) => {
           height: 5vw;
           line-height: 5vw;
           margin: 0 2vw;
+          flex-shrink: 0;
         }
       }
 
@@ -286,13 +369,40 @@ const handleTo = (e: string) => {
         margin-right: 1vw;
       }
 
-      span {
-        color: white;
-        margin: 0 20px;
-
+      .btn-login {
+        width: 80px;
+        height: 38px;
+        line-height: 38px;
+        text-align: center;
+        border-radius: 5px;
+        background-color: rgba(247, 139, 50, 100);
+        color: rgba(255, 255, 255, 100);
+        font-size: 14px;
         @media screen and (min-width: 320px) and (max-width: 480px) {
-          font-size: 4vw;
-          margin: 0 1vw;
+          width: 16vw;
+          height: 8vw;
+          line-height: 8vw;
+          font-style: 4vw;
+        }
+      }
+
+      .btn-login:hover {
+        opacity: 0.7;
+      }
+      .info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        .person-text {
+          color: white;
+          margin: 0 20px;
+          flex-shrink: 0;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            font-size: 4vw;
+            margin: 0 1vw;
+            display: none;
+          }
         }
       }
     }
@@ -312,8 +422,12 @@ const handleTo = (e: string) => {
 
     .main-content {
       width: 750px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
 
       @media screen and (min-width: 320px) and (max-width: 480px) {
+        align-items: center;
         width: 95vw;
       }
 
@@ -329,11 +443,12 @@ const handleTo = (e: string) => {
       }
 
       .title2 {
-        text-align: center;
+        text-align: left;
         font-size: 18px;
         line-height: 40px;
 
         @media screen and (min-width: 320px) and (max-width: 480px) {
+          text-align: center;
           font-size: 4vw;
           line-height: 8vw;
         }
@@ -597,9 +712,7 @@ const handleTo = (e: string) => {
 
 .home-bottom {
   display: flex;
-  flex-direction: row;
-  align-items: start;
-  justify-content: space-between;
+  flex-direction: column;
   width: 100%;
   height: 200px;
   background-color: rgba(15, 19, 31, 100);
@@ -607,49 +720,136 @@ const handleTo = (e: string) => {
   padding-top: 20px;
 
   @media screen and (min-width: 320px) and (max-width: 480px) {
-    height: 25vw;
+    height: 40vw;
     padding-top: 2vw;
   }
-
-  .bottom-left {
-    width: 30%;
+  .bottom-main {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    justify-content: center;
-
-    span {
-      color: rgba(255, 255, 255, 100);
-      font-size: 50px;
-      cursor: pointer;
+    justify-content: space-between;
+    width: 100%;
+    .bottom-left {
+      width: 20vw;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
       @media screen and (min-width: 320px) and (max-width: 480px) {
-        font-size: 7vw;
+        flex-direction: column;
+        width: auto;
+      }
+
+      img {
+        width: auto;
+        height: 59px;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          width: auto;
+          height: 4vw;
+        }
+      }
+
+      .left-text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          align-items: center;
+        }
+
+        .text1 {
+          color: rgba(255, 255, 255, 100);
+          font-size: 35px;
+          cursor: pointer;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            font-size: 4vw;
+          }
+        }
+
+        .text2 {
+          color: rgba(255, 255, 255, 100);
+          font-size: 20px;
+          cursor: pointer;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            font-size: 3vw;
+          }
+        }
+      }
+
+      span:hover {
+        opacity: 0.7;
       }
     }
 
-    span:hover {
-      opacity: 0.7;
+    .bottom-right {
+      width: 50%;
+      display: flex;
+      flex-direction: row;
+      align-items: self-start;
+      justify-content: space-around;
+
+      @media screen and (min-width: 320px) and (max-width: 480px) {
+        width: 80vw;
+      }
+
+      .right-detail {
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+
+        .text1 {
+          color: rgba(255, 255, 255, 84);
+          font-size: 20px;
+          cursor: pointer;
+          margin-bottom: 15px;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            font-size: 3vw;
+          }
+        }
+
+        .text2 {
+          color: rgba(255, 255, 255, 84);
+          font-size: 15px;
+          cursor: pointer;
+          font-weight: normal;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            font-size: 3vw;
+          }
+        }
+
+        .icon {
+          display: flex;
+          flex-direction: row;
+
+          img {
+            width: auto;
+            height: 25px;
+            margin: 5px;
+            cursor: pointer;
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              width: auto;
+              height: 4vw;
+            }
+          }
+          img:hover {
+            opacity: 0.7;
+          }
+        }
+
+        .text1:hover,
+        .text2:hover {
+          opacity: 0.7;
+        }
+      }
     }
   }
+  .bottom-pic {
+    text-align: center;
+    color: rgba(255, 255, 255, 65);
+    font-size: 14px;
 
-  .bottom-right {
-    width: 50%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
-
-    span {
-      color: rgba(255, 255, 255, 84);
-      font-size: 30px;
-      cursor: pointer;
-      @media screen and (min-width: 320px) and (max-width: 480px) {
-        font-size: 5vw;
-      }
-    }
-
-    span:hover {
-      opacity: 0.7;
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      font-size: 3vw;
     }
   }
 }

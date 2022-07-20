@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { PersonOutline, StarOutline, BarChartOutline } from '@vicons/ionicons5'
 import { useStore } from 'vuex'
 
-import { NAvatar, NIcon, NConfigProvider, GlobalThemeOverrides } from 'naive-ui'
+import { NAvatar, NIcon } from 'naive-ui'
 
 import personLogoPng from '@/assets/person_logo.png'
 import personIconPng from '@/assets/person_icon.png'
@@ -35,14 +35,6 @@ const menuArr = reactive([
     isSelect: false
   }
 ])
-const themeOverrides: GlobalThemeOverrides = {
-  common: {
-    primaryColor: '#1684FC'
-  },
-  Button: {
-    textColor: '#1684FC'
-  }
-}
 const menuName = ref<string>()
 const handleClick = (e: string) => {
   menuArr.forEach((item) => {
@@ -68,78 +60,76 @@ onMounted(() => {
 
 <template>
   <div>
-    <n-config-provider :theme-overrides="themeOverrides">
-      <Header />
-      <div class="person-top">
-        <!-- logo -->
-        <div class="person-top-menu-logo">
-          <img :src="personLogoPng" alt="logo" />
-          <span></span>
-          <div class="logo-title">
-            <span>潮汐</span>
-            <span style="color: black">指数</span>
-          </div>
+    <Header />
+    <div class="person-top">
+      <!-- logo -->
+      <div class="person-top-menu-logo">
+        <img :src="personLogoPng" alt="logo" />
+        <span></span>
+        <div class="logo-title">
+          <span>潮汐</span>
+          <span style="color: black">指数</span>
         </div>
       </div>
+    </div>
 
-      <div class="person-main">
-        <div class="main">
-          <div class="main-menu">
-            <div class="menu-avatar">
-              <NAvatar :size="50" :src="store.getters?.currentPictureUrl" round></NAvatar>
-            </div>
-            <span class="menu-username">{{ store.getters.currentUsername }}</span>
-            <span class="menu-ipaddress">IP所属地：{{ store.getters.currentIpAddress }}</span>
-            <div class="menu-identification">
-              <img :src="personGradePng" alt="用户等级" />
-              <div class="identification-grade">普通用户</div>
-            </div>
-            <hr style="background: rgba(140, 140, 140, 0.02)" />
-            <div class="menu-list">
-              <div v-for="(item, index) in menuArr" :key="index" class="list-content">
-                <NIcon
-                  v-if="item.code === 'person'"
-                  :color="item.isSelect ? '#F78B32' : 'black'"
-                  :component="PersonOutline"
-                  size="25"
-                  @click="handleClick(item.code)"
-                />
-                <NIcon
-                  v-else-if="item.code === 'Leaderboard'"
-                  :color="item.isSelect ? '#F78B32' : 'black'"
-                  :component="BarChartOutline"
-                  size="25"
-                  @click="handleClick(item.code)"
-                />
-                <NIcon
-                  v-else-if="item.code === 'collect'"
-                  :color="item.isSelect ? '#F78B32' : 'black'"
-                  :component="StarOutline"
-                  size="25"
-                  @click="handleClick(item.code)"
-                />
-                <span
-                  :style="{ color: item.isSelect ? '#F78B32' : 'black' }"
-                  @click="handleClick(item.code)"
-                  >{{ item.name }}</span
-                >
-              </div>
-            </div>
+    <div class="person-main">
+      <div class="main">
+        <div class="main-menu">
+          <div class="menu-avatar">
+            <NAvatar :size="50" :src="store.getters?.currentPictureUrl" round></NAvatar>
           </div>
-
-          <div class="main-content">
-            <div class="content-header">
-              <span>{{ '/' + menuName }}</span>
+          <span class="menu-username">{{ store.getters.currentUsername }}</span>
+          <span class="menu-ipaddress">IP所属地：{{ store.getters.currentIpAddress }}</span>
+          <div class="menu-identification">
+            <img :src="personGradePng" alt="用户等级" />
+            <div class="identification-grade">普通用户</div>
+          </div>
+          <hr style="background: rgba(140, 140, 140, 0.02)" />
+          <div class="menu-list">
+            <div v-for="(item, index) in menuArr" :key="index" class="list-content">
+              <NIcon
+                v-if="item.code === 'person'"
+                :color="item.isSelect ? '#F78B32' : 'black'"
+                :component="PersonOutline"
+                size="25"
+                @click="handleClick(item.code)"
+              />
+              <NIcon
+                v-else-if="item.code === 'Leaderboard'"
+                :color="item.isSelect ? '#F78B32' : 'black'"
+                :component="BarChartOutline"
+                size="25"
+                @click="handleClick(item.code)"
+              />
+              <NIcon
+                v-else-if="item.code === 'collect'"
+                :color="item.isSelect ? '#F78B32' : 'black'"
+                :component="StarOutline"
+                size="25"
+                @click="handleClick(item.code)"
+              />
+              <span
+                :style="{ color: item.isSelect ? '#F78B32' : 'black' }"
+                @click="handleClick(item.code)"
+                >{{ item.name }}</span
+              >
             </div>
-            <hr style="background-color: rgb(239, 239, 239)" />
-            <router-view></router-view>
           </div>
         </div>
-        <!--        <img :src="personIconPng" alt="背景图标" class="maiNIcon1" />-->
-        <img :src="personIcon2Png" alt="背景图标" class="maiNIcon2" />
-        <img :src="personIcon3Png" alt="背景图标" class="maiNIcon3" />
+
+        <div class="main-content">
+          <div class="content-header">
+            <span>{{ '/' + menuName }}</span>
+          </div>
+          <hr style="background-color: rgb(239, 239, 239)" />
+          <router-view></router-view>
+        </div>
       </div>
-    </n-config-provider>
+      <!--        <img :src="personIconPng" alt="背景图标" class="maiNIcon1" />-->
+      <img :src="personIcon2Png" alt="背景图标" class="maiNIcon2" />
+      <img :src="personIcon3Png" alt="背景图标" class="maiNIcon3" />
+    </div>
   </div>
 </template>
 

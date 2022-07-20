@@ -6,7 +6,14 @@ import moment from 'moment'
 import 'moment/locale/pt-br'
 import * as echarts from 'echarts'
 import { NButton, NAvatar, NGrid, NGi, NDivider, NIcon, NButtonGroup, NCard } from 'naive-ui'
-import { StarOutline } from '@vicons/ionicons5'
+import {
+  Star,
+  StarOutline,
+  ChatboxEllipsesOutline,
+  Heart,
+  ArrowRedoOutline,
+  ThumbsUpOutline
+} from '@vicons/ionicons5'
 import {
   findAccountByAccountApi,
   findRecordTotalApi,
@@ -17,7 +24,6 @@ import {
   getCommentTopApi
 } from '@service/account'
 import arrow from '@/assets/arrow.png'
-import up from '@/assets/up.png'
 import comment from '@/assets/comment.png'
 import forward from '@/assets/forward.png'
 import textBg from '@/assets/text_bg.png'
@@ -87,6 +93,8 @@ const seriesData = ref()
 const main = ref() // 使用ref创建虚拟DOM引用，使用时用main.value
 
 const postIndex = ref<string>('null')
+
+const publishTime = ref<string>()
 
 const eCharDate = reactive({
   dateList: [],
@@ -313,8 +321,10 @@ const getCommentTop = async (e: string) => {
 }
 
 const handleSelectPost = (e: string) => {
-  postIndex.value = e
-  getCommentTop(e)
+  const temp: any = e
+  postIndex.value = temp.postId
+  publishTime.value = temp.publishTime
+  getCommentTop(temp.postId)
 }
 
 onMounted(() => {
@@ -324,8 +334,11 @@ onMounted(() => {
   accountCollectionStatue()
   getPostTop(accountId.value as number)
   setTimeout(() => {
-    postIndex.value = postData.data[0].postId
-    getCommentTop(postData.data[0].postId)
+    if (postData.data.length > 0) {
+      postIndex.value = postData.data[0].postId
+      publishTime.value = postData.data[0].publishTime
+      getCommentTop(postData.data[0].postId)
+    }
   }, 1000)
 })
 </script>
@@ -345,9 +358,7 @@ onMounted(() => {
               <div v-if="collectionState === 2" class="box-collect">
                 <NButton class="button_collection" ghost type="warning" @click="AccountCollection">
                   <template #icon>
-                    <NIcon>
-                      <StarOutline />
-                    </NIcon>
+                    <NIcon :component="StarOutline"></NIcon>
                   </template>
                   收藏
                 </NButton>
@@ -355,9 +366,7 @@ onMounted(() => {
               <div v-else class="box-collect">
                 <NButton class="button_collection" ghost type="warning" @click="AccountCollection">
                   <template #icon>
-                    <NIcon>
-                      <StarOutline />
-                    </NIcon>
+                    <NIcon :component="Star"></NIcon>
                   </template>
                   取消收藏
                 </NButton>
@@ -456,38 +465,6 @@ onMounted(() => {
           </NGi>
         </NGrid>
 
-        <!--      榜单排行-->
-        <!--
-        <NGrid :cols="1" style="margin-bottom: 20px" x-gap="24">
-          <NGi>
-            <div style="display: flex; align-items: center">
-              <text class="text_italic">榜单排行</text>
-              <img :src="arrowPng" alt="榜单排行" class="img_arrow" />
-            </div>
-          </NGi>
-        </NGrid>
-
-        <NGrid :cols="1" style="margin-bottom: 80px" x-gap="24">
-          <NGi>
-            <div class="card-score">
-              <div class="score_body2">
-                <text class="text_exponential2">888.8</text>
-
-                <text class="text_exponential2"> 分</text>
-                <text class="text_num"> /周潮汐指数</text>
-              </div>
-              <div class="rank_body2">
-                <text class="rank">NO.</text>
-                <text class="rank">1</text>
-                <text class="rank_area">两岸>周榜</text>
-              </div>
-            </div>
-          </NGi>
-
-          <NGi></NGi>
-        </NGrid>
--->
-
         <NDivider />
 
         <!--      互动数据-->
@@ -513,6 +490,16 @@ onMounted(() => {
                       ? 0
                       : accountInfo.accountDetailInfo.recordArticle
                   }}
+                  <img
+                    :src="trendingUpPng"
+                    :class="[
+                      accountInfo.accountDetailInfo.recordArticle !== null &&
+                      accountInfo.accountDetailInfo.recordArticle !== 0
+                        ? 'active'
+                        : 'none'
+                    ]"
+                    alt="上升"
+                  />
                 </text>
               </div>
             </div>
@@ -530,6 +517,16 @@ onMounted(() => {
                       ? 0
                       : accountInfo.accountDetailInfo.recordLike
                   }}
+                  <img
+                    :src="trendingUpPng"
+                    :class="[
+                      accountInfo.accountDetailInfo.recordArticle !== null &&
+                      accountInfo.accountDetailInfo.recordArticle !== 0
+                        ? 'active'
+                        : 'none'
+                    ]"
+                    alt="上升"
+                  />
                 </text>
               </div>
             </div>
@@ -547,6 +544,16 @@ onMounted(() => {
                       ? 0
                       : accountInfo.accountDetailInfo.recordComment
                   }}
+                  <img
+                    :src="trendingUpPng"
+                    :class="[
+                      accountInfo.accountDetailInfo.recordArticle !== null &&
+                      accountInfo.accountDetailInfo.recordArticle !== 0
+                        ? 'active'
+                        : 'none'
+                    ]"
+                    alt="上升"
+                  />
                 </text>
               </div>
             </div>
@@ -564,13 +571,19 @@ onMounted(() => {
                       ? 0
                       : accountInfo.accountDetailInfo.recordForward
                   }}
+                  <img
+                    :src="trendingUpPng"
+                    :class="[
+                      accountInfo.accountDetailInfo.recordArticle !== null &&
+                      accountInfo.accountDetailInfo.recordArticle !== 0
+                        ? 'active'
+                        : 'none'
+                    ]"
+                    alt="上升"
+                  />
                 </text>
               </div>
             </div>
-            <!--            <div class="center_detail">-->
-            <!--              <img :src="forwardPng" alt="转发数" class="img_arrow" />-->
-            <!--              <text class="text_info">转发数</text>-->
-            <!--            </div>-->
           </NGi>
         </NGrid>
 
@@ -642,26 +655,50 @@ onMounted(() => {
                   <text class="text_italic">最新贴文列表</text>
                   <img :src="arrowPng" alt="账号内容" class="img_arrow" />
                 </div>
-                <NCard v-for="(item, index) in postData.data" :key="index">
+                <NCard
+                  v-for="(item, index) in postData.data"
+                  :key="index"
+                  :bordered="false"
+                  style="padding: 0"
+                  size="small"
+                >
                   <div
-                    :class="[item.postId === postIndex ? 'select' : '']"
                     class="list_content"
-                    @click="handleSelectPost(item.postId)"
+                    :class="[item.postId === postIndex ? 'select' : '']"
+                    @click="handleSelectPost(item)"
                   >
                     <div class="content_text">{{ item.content }}</div>
                     <div class="content_data">
                       <div>
-                        <img :src="up" alt="点赞" />
+                        <NIcon
+                          :component="ThumbsUpOutline"
+                          size="15"
+                          :color="
+                            item.postId === postIndex ? 'rgb(249, 167, 101)' : 'rgb(176, 176, 176)'
+                          "
+                        ></NIcon>
                         <span>{{ item.attitudes }}</span>
                       </div>
 
                       <div>
-                        <img :src="comment" alt="评论" />
+                        <NIcon
+                          :component="ChatboxEllipsesOutline"
+                          size="15"
+                          :color="
+                            item.postId === postIndex ? 'rgb(249, 167, 101)' : 'rgb(176, 176, 176)'
+                          "
+                        ></NIcon>
                         <span>{{ item.commentsCount }}</span>
                       </div>
 
                       <div>
-                        <img :src="forward" alt="转发" />
+                        <NIcon
+                          :component="ArrowRedoOutline"
+                          size="15"
+                          :color="
+                            item.postId === postIndex ? 'rgb(249, 167, 101)' : 'rgb(176, 176, 176)'
+                          "
+                        ></NIcon>
                         <span>{{ item.repostsCount }}</span>
                       </div>
                     </div>
@@ -670,10 +707,10 @@ onMounted(() => {
               </div>
               <!--              帖子详情-->
               <div
+                class="post_detail"
                 v-for="(item, index) in postData.data"
                 :key="index"
                 :class="[item.postId !== postIndex ? 'none' : '']"
-                class="post_detail"
               >
                 <template v-if="item.postId === postIndex">
                   <div style="display: flex; align-items: center">
@@ -684,17 +721,38 @@ onMounted(() => {
                   <div class="detail_info">
                     <div class="content_data">
                       <div>
-                        <div><img :src="up" alt="点赞" /><span>点赞数</span></div>
+                        <div>
+                          <NIcon
+                            :component="ThumbsUpOutline"
+                            size="20"
+                            color="rgb(176, 176, 176)"
+                          ></NIcon>
+                          <span>点赞数</span>
+                        </div>
                         <span>{{ item.attitudes }}</span>
                       </div>
 
                       <div>
-                        <div><img :src="comment" alt="评论" /><span>评论数</span></div>
+                        <div>
+                          <NIcon
+                            :component="ChatboxEllipsesOutline"
+                            size="20"
+                            color="rgb(176, 176, 176)"
+                          ></NIcon>
+                          <span>评论数</span>
+                        </div>
                         <span>{{ item.commentsCount }}</span>
                       </div>
 
                       <div>
-                        <div><img :src="forward" alt="转发" /><span>转发数</span></div>
+                        <div>
+                          <NIcon
+                            :component="ArrowRedoOutline"
+                            size="20"
+                            color="rgb(176, 176, 176)"
+                          ></NIcon>
+                          <span>转发数</span>
+                        </div>
                         <span>{{ item.repostsCount }}</span>
                       </div>
                     </div>
@@ -706,19 +764,39 @@ onMounted(() => {
                   </div>
 
                   <div class="detail_content">
-                    <NCard>{{ item.content }}</NCard>
+                    <NCard>
+                      <div class="flexrow">
+                        <NAvatar :src="accountInfo.accountDetailInfo.accountPictureUrl" round>
+                        </NAvatar>
+                        <div class="flexcolumn">
+                          <span class="text1">{{ accountInfo.accountDetailInfo.accountName }}</span>
+                          <span class="text2">{{ publishTime }}</span>
+                        </div>
+                      </div>
+                      <div class="content">{{ item.content }}</div>
+                    </NCard>
                   </div>
 
                   <div style="display: flex; align-items: center">
                     <text class="text_italic">热门评论</text>
-                    <img :src="arrowPng" alt="账号内容" class="img_arrow" />
+                    <img :src="arrowPng" alt="热门评论" class="img_arrow" />
                   </div>
 
                   <div class="detail_comment">
                     <NCard v-for="(item1, index) in commentData.data" :key="index">
-                      <span>作者：{{ item1.author }}</span
-                      ><br />
-                      <span>{{ item1.text }}</span>
+                      <div class="flexrow">
+                        <div class="content">
+                          <div class="info">
+                            <NAvatar :size="35" src="" round style="flex-shrink: 0"></NAvatar>
+                            <span class="text1">{{ item1.author }}</span>
+                          </div>
+                          <span class="text2">{{ item1.text }}</span>
+                        </div>
+                        <div class="icon">
+                          <NIcon :component="Heart" size="20" color="rgb(176, 176, 176)"></NIcon>
+                          <span>0</span>
+                        </div>
+                      </div>
                     </NCard>
                   </div>
                 </template>
@@ -737,7 +815,19 @@ onMounted(() => {
   flex-direction: row;
 
   .select {
-    background: rgba(140, 141, 144, 0.09);
+    background: rgba(140, 141, 144, 0.07);
+    padding: 10px !important;
+    border-radius: 10px;
+    .content_text {
+      color: rgba(249, 167, 101, 100) !important;
+    }
+    .content_data {
+      div {
+        span {
+          color: rgba(249, 167, 101, 100) !important;
+        }
+      }
+    }
   }
 
   .none {
@@ -746,6 +836,8 @@ onMounted(() => {
 
   .post_list {
     width: 300px;
+    box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 27);
+    border-radius: 20px;
 
     .text_italic {
       font-size: 15px;
@@ -754,6 +846,7 @@ onMounted(() => {
     .list_content {
       display: flex;
       flex-direction: column;
+      padding: 10px;
 
       cursor: pointer;
 
@@ -765,13 +858,24 @@ onMounted(() => {
         flex-direction: row;
         align-items: center;
         justify-content: space-around;
+        margin-top: 20px;
 
         div {
           display: flex;
+          flex-direction: row;
           align-items: center;
           justify-content: center;
           @media screen and (min-width: 320px) and (max-width: 480px) {
             flex-direction: column;
+          }
+          img {
+            width: 20px;
+            height: auto;
+          }
+          span {
+            color: rgba(176, 176, 176, 100);
+            font-size: 12px;
+            margin-left: 5px;
           }
         }
       }
@@ -786,6 +890,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     width: 100%;
+    margin-left: 20px;
 
     .text_italic {
       font-size: 15px;
@@ -807,13 +912,21 @@ onMounted(() => {
           div {
             display: flex;
             flex-direction: row;
+            align-items: center;
+            justify-content: center;
 
             @media screen and (min-width: 320px) and (max-width: 480px) {
               flex-direction: column;
             }
+            img {
+              width: 20px;
+              height: auto;
+            }
 
             span {
               font-size: 15px;
+              color: rgba(176, 176, 176, 100);
+              margin-left: 10px;
             }
           }
 
@@ -827,6 +940,76 @@ onMounted(() => {
             @media screen and (min-width: 320px) and (max-width: 480px) {
               font-size: 4vw;
             }
+          }
+        }
+      }
+    }
+
+    .detail_content {
+      .flexrow {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .flexcolumn {
+          margin-left: 10px;
+          display: flex;
+          flex-direction: column;
+          .text1 {
+            color: rgba(63, 63, 70, 100);
+            font-size: 16px;
+          }
+          .text2 {
+            color: rgba(176, 176, 176, 100);
+            font-size: 12px;
+          }
+        }
+      }
+      .content {
+        margin-top: 20px;
+        font-size: 14px;
+        line-height: 25px;
+      }
+    }
+
+    .detail_comment {
+      .flexrow {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        .content {
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          justify-content: center;
+          .info {
+            display: flex;
+            flex-direction: row;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+            .text1 {
+              margin-left: 5px;
+              color: rgba(176, 176, 176, 100);
+              font-size: 16px;
+              flex-shrink: 0;
+            }
+          }
+
+          .text2 {
+            margin-left: 20px;
+            color: rgba(63, 63, 70, 100);
+            font-size: 14px;
+          }
+        }
+        .icon {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          span {
+            margin-left: 5px;
           }
         }
       }
@@ -1017,8 +1200,19 @@ onMounted(() => {
       .text_info3 {
         color: rgba(120, 150, 225, 100);
         font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         @media screen and (min-width: 320px) and (max-width: 480px) {
           font-size: 4vw;
+        }
+        .active {
+          width: auto;
+          height: 20px;
+          margin-left: 5px;
+        }
+        .none {
+          display: none;
         }
       }
     }
@@ -1113,10 +1307,11 @@ onMounted(() => {
 .button_body {
   display: flex;
   flex-direction: column;
-  margin: 80px 50px 50px 50px;
+  padding: 80px 50px 50px 50px;
   text-align: center;
   justify-content: center;
-
+  box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 27);
+  border-radius: 20px;
   @media screen and (min-width: 320px) and (max-width: 480px) {
     margin: 10vw 0;
   }

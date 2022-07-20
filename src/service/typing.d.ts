@@ -203,4 +203,10 @@ declare namespace API {
     address: any
     focusCategory: any
   }
+  type SearchPostRequest = {
+    search: string
+    categoryId: number
+    areaId: number
+    dateTime: string
+  }
 }

@@ -199,7 +199,7 @@ onMounted(() => {
   <div class="bg_box">
     <div class="bg_box2">
       <h3>管理账号列表</h3>
-      <img class="text_png1" :src="underLinePng" />
+      <img class="text_png1" :src="underLinePng" alt="横线" />
       <n-grid :cols="4" x-gap="24">
         <n-gi span="4">
           <vxe-toolbar>
@@ -211,11 +211,9 @@ onMounted(() => {
                 @blur="changeAdminName"
               ></vxe-input>
 
-              <n-button ghost type="info" style="margin-left: 70px" @click="clickEvent">
-                重置
-              </n-button>
+              <n-button ghost type="info" class="ml5" @click="clickEvent"> 重置 </n-button>
 
-              <n-button type="info" style="margin-left: 350px" @click="handleAddAdmin">
+              <n-button type="info" class="ml5" @click="handleAddAdmin">
                 <template #icon>
                   <n-icon>
                     <Add />
@@ -223,7 +221,7 @@ onMounted(() => {
                 </template>
                 添加
               </n-button>
-              <n-button type="error" style="margin-left: 20px" @click="deleteEvent">
+              <n-button type="error" class="ml5" @click="deleteEvent">
                 <template #icon>
                   <n-icon>
                     <TrashOutline />
@@ -412,13 +410,20 @@ onMounted(() => {
     padding-bottom: 5%;
     border-radius: 15px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      margin: 0;
+      width: auto;
+    }
+    .ml5 {
+      margin-left: 5px;
+    }
     .text_png1 {
       position: absolute;
       height: 16px;
       width: 150px;
       left: 335px;
       bottom: 585px;
+      display: none;
     }
 
     .table1 {
