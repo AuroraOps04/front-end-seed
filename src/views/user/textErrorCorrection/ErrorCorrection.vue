@@ -2,7 +2,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { NSpace, NInput, NButton, NAvatar } from 'naive-ui'
+import { NSpace, NInput, NButton } from 'naive-ui'
 import { VXETable } from 'vxe-table'
 import { getErrorCorrectionApi } from '@service/account'
 import correctionPng from '@/assets/correction.png'
@@ -163,8 +163,16 @@ const clearText = () => {
             </div>
           </div>
           <div class="text-areaText-suggest">
-            <div></div>
-            <div></div>
+            <div class="text-suggest-typesetting">
+              <div class="text-typesetting-adoption">已采纳:<span>0</span></div>
+              <div class="text-typesetting-adoption-all">采纳全部</div>
+            </div>
+            <div class="text-suggest-typesetting">
+              <div class="text-typesetting-adoption">已忽略:<span style="color: red">0</span></div>
+              <div class="text-typesetting-adoption-all" style="background-color: gray">
+                采纳全部
+              </div>
+            </div>
           </div>
           <div class="text-areaText-revise">
             <div v-for="(item, index) in errorMessage.correctList" :key="index" class="result-list">
@@ -183,7 +191,7 @@ const clearText = () => {
 
 <style lang="scss" scoped>
 .container {
-  background-color: #f2f6f7;
+  background-color: #f4f7fa;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -253,12 +261,12 @@ const clearText = () => {
       display: flex;
       flex-direction: row;
       margin-top: 1.39vh;
-      width: 44.17vw;
+      width: 65.17vw;
       height: 72.13vh;
       background-color: rgba(255, 255, 255, 100);
       //box-shadow: 0px 2px 22px 5px rgba(17, 54, 145, 12);
       border-radius: 10px;
-      margin-left: 16.05vw;
+      margin-left: 9.05vw;
 
       .text-content-logo {
         justify-content: space-between;
@@ -382,8 +390,10 @@ const clearText = () => {
       height: 72.13vh;
       background-color: rgba(255, 255, 255, 100);
       flex-wrap: wrap;
+      box-shadow: 0 2px 22px 5px #e3eaf1;
       //文本返回
       .text-areaText-show {
+        background-color: #f4f7fa;
         align-content: flex-start;
         flex-direction: row;
         border-radius: 10px;
@@ -391,9 +401,10 @@ const clearText = () => {
         display: flex;
         width: 100%;
         height: calc(100% - 8.8vh);
-        background-color: rgba(14, 14, 14, 0.3);
+        //background-color: rgba(14, 14, 14, 0.3);
 
         .text-areaText-result {
+          margin: 10px;
           border-bottom: 1px solid;
           border-color: rgba(10, 10, 10, 0.1);
           border-radius: 10px;
@@ -428,14 +439,42 @@ const clearText = () => {
         }
 
         .text-areaText-suggest {
-          border-bottom: 1px solid;
-          border-color: rgba(10, 10, 10, 0.1);
-          border-radius: 10px;
+          //border-bottom: 1px solid;
+          //border-color: rgba(10, 10, 10, 0.1);
+          //border-radius: 10px;
           display: flex;
           flex-direction: row;
+          flex-wrap: wrap;
           width: 100%;
           height: 8.8vh;
-          background-color: black;
+          background-color: #f4f7fa;
+
+          .text-suggest-typesetting {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            width: 100%;
+            height: 50%;
+            justify-content: space-around;
+            .text-typesetting-adoption {
+              padding-top: 10px;
+              color: #6a6f77;
+              span {
+                padding-left: 3px;
+                color: dodgerblue;
+              }
+            }
+
+            .text-typesetting-adoption-all {
+              margin-top: 10px;
+              background-color: #bbdbfa;
+              border-radius: 10px;
+              height: 25px;
+              width: 80px;
+              align-items: center;
+              text-align: center;
+            }
+          }
         }
 
         .text-areaText-revise {
@@ -446,7 +485,7 @@ const clearText = () => {
           flex-direction: row;
           width: 100%;
           height: calc(100% - 17.6vh);
-          background-color: white;
+          background-color: #f2f6f7;
           .result-list {
             border-radius: 10px;
             background-color: white;
