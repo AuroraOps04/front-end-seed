@@ -89,6 +89,7 @@ const findUserSelectPage = async () => {
   const res = await listUserByPageApi(params)
   userData.tableData = res.data! as any
   userData.tablePage.total = res.count! as any
+  console.log(userData.tableData)
 }
 
 // 查询所有地区
@@ -251,12 +252,15 @@ onMounted(() => {
             :data="userData.tableData"
             :export-config="{}"
             :row-config="{ isHover: true }"
+            :loading="loading"
+            border="inner"
             align="center"
             size="small"
           >
-            <vxe-column type="checkbox" width="60"></vxe-column>
-            <vxe-column field="userName" title="姓名"></vxe-column>
-            <vxe-column field="gender" title="性别"></vxe-column>
+            <vxe-column type="checkbox" width="50"></vxe-column>
+            <vxe-column field="userName" title="账户名"></vxe-column>
+            <vxe-column field="gender" title="性别" width="50"></vxe-column>
+            <vxe-column field="ipAddress" title="IP所属地"></vxe-column>
             <vxe-column field="categoryName" title="关注领域"></vxe-column>
             <vxe-column field="areaName" title="所在地"></vxe-column>
             <vxe-column field="phone" title="手机号"></vxe-column>
@@ -307,6 +311,7 @@ onMounted(() => {
   }
 
   .table {
+    margin-top: 20px;
     height: 470px;
     @media screen and (min-width: 320px) and (max-width: 480px) {
       height: auto;

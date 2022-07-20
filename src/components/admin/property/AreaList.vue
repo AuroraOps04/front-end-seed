@@ -227,6 +227,8 @@ onMounted(() => {
               :data="propertyData.tableData"
               :export-config="{}"
               :row-config="{ isHover: true }"
+              :loading="loading"
+              border="inner"
               align="center"
               size="small"
               @checkbox-all="selectAllChangeEvent"
@@ -386,6 +388,7 @@ onMounted(() => {
     }
 
     .table1 {
+      margin-top: 20px;
       height: 445px;
 
       .add_icon {

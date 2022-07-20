@@ -241,6 +241,8 @@ onMounted(() => {
               ref="xTable1"
               size="small"
               align="center"
+              :loading="loading"
+              border="inner"
               :data="adminData.tableData"
               :export-config="{}"
               :row-config="{ isHover: true }"
@@ -427,6 +429,7 @@ onMounted(() => {
     }
 
     .table1 {
+      margin-top: 20px;
       height: 445px;
 
       .add_icon {
