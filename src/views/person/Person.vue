@@ -52,6 +52,7 @@ import phonePng from '@/assets/phone.png'
 import memberPng from '@/assets/member.png'
 import Header from '@/components/Header.vue'
 import underLine from '@/assets/underLine.png'
+import btn_collect from '@/assets/btn-collect- default.png'
 
 import {
   AccountCollectionApi,

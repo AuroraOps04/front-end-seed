@@ -5,7 +5,19 @@ import { useRouter } from 'vue-router'
 import moment from 'moment'
 import 'moment/locale/pt-br'
 import * as echarts from 'echarts'
-import { NButton, NAvatar, NGrid, NGi, NDivider, NIcon, NButtonGroup, NCard } from 'naive-ui'
+import {
+  NButton,
+  NAvatar,
+  NGrid,
+  NGi,
+  NDivider,
+  NIcon,
+  NButtonGroup,
+  NCard,
+  GlobalThemeOverrides,
+  NConfigProvider,
+  NMessageProvider
+} from 'naive-ui'
 import {
   Star,
   StarOutline,
@@ -32,6 +44,25 @@ import accountComment from '@/assets/account_comment.png'
 import accountLike from '@/assets/account_like.png'
 import accountPost from '@/assets/account_post.png'
 import Header from '@/components/body/Header.vue'
+import buttonCollect from '@/assets/btn-collect- selected.png'
+import buttonUnCollect from '@/assets/btn-collect- default.png'
+import buttonAdd from '@/assets/btn-add.png'
+import titleImgSj from '@/assets/title-img-sj.png'
+import titleImgNr from '@/assets/title-img-nr.png'
+import trendingUp from '@/assets/trending_up.png'
+import titleQs from '@/assets/title-img-qs.png'
+import titleGl from '@/assets/title-gl.png'
+import titleList from '@/assets/title-list.png'
+import titleRmpl from '@/assets/title-rmpl.png'
+import titleTwnr from '@/assets/title-twnr.png'
+import iconMessage from '@/assets/icon-message.png'
+import iconShare from '@/assets/icon-share.png'
+import iconThumbs from '@/assets/icon-thumbs.png'
+import iconParkMessage from '@/assets/iconPark-message-.png'
+import iconParkShare from '@/assets/iconPark-share.png'
+import iconParkThumbs from '@/assets/iconPark-thumbs.png'
+import accountLogo from '@/assets/account_logo.png'
+import '@/assets/font/SourceHanSansSC-Medium.otf'
 
 const store = useStore()
 
@@ -73,7 +104,22 @@ type EChar = {
   data: eCharsObject[]
 }
 
+// 定义局部颜色
+const themeOverrides: GlobalThemeOverrides = {
+  common: {
+    primaryColor: '#F0A020',
+    primaryColorHover: '#F0A020'
+  }
+}
+
 const router = useRouter()
+
+// 单击行实现信息跳转
+const ClickToSearch = () => {
+  router.push({
+    path: `/Account`
+  })
+}
 
 const accountId = ref<number>()
 
@@ -344,475 +390,481 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <div>
-      <Header />
-      <!--    <span class="back" @click="handleBack">返回</span>-->
-      <!--    页面上半部分-->
-      <div class="box-card">
-        <NGrid :cols="4" x-gap="24">
-          <NGi>
-            <div class="profile_picture">
-              <NAvatar :size="60" :src="accountInfo.accountDetailInfo.accountPictureUrl" round>
-              </NAvatar>
-              <div v-if="collectionState === 2" class="box-collect">
-                <NButton class="button_collection" ghost type="warning" @click="AccountCollection">
-                  <template #icon>
-                    <NIcon :component="StarOutline"></NIcon>
-                  </template>
-                  收藏
-                </NButton>
+  <n-config-provider :theme-overrides="themeOverrides">
+    <div style="background-color: #f2f6f7">
+      <div>
+        <Header />
+        <div @click="ClickToSearch" class="search">
+          <img :src="accountLogo" alt="logo" style="height: 42px; width: 244px" />
+        </div>
+
+        <!--    页面上半部分-->
+        <div class="box-card">
+          <NGrid :cols="4" x-gap="24">
+            <NGi>
+              <div class="profile_picture">
+                <NAvatar :size="140" :src="accountInfo.accountDetailInfo.accountPictureUrl" round>
+                </NAvatar>
+                <div v-if="collectionState === 2" class="box-collect">
+                  <div>
+                    <img
+                      :src="buttonUnCollect"
+                      alt="未收藏"
+                      style="height: 54px; width: 100px"
+                      @click="AccountCollection"
+                    />
+                  </div>
+
+                  <div>
+                    <img :src="buttonAdd" alt="加入自榜" style="height: 27px; width: 110px" />
+                  </div>
+                </div>
+                <div v-else class="box-collect">
+                  <div>
+                    <img
+                      :src="buttonCollect"
+                      alt="已收藏"
+                      style="height: 54px; width: 100px"
+                      @click="AccountCollection"
+                    />
+                  </div>
+
+                  <div>
+                    <img :src="buttonAdd" alt="加入自榜" style="height: 27px; width: 110px" />
+                  </div>
+                </div>
               </div>
-              <div v-else class="box-collect">
-                <NButton class="button_collection" ghost type="warning" @click="AccountCollection">
-                  <template #icon>
-                    <NIcon :component="Star"></NIcon>
-                  </template>
-                  取消收藏
-                </NButton>
+            </NGi>
+            <NGi span="2">
+              <div class="acc_body1">
+                <text class="account_name">{{ accountInfo.accountDetailInfo.accountName }}</text>
               </div>
-            </div>
-          </NGi>
-          <NGi span="2">
-            <div class="acc_body1">
-              <text class="account_name">{{ accountInfo.accountDetailInfo.accountName }}</text>
-            </div>
-            <div class="acc_body2">
-              <text class="text_brief_color">账号名称：</text>
-              <text class>{{ accountInfo.accountDetailInfo.accountName }}</text>
-            </div>
-            <div class="acc_body3">
-              <text class="text_brief_color">个人简介：</text>
-              <text class>{{ accountInfo.accountDetailInfo.introduction }}</text>
-            </div>
-            <NDivider />
-            <div class="acc_body4">
-              <NGrid :cols="3" x-gap="24">
-                <NGi>
-                  <div class="profile_info">
-                    <text class="text_brief_color">分类</text>
-                    <text class="text_brief_info"
-                      >{{ accountInfo.accountDetailInfo.categoryName }}
-                    </text>
-                  </div>
-                </NGi>
+              <div class="acc_body2">
+                <text class="text_brief_color">账号名称：</text>
+                <text class="text_brief">{{ accountInfo.accountDetailInfo.accountName }}</text>
+              </div>
+              <div class="acc_body3">
+                <text class="text_brief_color">个人简介：</text>
+                <text class="text_brief">{{ accountInfo.accountDetailInfo.introduction }}</text>
+              </div>
+              <NDivider />
+              <div class="acc_body4">
+                <NGrid :cols="3" x-gap="24">
+                  <NGi>
+                    <div class="profile_info">
+                      <text class="text_brief_color">分类</text>
+                      <text class="text_brief_info"
+                        >{{ accountInfo.accountDetailInfo.categoryName }}
+                      </text>
+                    </div>
+                  </NGi>
 
-                <NGi>
-                  <div class="profile_info">
-                    <text class="text_brief_color">地区</text>
-                    <text class="text_brief_info"
-                      >{{ accountInfo.accountDetailInfo.areaName }}
-                    </text>
-                  </div>
-                </NGi>
+                  <NGi>
+                    <div class="profile_info">
+                      <text class="text_brief_color">地区</text>
+                      <text class="text_brief_info"
+                        >{{ accountInfo.accountDetailInfo.areaName }}
+                      </text>
+                    </div>
+                  </NGi>
 
-                <NGi>
-                  <div class="profile_info">
-                    <text class="text_brief_color">粉丝数</text>
-                    <text class="text_brief_info"
-                      >{{ accountInfo.accountDetailInfo.recordFan }}
-                    </text>
-                  </div>
-                </NGi>
-              </NGrid>
-            </div>
-          </NGi>
+                  <NGi>
+                    <div class="profile_info">
+                      <text class="text_brief_color">粉丝数</text>
+                      <text class="text_brief_info"
+                        >{{ accountInfo.accountDetailInfo.recordFan }}
+                      </text>
+                    </div>
+                  </NGi>
+                </NGrid>
+              </div>
+            </NGi>
 
-          <NGi>
-            <div class="score_body">
-              <text class="text_exponential">888.8</text>
+            <NGi>
+              <div class="score_body">
+                <text class="text_exponential">888.8</text>
 
-              <text class="text_exponential"> 分</text>
-              <text class="text_num"> /周潮汐指数</text>
-            </div>
+                <text class="text_exponential"> 分</text>
+                <text class="text_num"> /周潮汐指数</text>
+              </div>
 
-            <div class="rank_body">
-              <text class="rank">NO.</text>
-              <text class="rank">1</text>
-              <text class="rank_area">两岸>周榜</text>
-            </div>
-          </NGi>
-        </NGrid>
+              <div class="rank_body">
+                <text class="rank">NO.</text>
+                <text class="rank">1</text>
+                <text class="rank_area">两岸>周榜</text>
+              </div>
+            </NGi>
+          </NGrid>
+        </div>
       </div>
-    </div>
-    <div>
-      <!--    页面下半部分-->
-      <div class="box-card">
-        <!--      账号数据标题-->
-        <NGrid :cols="1" x-gap="24">
-          <NGi>
-            <div class="card-content">
-              <div class="card-title">
-                <h2 class="text_italic">账号数据</h2>
-                <img :src="textBgPng" alt="账号数据" class="img_bg" />
-                <h5 class="text_date">更新于{{ currentDate }}</h5>
+      <div>
+        <!--    页面下半部分-->
+        <div class="box-card">
+          <!--      账号数据标题-->
+          <NGrid :cols="1" x-gap="24">
+            <NGi>
+              <div class="card-content">
+                <div class="card-title">
+                  <img :src="titleImgSj" alt="账号数据" style="height: 39px; width: 140px" />
+                  <h4 class="text_date">更新于{{ currentDate }}</h4>
+                </div>
+                <div class="center">
+                  <NButtonGroup>
+                    <NButton
+                      :type="dateListButtonStyle"
+                      plain
+                      round
+                      @click="DateListButtonChange(1)"
+                      >日榜
+                    </NButton>
+                    <NButton
+                      :type="weeklyListButtonStyle"
+                      plain
+                      round
+                      @click="DateListButtonChange(2)"
+                      >周榜
+                    </NButton>
+                  </NButtonGroup>
+                </div>
               </div>
-              <div class="center">
-                <NButtonGroup>
-                  <NButton :type="dateListButtonStyle" plain round @click="DateListButtonChange(1)"
-                    >日榜
+            </NGi>
+          </NGrid>
+
+          <NDivider />
+
+          <NGrid :cols="4" style="margin-bottom: 80px; margin-top: 80px" x-gap="24">
+            <NGi class="body_center">
+              <div class="center_text">
+                <img :src="accountPost" alt="发帖数" />
+                <div>
+                  <text class="text_info1">发帖数</text>
+                  <text class="text_info2">{{ accountInfo.recordTotal.recordArticleCount }}</text>
+                  <text class="text_info3">
+                    {{
+                      accountInfo.accountDetailInfo.recordArticle === null
+                        ? 0
+                        : accountInfo.accountDetailInfo.recordArticle
+                    }}
+                    <img
+                      :src="trendingUpPng"
+                      :class="[
+                        accountInfo.accountDetailInfo.recordArticle !== null &&
+                        accountInfo.accountDetailInfo.recordArticle !== 0
+                          ? 'active'
+                          : 'none'
+                      ]"
+                      alt="上升"
+                    />
+                  </text>
+                </div>
+              </div>
+            </NGi>
+
+            <NGi class="body_center">
+              <div class="center_text">
+                <img :src="accountLike" alt="点赞数" />
+                <div>
+                  <text class="text_info1">评论数</text>
+                  <text class="text_info2">{{ accountInfo.recordTotal.recordLikeCount }}</text>
+                  <text class="text_info3">
+                    {{
+                      accountInfo.accountDetailInfo.recordLike === null
+                        ? 0
+                        : accountInfo.accountDetailInfo.recordLike
+                    }}
+                    <img
+                      :src="trendingUp"
+                      :class="[
+                        accountInfo.accountDetailInfo.recordArticle !== null &&
+                        accountInfo.accountDetailInfo.recordArticle !== 0
+                          ? 'active'
+                          : 'none'
+                      ]"
+                      alt="上升"
+                    />
+                  </text>
+                </div>
+              </div>
+            </NGi>
+
+            <NGi class="body_center">
+              <div class="center_text">
+                <img :src="accountComment" alt="评论数" />
+                <div>
+                  <text class="text_info1">评论数</text>
+                  <text class="text_info2">{{ accountInfo.recordTotal.recordCommentCount }}</text>
+                  <text class="text_info3">
+                    {{
+                      accountInfo.accountDetailInfo.recordComment === null
+                        ? 0
+                        : accountInfo.accountDetailInfo.recordComment
+                    }}
+                    <img
+                      :src="trendingUp"
+                      :class="[
+                        accountInfo.accountDetailInfo.recordArticle !== null &&
+                        accountInfo.accountDetailInfo.recordArticle !== 0
+                          ? 'active'
+                          : 'none'
+                      ]"
+                      alt="上升"
+                    />
+                  </text>
+                </div>
+              </div>
+            </NGi>
+
+            <NGi class="body_center">
+              <div class="center_text">
+                <img :src="accountForward" alt="转发数" />
+                <div>
+                  <text class="text_info1">转发数</text>
+                  <text class="text_info2">{{ accountInfo.recordTotal.recordForwardCount }}</text>
+                  <text class="text_info3">
+                    {{
+                      accountInfo.accountDetailInfo.recordForward === null
+                        ? 0
+                        : accountInfo.accountDetailInfo.recordForward
+                    }}
+                    <img
+                      :src="trendingUp"
+                      :class="[
+                        accountInfo.accountDetailInfo.recordArticle !== null &&
+                        accountInfo.accountDetailInfo.recordArticle !== 0
+                          ? 'active'
+                          : 'none'
+                      ]"
+                      alt="上升"
+                    />
+                  </text>
+                </div>
+              </div>
+            </NGi>
+          </NGrid>
+
+          <!--      数据趋势-->
+          <NGrid :cols="1" x-gap="24">
+            <NGi>
+              <div style="display: flex; align-items: center; margin-bottom: 10px">
+                <img :src="titleQs" alt="数据趋势" style="height: 39px; width: 140px" />
+                <h4 class="text_date">更新于{{ currentDate }}</h4>
+              </div>
+            </NGi>
+          </NGrid>
+
+          <NDivider />
+
+          <NGrid :cols="1" x-gap="24">
+            <NGi>
+              <div class="card-echarts">
+                <div class="button_body">
+                  <NButton
+                    focusable
+                    :type="echartsSelect === 'article' ? 'warning' : 'default'"
+                    class="button_1"
+                    round
+                    @click="handleEcharts('article')"
+                    >发文数
                   </NButton>
                   <NButton
-                    :type="weeklyListButtonStyle"
-                    plain
+                    focusable
+                    :type="echartsSelect === 'like' ? 'warning' : 'default'"
+                    class="button_1"
                     round
-                    @click="DateListButtonChange(2)"
-                    >周榜
+                    @click="handleEcharts('like')"
+                    >点赞数
                   </NButton>
-                </NButtonGroup>
-              </div>
-            </div>
-          </NGi>
-        </NGrid>
-
-        <NDivider />
-
-        <!--      互动数据-->
-        <NGrid :cols="1" style="margin-bottom: 80px" x-gap="24">
-          <NGi>
-            <div style="display: flex; align-items: center">
-              <text class="text_italic">互动数据</text>
-              <img :src="arrowPng" alt="互动数据" class="img_arrow" />
-            </div>
-          </NGi>
-        </NGrid>
-
-        <NGrid :cols="4" style="margin-bottom: 80px" x-gap="24">
-          <NGi class="body_center">
-            <div class="center_text">
-              <img :src="accountPost" alt="发帖数" />
-              <div>
-                <text class="text_info1">发帖数</text>
-                <text class="text_info2">{{ accountInfo.recordTotal.recordArticleCount }}</text>
-                <text class="text_info3">
-                  {{
-                    accountInfo.accountDetailInfo.recordArticle === null
-                      ? 0
-                      : accountInfo.accountDetailInfo.recordArticle
-                  }}
-                  <img
-                    :src="trendingUpPng"
-                    :class="[
-                      accountInfo.accountDetailInfo.recordArticle !== null &&
-                      accountInfo.accountDetailInfo.recordArticle !== 0
-                        ? 'active'
-                        : 'none'
-                    ]"
-                    alt="上升"
-                  />
-                </text>
-              </div>
-            </div>
-          </NGi>
-
-          <NGi class="body_center">
-            <div class="center_text">
-              <img :src="accountLike" alt="点赞数" />
-              <div>
-                <text class="text_info1">评论数</text>
-                <text class="text_info2">{{ accountInfo.recordTotal.recordLikeCount }}</text>
-                <text class="text_info3">
-                  {{
-                    accountInfo.accountDetailInfo.recordLike === null
-                      ? 0
-                      : accountInfo.accountDetailInfo.recordLike
-                  }}
-                  <img
-                    :src="trendingUpPng"
-                    :class="[
-                      accountInfo.accountDetailInfo.recordArticle !== null &&
-                      accountInfo.accountDetailInfo.recordArticle !== 0
-                        ? 'active'
-                        : 'none'
-                    ]"
-                    alt="上升"
-                  />
-                </text>
-              </div>
-            </div>
-          </NGi>
-
-          <NGi class="body_center">
-            <div class="center_text">
-              <img :src="accountComment" alt="评论数" />
-              <div>
-                <text class="text_info1">评论数</text>
-                <text class="text_info2">{{ accountInfo.recordTotal.recordCommentCount }}</text>
-                <text class="text_info3">
-                  {{
-                    accountInfo.accountDetailInfo.recordComment === null
-                      ? 0
-                      : accountInfo.accountDetailInfo.recordComment
-                  }}
-                  <img
-                    :src="trendingUpPng"
-                    :class="[
-                      accountInfo.accountDetailInfo.recordArticle !== null &&
-                      accountInfo.accountDetailInfo.recordArticle !== 0
-                        ? 'active'
-                        : 'none'
-                    ]"
-                    alt="上升"
-                  />
-                </text>
-              </div>
-            </div>
-          </NGi>
-
-          <NGi class="body_center">
-            <div class="center_text">
-              <img :src="accountForward" alt="转发数" />
-              <div>
-                <text class="text_info1">转发数</text>
-                <text class="text_info2">{{ accountInfo.recordTotal.recordForwardCount }}</text>
-                <text class="text_info3">
-                  {{
-                    accountInfo.accountDetailInfo.recordForward === null
-                      ? 0
-                      : accountInfo.accountDetailInfo.recordForward
-                  }}
-                  <img
-                    :src="trendingUpPng"
-                    :class="[
-                      accountInfo.accountDetailInfo.recordArticle !== null &&
-                      accountInfo.accountDetailInfo.recordArticle !== 0
-                        ? 'active'
-                        : 'none'
-                    ]"
-                    alt="上升"
-                  />
-                </text>
-              </div>
-            </div>
-          </NGi>
-        </NGrid>
-
-        <NDivider />
-        <!--      数据趋势-->
-        <NGrid :cols="1" x-gap="24">
-          <NGi>
-            <div style="display: flex; align-items: center">
-              <text class="text_italic">数据趋势</text>
-              <img :src="arrowPng" alt="数据趋势" class="img_arrow" />
-            </div>
-          </NGi>
-        </NGrid>
-
-        <NGrid :cols="1" x-gap="24">
-          <NGi>
-            <div class="card-echarts">
-              <div class="button_body">
-                <NButton
-                  :type="echartsSelect === 'article' ? 'warning' : 'default'"
-                  class="button_1"
-                  round
-                  @click="handleEcharts('article')"
-                  >发文数
-                </NButton>
-                <NButton
-                  :type="echartsSelect === 'like' ? 'warning' : 'default'"
-                  class="button_1"
-                  round
-                  @click="handleEcharts('like')"
-                  >点赞数
-                </NButton>
-                <NButton
-                  :type="echartsSelect === 'comment' ? 'warning' : 'default'"
-                  class="button_1"
-                  round
-                  @click="handleEcharts('comment')"
-                  >评论数
-                </NButton>
-                <NButton
-                  :type="echartsSelect === 'forward' ? 'warning' : 'default'"
-                  class="button_1"
-                  round
-                  @click="handleEcharts('forward')"
-                  >转发数
-                </NButton>
-              </div>
-              <div ref="main" class="echarts-content"></div>
-            </div>
-          </NGi>
-        </NGrid>
-
-        <!--        账号内容-->
-        <NGrid :cols="1" x-gap="24">
-          <NGi>
-            <div style="display: flex; align-items: center">
-              <text class="text_italic">账号内容</text>
-              <img :src="arrowPng" alt="账号内容" class="img_arrow" />
-            </div>
-          </NGi>
-        </NGrid>
-
-        <NGrid :cols="1" x-gap="24">
-          <NGi>
-            <div class="account_post">
-              <!--              帖子列表-->
-              <div class="post_list">
-                <div style="display: flex; align-items: center">
-                  <text class="text_italic">最新贴文列表</text>
-                  <img :src="arrowPng" alt="账号内容" class="img_arrow" />
+                  <NButton
+                    :type="echartsSelect === 'comment' ? 'warning' : 'default'"
+                    class="button_1"
+                    round
+                    @click="handleEcharts('comment')"
+                    >评论数
+                  </NButton>
+                  <NButton
+                    :type="echartsSelect === 'forward' ? 'warning' : 'default'"
+                    class="button_1"
+                    round
+                    @click="handleEcharts('forward')"
+                    >转发数
+                  </NButton>
                 </div>
-                <NCard
+                <div ref="main" class="echarts-content"></div>
+              </div>
+            </NGi>
+          </NGrid>
+
+          <!--        账号内容-->
+          <NGrid :cols="1" x-gap="24">
+            <NGi>
+              <div style="display: flex; align-items: center; margin-bottom: 30px">
+                <img :src="titleImgNr" alt="账号内容" style="height: 39px; width: 140px" />
+              </div>
+            </NGi>
+          </NGrid>
+
+          <NDivider />
+
+          <NGrid :cols="1" x-gap="24">
+            <NGi>
+              <div class="account_post">
+                <!--              帖子列表-->
+                <div class="post_list">
+                  <div style="display: flex; align-items: center">
+                    <img :src="titleList" alt="最新贴文列表" style="width: 150px; height: 31px" />
+                  </div>
+                  <NCard
+                    v-for="(item, index) in postData.data"
+                    :key="index"
+                    :bordered="false"
+                    style="padding: 0"
+                    size="small"
+                  >
+                    <div
+                      class="list_content"
+                      :class="[item.postId === postIndex ? 'select' : '']"
+                      @click="handleSelectPost(item)"
+                    >
+                      <div class="content_text">{{ item.content }}</div>
+                      <div class="content_data">
+                        <div>
+                          <img v-if="item.postId === postIndex" :src="iconParkThumbs" alt="点赞" />
+                          <img v-else :src="iconThumbs" />
+                          <span>{{ item.attitudes }}</span>
+                        </div>
+
+                        <div>
+                          <img v-if="item.postId === postIndex" :src="iconParkMessage" alt="评论" />
+                          <img v-else :src="iconMessage" />
+                          <span>{{ item.commentsCount }}</span>
+                        </div>
+
+                        <div>
+                          <img v-if="item.postId === postIndex" :src="iconParkShare" alt="点赞" />
+                          <img v-else :src="iconShare" />
+                          <span>{{ item.repostsCount }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </NCard>
+                </div>
+                <!--              帖子详情-->
+                <div
+                  class="post_detail"
                   v-for="(item, index) in postData.data"
                   :key="index"
-                  :bordered="false"
-                  style="padding: 0"
-                  size="small"
+                  :class="[item.postId !== postIndex ? 'none' : '']"
                 >
-                  <div
-                    class="list_content"
-                    :class="[item.postId === postIndex ? 'select' : '']"
-                    @click="handleSelectPost(item)"
-                  >
-                    <div class="content_text">{{ item.content }}</div>
-                    <div class="content_data">
-                      <div>
-                        <NIcon
-                          :component="ThumbsUpOutline"
-                          size="15"
-                          :color="
-                            item.postId === postIndex ? 'rgb(249, 167, 101)' : 'rgb(176, 176, 176)'
-                          "
-                        ></NIcon>
-                        <span>{{ item.attitudes }}</span>
-                      </div>
-
-                      <div>
-                        <NIcon
-                          :component="ChatboxEllipsesOutline"
-                          size="15"
-                          :color="
-                            item.postId === postIndex ? 'rgb(249, 167, 101)' : 'rgb(176, 176, 176)'
-                          "
-                        ></NIcon>
-                        <span>{{ item.commentsCount }}</span>
-                      </div>
-
-                      <div>
-                        <NIcon
-                          :component="ArrowRedoOutline"
-                          size="15"
-                          :color="
-                            item.postId === postIndex ? 'rgb(249, 167, 101)' : 'rgb(176, 176, 176)'
-                          "
-                        ></NIcon>
-                        <span>{{ item.repostsCount }}</span>
-                      </div>
+                  <template v-if="item.postId === postIndex">
+                    <div style="display: flex; align-items: center; margin-bottom: 30px">
+                      <img :src="titleGl" alt="传播概览" style="width: 120px; height: 30px" />
                     </div>
-                  </div>
-                </NCard>
-              </div>
-              <!--              帖子详情-->
-              <div
-                class="post_detail"
-                v-for="(item, index) in postData.data"
-                :key="index"
-                :class="[item.postId !== postIndex ? 'none' : '']"
-              >
-                <template v-if="item.postId === postIndex">
-                  <div style="display: flex; align-items: center">
-                    <text class="text_italic">传播概览</text>
-                    <img :src="arrowPng" alt="账号内容" class="img_arrow" />
-                  </div>
 
-                  <div class="detail_info">
-                    <div class="content_data">
-                      <div>
+                    <div class="detail_info">
+                      <div class="content_data">
                         <div>
-                          <NIcon
-                            :component="ThumbsUpOutline"
-                            size="20"
-                            color="rgb(176, 176, 176)"
-                          ></NIcon>
-                          <span>点赞数</span>
-                        </div>
-                        <span>{{ item.attitudes }}</span>
-                      </div>
-
-                      <div>
-                        <div>
-                          <NIcon
-                            :component="ChatboxEllipsesOutline"
-                            size="20"
-                            color="rgb(176, 176, 176)"
-                          ></NIcon>
-                          <span>评论数</span>
-                        </div>
-                        <span>{{ item.commentsCount }}</span>
-                      </div>
-
-                      <div>
-                        <div>
-                          <NIcon
-                            :component="ArrowRedoOutline"
-                            size="20"
-                            color="rgb(176, 176, 176)"
-                          ></NIcon>
-                          <span>转发数</span>
-                        </div>
-                        <span>{{ item.repostsCount }}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style="display: flex; align-items: center">
-                    <text class="text_italic">贴文内容</text>
-                    <img :src="arrowPng" alt="账号内容" class="img_arrow" />
-                  </div>
-
-                  <div class="detail_content">
-                    <NCard>
-                      <div class="flexrow">
-                        <NAvatar :src="accountInfo.accountDetailInfo.accountPictureUrl" round>
-                        </NAvatar>
-                        <div class="flexcolumn">
-                          <span class="text1">{{ accountInfo.accountDetailInfo.accountName }}</span>
-                          <span class="text2">{{ publishTime }}</span>
-                        </div>
-                      </div>
-                      <div class="content">{{ item.content }}</div>
-                    </NCard>
-                  </div>
-
-                  <div style="display: flex; align-items: center">
-                    <text class="text_italic">热门评论</text>
-                    <img :src="arrowPng" alt="热门评论" class="img_arrow" />
-                  </div>
-
-                  <div class="detail_comment">
-                    <NCard v-for="(item1, index) in commentData.data" :key="index">
-                      <div class="flexrow">
-                        <div class="content">
-                          <div class="info">
-                            <NAvatar :size="35" src="" round style="flex-shrink: 0"></NAvatar>
-                            <span class="text1">{{ item1.author }}</span>
+                          <div>
+                            <img :src="iconThumbs" />
+                            <span>点赞数</span>
                           </div>
-                          <span class="text2">{{ item1.text }}</span>
+                          <span>{{ item.attitudes }}</span>
                         </div>
-                        <div class="icon">
-                          <NIcon :component="Heart" size="20" color="rgb(176, 176, 176)"></NIcon>
-                          <span>0</span>
+
+                        <div>
+                          <div>
+                            <img :src="iconMessage" />
+                            <span>评论数</span>
+                          </div>
+                          <span>{{ item.commentsCount }}</span>
+                        </div>
+
+                        <div>
+                          <div>
+                            <img :src="iconShare" />
+                            <span>转发数</span>
+                          </div>
+                          <span>{{ item.repostsCount }}</span>
                         </div>
                       </div>
-                    </NCard>
-                  </div>
-                </template>
+                    </div>
+
+                    <NDivider />
+
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        margin-top: 20px;
+                        margin-bottom: 30px;
+                      "
+                    >
+                      <img :src="titleTwnr" alt="帖文内容" style="width: 120px; height: 30px" />
+                    </div>
+
+                    <div class="detail_content">
+                      <NCard :bordered="false">
+                        <div class="flexrow">
+                          <NAvatar :src="accountInfo.accountDetailInfo.accountPictureUrl" round>
+                          </NAvatar>
+                          <div class="flexcolumn">
+                            <span class="text1">{{
+                              accountInfo.accountDetailInfo.accountName
+                            }}</span>
+                            <span class="text2">{{ publishTime }}</span>
+                          </div>
+                        </div>
+                        <div class="content">{{ item.content }}</div>
+                      </NCard>
+                    </div>
+
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        margin-top: 30px;
+                        margin-bottom: 10px;
+                      "
+                    >
+                      <img :src="titleRmpl" alt="热门评论" style="width: 120px; height: 30px" />
+                    </div>
+
+                    <div class="detail_comment">
+                      <NCard
+                        v-for="(item1, index) in commentData.data"
+                        :key="index"
+                        :bordered="false"
+                      >
+                        <div class="flexrow">
+                          <div class="content">
+                            <div class="info">
+                              <NAvatar :size="35" src="" round style="flex-shrink: 0"></NAvatar>
+                              <span class="text1">{{ item1.author }}</span>
+                            </div>
+                            <span class="text2">{{ item1.text }}</span>
+                          </div>
+                          <div class="icon">
+                            <NIcon :component="Heart" size="20" color="rgb(176, 176, 176)"></NIcon>
+                            <span>0</span>
+                          </div>
+                        </div>
+                      </NCard>
+                    </div>
+                  </template>
+                </div>
               </div>
-            </div>
-          </NGi>
-        </NGrid>
+            </NGi>
+          </NGrid>
+        </div>
       </div>
     </div>
-  </div>
+  </n-config-provider>
 </template>
 
 <style lang="scss" scoped>
 .account_post {
   display: flex;
   flex-direction: row;
+  padding-left: 40px;
 
   .select {
     background: rgba(140, 141, 144, 0.07);
@@ -836,7 +888,8 @@ onMounted(() => {
 
   .post_list {
     width: 300px;
-    box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 27);
+    margin-top: 20px;
+    box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 0.4);
     border-radius: 20px;
 
     .text_italic {
@@ -890,7 +943,8 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-left: 20px;
+    margin-left: 40px;
+    margin-top: 30px;
 
     .text_italic {
       font-size: 15px;
@@ -991,7 +1045,8 @@ onMounted(() => {
             .text1 {
               margin-left: 5px;
               color: rgba(176, 176, 176, 100);
-              font-size: 16px;
+              font-weight: 500;
+              font-size: 18px;
               flex-shrink: 0;
             }
           }
@@ -1017,16 +1072,33 @@ onMounted(() => {
   }
 }
 
+.search {
+  background-color: white;
+  height: 120px;
+}
+
 .box-card {
+  background-color: white;
   width: 86%;
-  margin: 5%;
-  padding: 2%;
+  margin-left: 100px;
+  margin-right: 100px;
+  margin-top: 30px;
+  padding: 30px;
   border-radius: 20px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   @media screen and (min-width: 320px) and (max-width: 480px) {
     margin: 1vw;
     width: 96vw;
     padding: 5vw 1vw;
+  }
+
+  .text_date {
+    color: rgba(176, 176, 176, 100);
+    font-size: 13px;
+    text-align: left;
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      margin-left: 2vw;
+    }
   }
 
   .profile_picture {
@@ -1097,8 +1169,8 @@ onMounted(() => {
       }
 
       .text_date {
-        color: rgba(17, 54, 145, 58);
-        font-size: 8px;
+        color: rgba(176, 176, 176, 100);
+        font-size: 13px;
         text-align: left;
         @media screen and (min-width: 320px) and (max-width: 480px) {
           margin-left: 2vw;
@@ -1126,10 +1198,14 @@ onMounted(() => {
   .card-echarts {
     display: flex;
     flex-direction: row;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    padding-left: 40px;
 
     .echarts-content {
-      width: 700px;
-      height: 350px;
+      margin-left: 100px;
+      width: 900px;
+      height: 450px;
     }
 
     //@media screen and (min-width: 320px) and (max-width: 480px) {
@@ -1259,8 +1335,9 @@ onMounted(() => {
 }
 
 .text_num {
-  font-size: 8px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 3px;
 
   @media screen and (min-width: 320px) and (max-width: 480px) {
     font-size: 2vw;
@@ -1283,11 +1360,18 @@ onMounted(() => {
 }
 
 .text_brief_color {
+  font-weight: 500;
   color: #bbbaba;
 }
 
+.text_brief {
+  color: rgba(33, 41, 66, 100);
+  font-size: 15px;
+}
+
 .text_brief_info {
-  font-size: 20px;
+  color: rgba(33, 41, 66, 100);
+  font-size: 21px;
   @media screen and (min-width: 320px) and (max-width: 480px) {
     font-size: 4vw;
   }
@@ -1310,7 +1394,7 @@ onMounted(() => {
   padding: 80px 50px 50px 50px;
   text-align: center;
   justify-content: center;
-  box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 27);
+  box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 0.4);
   border-radius: 20px;
   @media screen and (min-width: 320px) and (max-width: 480px) {
     margin: 10vw 0;
@@ -1325,14 +1409,14 @@ onMounted(() => {
 }
 
 .acc_body2 {
-  margin: 10px;
+  margin: 30px 10px 10px;
   @media screen and (min-width: 320px) and (max-width: 480px) {
     margin: 1vw;
   }
 }
 
 .acc_body3 {
-  margin: 10px;
+  margin: 10px 10px 40px;
   @media screen and (min-width: 320px) and (max-width: 480px) {
     margin: 1vw;
   }
@@ -1396,8 +1480,10 @@ onMounted(() => {
 }
 
 .account_name {
+  color: rgba(33, 41, 66, 100);
   font-size: 25px;
   font-weight: 600;
+  font-family: 'SourceHanSansSC-Medium';
   @media screen and (min-width: 320px) and (max-width: 480px) {
     font-size: 5vw;
   }
