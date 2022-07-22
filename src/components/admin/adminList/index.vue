@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NButton, NGrid, NGi, NIcon, useMessage } from 'naive-ui'
-import { VxeButtonEvents, VXETable, VxeTableEvents, VxeTableInstance } from 'vxe-table'
+import { VXETable, VxeTableEvents, VxeTableInstance } from 'vxe-table'
 import { TrashOutline, Add } from '@vicons/ionicons5'
 import { EditRegular } from '@vicons/fa'
 import {
@@ -406,10 +406,7 @@ onMounted(() => {
     width: 80%;
     margin: 2%;
     margin-left: 80px;
-    padding-left: 3%;
-    padding-right: 3%;
-    padding-top: 1%;
-    padding-bottom: 5%;
+    padding: 1% 3% 5%;
     border-radius: 15px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     @media screen and (min-width: 320px) and (max-width: 480px) {
