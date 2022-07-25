@@ -499,8 +499,9 @@ onMounted(() => {
                 <n-button
                   round
                   quaternary
-                  :class="dateList === 1 ? 'button_right' : 'button_right_select'"
+                  :class="dateList === 2 ? 'button_right_select' : 'button_right'"
                   @click="DateListButtonChange(2)"
+                  :focusable="false"
                   >周榜</n-button
                 >
               </div>
@@ -551,16 +552,7 @@ onMounted(() => {
                         ? 0
                         : accountInfo.accountDetailInfo.recordArticle
                     }}
-                    <img
-                      :src="trendingUpPng"
-                      :class="[
-                        accountInfo.accountDetailInfo.recordArticle !== null &&
-                        accountInfo.accountDetailInfo.recordArticle !== 0
-                          ? 'active'
-                          : 'none'
-                      ]"
-                      alt="上升"
-                    />
+                    <img :src="trendingUp" class="active" alt="上升" />
                   </text>
                 </div>
               </div>
@@ -578,16 +570,7 @@ onMounted(() => {
                         ? 0
                         : accountInfo.accountDetailInfo.recordLike
                     }}
-                    <img
-                      :src="trendingUp"
-                      :class="[
-                        accountInfo.accountDetailInfo.recordArticle !== null &&
-                        accountInfo.accountDetailInfo.recordArticle !== 0
-                          ? 'active'
-                          : 'none'
-                      ]"
-                      alt="上升"
-                    />
+                    <img :src="trendingUp" class="active" alt="上升" />
                   </text>
                 </div>
               </div>
@@ -605,16 +588,7 @@ onMounted(() => {
                         ? 0
                         : accountInfo.accountDetailInfo.recordComment
                     }}
-                    <img
-                      :src="trendingUp"
-                      :class="[
-                        accountInfo.accountDetailInfo.recordArticle !== null &&
-                        accountInfo.accountDetailInfo.recordArticle !== 0
-                          ? 'active'
-                          : 'none'
-                      ]"
-                      alt="上升"
-                    />
+                    <img :src="trendingUp" class="active" alt="上升" />
                   </text>
                 </div>
               </div>
@@ -632,16 +606,7 @@ onMounted(() => {
                         ? 0
                         : accountInfo.accountDetailInfo.recordForward
                     }}
-                    <img
-                      :src="trendingUp"
-                      :class="[
-                        accountInfo.accountDetailInfo.recordArticle !== null &&
-                        accountInfo.accountDetailInfo.recordArticle !== 0
-                          ? 'active'
-                          : 'none'
-                      ]"
-                      alt="上升"
-                    />
+                    <img :src="trendingUp" class="active" alt="上升" />
                   </text>
                 </div>
               </div>
@@ -705,6 +670,7 @@ onMounted(() => {
             <NGi>
               <div style="display: flex; align-items: center; margin-bottom: 30px">
                 <img :src="titleImgNr" alt="账号内容" style="height: 39px; width: 140px" />
+                <h4 class="text_date">更新于{{ currentDate }}</h4>
               </div>
             </NGi>
           </NGrid>
@@ -1051,7 +1017,7 @@ onMounted(() => {
             .text1 {
               margin-left: 5px;
               color: rgba(176, 176, 176, 100);
-              font-weight: 500;
+              font-weight: 400;
               font-size: 18px;
               flex-shrink: 0;
             }
@@ -1149,6 +1115,7 @@ onMounted(() => {
   .text_date {
     color: rgba(176, 176, 176, 100);
     font-size: 13px;
+    font-weight: 400;
     text-align: left;
     @media screen and (min-width: 320px) and (max-width: 480px) {
       margin-left: 2vw;
@@ -1490,26 +1457,29 @@ onMounted(() => {
   border-radius: 20px;
   width: 118px;
   background: #faf8f8;
-  .button_left {
-    color: #f8c499;
-    outline: none;
-  }
+
   .button_left_select {
     color: #f78b32;
     outline: none;
     background: white;
     box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 0.4);
   }
-  .button_right {
+
+  .button_left {
     color: #f8c499;
     outline: none;
-    margin-left: -10px;
   }
   .button_right_select {
     color: #f78b32;
     outline: none;
     background: white;
     box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 0.4);
+    margin-left: -10px;
+  }
+
+  .button_right {
+    color: #f8c499;
+    outline: none;
     margin-left: -10px;
   }
 }

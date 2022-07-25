@@ -188,7 +188,7 @@ onMounted(() => {
 <template>
   <div class="bg_box">
     <div class="bg_box2">
-      <img :src="categoryManage" alt="分类管理" />
+      <img class="box_img" :src="categoryManage" alt="分类管理" />
 
       <NDivider />
 
