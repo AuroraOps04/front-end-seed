@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup xmlns:v-if="http://www.w3.org/1999/html">
 import { onMounted, ref, reactive } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -114,10 +114,17 @@ const themeOverrides: GlobalThemeOverrides = {
 
 const router = useRouter()
 
-// 单击行实现信息跳转
+// 单击行实现信息跳转全网搜
 const ClickToSearch = () => {
   router.push({
-    path: `/Account`
+    path: `/search`
+  })
+}
+
+// 单击行实现信息跳转搜账号
+const ClickToUserSearch = () => {
+  router.push({
+    path: `/Leaderboard`
   })
 }
 
@@ -329,13 +336,9 @@ const handleEcharts = (type: string) => {
 
 const DateListButtonChange = (typeButton: number) => {
   if (typeButton === 1) {
-    dateListButtonStyle.value = 'warning'
-    weeklyListButtonStyle.value = 'tertiary'
     dateList.value = typeButton
     findRecordCharsData(typeButton)
   } else if (typeButton === 2) {
-    weeklyListButtonStyle.value = 'warning'
-    dateListButtonStyle.value = 'tertiary'
     dateList.value = typeButton
     findRecordCharsData(typeButton)
   }
@@ -394,8 +397,11 @@ onMounted(() => {
     <div style="background-color: #f2f6f7">
       <div>
         <Header />
-        <div @click="ClickToSearch" class="search">
-          <img :src="accountLogo" alt="logo" style="height: 42px; width: 244px" />
+        <div class="search">
+          <img :src="accountLogo" alt="logo" />
+          <input placeholder="全网新媒体搜索引擎" @click="ClickToSearch" />
+          <button class="button_1" @click="ClickToSearch">全网搜</button>
+          <button class="button_2" @click="ClickToUserSearch">搜账号</button>
         </div>
 
         <!--    页面上半部分-->
@@ -481,11 +487,29 @@ onMounted(() => {
             </NGi>
 
             <NGi>
+              <div class="box">
+                <n-button
+                  round
+                  quaternary
+                  :class="dateList === 1 ? 'button_left_select' : 'button_left'"
+                  @click="DateListButtonChange(1)"
+                  :focusable="false"
+                  >日榜</n-button
+                >
+                <n-button
+                  round
+                  quaternary
+                  :class="dateList === 1 ? 'button_right' : 'button_right_select'"
+                  @click="DateListButtonChange(2)"
+                  >周榜</n-button
+                >
+              </div>
               <div class="score_body">
                 <text class="text_exponential">888.8</text>
 
                 <text class="text_exponential"> 分</text>
-                <text class="text_num"> /周潮汐指数</text>
+                <text v-if="dateList === 1" class="text_num"> /日潮汐指数</text>
+                <text v-else-if="dateList === 2" class="text_num"> /周潮汐指数</text>
               </div>
 
               <div class="rank_body">
@@ -507,24 +531,6 @@ onMounted(() => {
                 <div class="card-title">
                   <img :src="titleImgSj" alt="账号数据" style="height: 39px; width: 140px" />
                   <h4 class="text_date">更新于{{ currentDate }}</h4>
-                </div>
-                <div class="center">
-                  <NButtonGroup>
-                    <NButton
-                      :type="dateListButtonStyle"
-                      plain
-                      round
-                      @click="DateListButtonChange(1)"
-                      >日榜
-                    </NButton>
-                    <NButton
-                      :type="weeklyListButtonStyle"
-                      plain
-                      round
-                      @click="DateListButtonChange(2)"
-                      >周榜
-                    </NButton>
-                  </NButtonGroup>
                 </div>
               </div>
             </NGi>
@@ -1075,6 +1081,54 @@ onMounted(() => {
 .search {
   background-color: white;
   height: 120px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    height: 42px;
+    width: 244px;
+    margin-left: -250px;
+  }
+
+  input {
+    border-color: #7896e1;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    height: 40px;
+    width: 600px;
+
+    margin-left: 100px;
+  }
+  .button_1 {
+    position: absolute;
+    left: 920px;
+    border-color: #7896e1;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 0 10px 10px 0;
+    height: 43px;
+    width: 100px;
+    color: white;
+    background: #7896e1;
+    outline: none;
+    font-weight: 500;
+  }
+  .button_2 {
+    border-color: #7896e1;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 10px;
+    height: 42px;
+    width: 100px;
+    color: #7896e1;
+    background: white;
+    outline: none;
+    font-weight: 500;
+    margin-left: 60px;
+  }
 }
 
 .box-card {
@@ -1428,7 +1482,37 @@ onMounted(() => {
     margin: 1vw;
   }
 }
-
+.box {
+  margin-left: calc(40%);
+  border-color: #f78b32;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 20px;
+  width: 118px;
+  background: #faf8f8;
+  .button_left {
+    color: #f8c499;
+    outline: none;
+  }
+  .button_left_select {
+    color: #f78b32;
+    outline: none;
+    background: white;
+    box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 0.4);
+  }
+  .button_right {
+    color: #f8c499;
+    outline: none;
+    margin-left: -10px;
+  }
+  .button_right_select {
+    color: #f78b32;
+    outline: none;
+    background: white;
+    box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 0.4);
+    margin-left: -10px;
+  }
+}
 .text_info_title {
   color: #bbd1e9;
 }

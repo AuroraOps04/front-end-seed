@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { NButton, NGrid, NGi, NIcon } from 'naive-ui'
+import { NButton, NGrid, NGi, NIcon, NDivider } from 'naive-ui'
 import { VXETable, VxeTableEvents, VxeTableInstance } from 'vxe-table'
 import { TrashOutline, Add } from '@vicons/ionicons5'
 import { EditRegular } from '@vicons/fa'
@@ -12,6 +12,15 @@ import {
   removeCategoryByIdApi
 } from '@service/property'
 import underLine from '@/assets/underLine.png'
+import categoryManage from '@/assets/categoryManage.png'
+import btnAdd from '@/assets/btn-add-admin.png'
+import btnDelete from '@/assets/btn-delete.png'
+import btnCancel from '@/assets/btn- cancel.png'
+import btnSave from '@/assets/btn-save.png'
+import btnReset from '@/assets/btn-reset.png'
+import iconDelete from '@/assets/icon-delete.png'
+import iconEdit from '@/assets/icon-edit.png'
+import btnAddSure from '@/assets/btn-add-sure.png'
 
 const underLinePng = underLine
 
@@ -179,12 +188,14 @@ onMounted(() => {
 <template>
   <div class="bg_box">
     <div class="bg_box2">
-      <h3>分类管理</h3>
-      <img :src="underLinePng" alt="logo" class="text_png1" />
-      <n-grid :cols="4" x-gap="24">
-        <n-gi span="4">
-          <vxe-toolbar>
-            <template #buttons>
+      <img :src="categoryManage" alt="分类管理" />
+
+      <NDivider />
+
+      <vxe-toolbar>
+        <template #buttons>
+          <div class="toolbar">
+            <div class="search_tool">
               <vxe-input
                 v-model="params.categoryName"
                 placeholder="输入关键词搜索"
@@ -192,30 +203,19 @@ onMounted(() => {
                 @blur="changeCategoryName"
               ></vxe-input>
 
-              <n-button ghost style="margin-left: 70px" type="info" @click="clickEvent">
-                重置
-              </n-button>
+              <img :src="btnReset" style="height: 43px; width: 86px" @click="clickEvent" />
+            </div>
 
-              <n-button style="margin-left: 350px" type="info" @click="handleAddCategory">
-                <template #icon>
-                  <n-icon>
-                    <Add />
-                  </n-icon>
-                </template>
-                添加
-              </n-button>
-              <n-button style="margin-left: 20px" type="error" @click="deleteEvent">
-                <template #icon>
-                  <n-icon>
-                    <TrashOutline />
-                  </n-icon>
-                </template>
-                删除
-              </n-button>
-            </template>
-          </vxe-toolbar>
-        </n-gi>
-      </n-grid>
+            <div>
+              <img :src="btnAdd" style="height: 44px; width: 100px" @click="handleAddCategory" />
+            </div>
+
+            <div>
+              <img :src="btnDelete" style="width: 100px; height: 43px" @click="deleteEvent" />
+            </div>
+          </div>
+        </template>
+      </vxe-toolbar>
 
       <div class="table1">
         <n-grid :cols="4" x-gap="24">
@@ -238,21 +238,16 @@ onMounted(() => {
               <vxe-column show-overflow title="操作">
                 <template #default="{ row }">
                   <div>
-                    <n-button text>
-                      <template #icon>
-                        <n-icon :depth="3">
-                          <EditRegular @click="handleEditCategory(row)" />
-                        </n-icon>
-                      </template>
-                    </n-button>
-
-                    <n-button text>
-                      <template #icon>
-                        <n-icon :depth="3">
-                          <TrashOutline @click="removeEvent(row)" />
-                        </n-icon>
-                      </template>
-                    </n-button>
+                    <img
+                      :src="iconEdit"
+                      @click="handleEditCategory(row)"
+                      style="width: 20px; height: 20px"
+                    />
+                    <img
+                      :src="iconDelete"
+                      @click="removeEvent(row)"
+                      style="width: 20px; height: 20px"
+                    />
                   </div>
                 </template>
               </vxe-column>
@@ -299,18 +294,18 @@ onMounted(() => {
               <vxe-input v-model="inputCategoryName" placeholder="输入新增分类名称"></vxe-input>
             </div>
             <div class="input_button">
-              <vxe-button
+              <img
+                :src="btnCancel"
                 class="button_left"
-                content="取消"
-                status="info"
                 @click="isShow = false"
-              ></vxe-button>
-              <vxe-button
+                style="height: 33px; width: 110px"
+              />
+              <img
+                :src="btnAddSure"
                 class="button_right"
-                content="确定添加"
-                status="primary"
                 @click="insertEvent()"
-              ></vxe-button>
+                style="height: 45px; width: 125px; margin-bottom: -5px"
+              />
             </div>
           </div>
         </template>
@@ -333,18 +328,19 @@ onMounted(() => {
               <vxe-input v-model="inputCategoryName" placeholder="输入修改后的名称"></vxe-input>
             </div>
             <div class="input_button">
-              <vxe-button
+              <img
+                :src="btnCancel"
                 class="button_left"
-                content="取消"
-                status="info"
                 @click="isShow2 = false"
-              ></vxe-button>
-              <vxe-button
+                style="height: 33px; width: 110px"
+              />
+
+              <img
+                :src="btnSave"
                 class="button_right"
-                content="保存"
-                status="primary"
                 @click="updateEvent()"
-              ></vxe-button>
+                style="height: 33px; width: 110px"
+              />
             </div>
           </div>
         </template>
@@ -375,6 +371,36 @@ onMounted(() => {
     @media screen and (min-width: 320px) and (max-width: 480px) {
       width: auto;
     }
+    .box_img {
+      height: 35px;
+      width: 100px;
+      margin-top: 25px;
+      margin-bottom: -15px;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: nowrap;
+      flex-direction: row;
+      width: calc(100%);
+
+      .search_tool {
+        display: flex;
+        width: calc(65%);
+        margin-top: -15px;
+
+        div {
+          margin-left: 20px;
+          margin-top: 5px;
+        }
+        img {
+          margin-left: 35px;
+        }
+      }
+
+      div {
+        margin-top: -10px;
+      }
+    }
 
     .text_png1 {
       position: absolute;
@@ -386,7 +412,7 @@ onMounted(() => {
     }
 
     .table1 {
-      margin-top: 20px;
+      margin-top: 5px;
       height: 445px;
     }
 
@@ -396,13 +422,11 @@ onMounted(() => {
       margin-bottom: 30px;
     }
     .input_button {
-      margin-left: 30px;
+      margin-left: 25px;
       .button_left {
-        width: 90px;
-        margin-right: 45px;
+        margin-right: 40px;
       }
       .button_right {
-        width: 90px;
       }
     }
   }
