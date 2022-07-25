@@ -1,10 +1,9 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
-import { NSpace, NInput, NButton } from 'naive-ui'
+import { NSpace, NInput, NButton, NIcon } from 'naive-ui'
 import { VXETable } from 'vxe-table'
 import { getErrorCorrectionApi } from '@service/account'
+import { TrashOutline } from '@vicons/ionicons5'
 import correctionPng from '@/assets/correction.png'
 import textInput from '@/assets/textinput.png'
 import iec from '@/assets/iec.png'
@@ -13,20 +12,6 @@ import tidalNebula from '@/assets/tidal-nebula.png'
 import intelligentText from '@/assets/intelligent-text.png'
 import Header from '@/components/body/Header.vue'
 
-const router = useRouter()
-const store = useStore()
-const menuArr = reactive([
-  {
-    name: '首页',
-    code: 'home',
-    isSelect: true
-  },
-  {
-    name: '排行榜',
-    code: 'Leaderboard',
-    isSelect: false
-  }
-])
 type errorMessageObject = {
   errorText: string
   correctList: errorMessageObject[]
@@ -39,10 +24,6 @@ type ErrorMessage = {
   correctList: errorMessageObject[]
   errorText: string | null
   correctText: string | null
-}
-const handleTo = (e: string) => {
-  store.commit('SET_MENU', e)
-  router.push(`/${e}`)
 }
 const showInput = ref<boolean>(true)
 const textValue = ref<string | null>(null)
@@ -72,25 +53,6 @@ const clearText = () => {
 <template>
   <div class="container">
     <Header />
-    <!--    <div class="text-error-menu">
-      <div class="title">
-        <template v-for="(item, index) in menuArr" :key="index">
-          <span
-            :style="{ backgroundColor: item.code === store.state.menu ? '#113691' : 'black' }"
-            @click="handleTo(item.code)"
-            >{{ item.name }}
-          </span>
-        </template>
-      </div>
-      <div class="avatar">
-        <NAvatar :size="35" :src="store.getters?.currentPictureUrl" round></NAvatar>
-        <span v-if="!store.getters.currentId" style="margin: 0 5px" @click="handleTo('login')">
-          登录
-        </span>
-        <span v-else style="margin: 0 5px" @click="handleTo('person')">个人中心</span>
-      </div>
-    </div>-->
-
     <div class="text-error-logo">
       <div class="text-logo-tidalNebula">
         <img :src="tidalNebula" alt="潮汐星云" />
@@ -128,7 +90,15 @@ const clearText = () => {
         <div class="text-content-button">
           <div class="text-button-button">
             <n-space>
-              <n-button type="warning" @click="clearText">清空文字</n-button>
+              <n-button color="#D76C54" @click="clearText()">
+                <template #icon>
+                  <n-icon>
+                    <TrashOutline />
+                  </n-icon>
+                </template>
+                清空文字
+              </n-button>
+              <!--              <n-button type="warning" @click="clearText"></n-button>-->
               <n-button type="error" @click="submitText">开始纠错</n-button>
             </n-space>
           </div>
@@ -146,19 +116,19 @@ const clearText = () => {
             <div class="text-result-results">
               <div class="text-result-front">
                 全部风险
-                <div class="text-result-total">8</div>
+                <div class="text-result-total">{{ errorMessage.correctList.length }}</div>
               </div>
             </div>
             <div class="text-result-results">
               <div class="text-result-front">
                 文字纠错
-                <div class="text-result-total">8</div>
+                <div class="text-result-total">{{ errorMessage.correctList.length }}</div>
               </div>
             </div>
             <div class="text-result-results">
               <div class="text-result-front">
                 铭感审核
-                <div class="text-result-total">8</div>
+                <div class="text-result-total">{{ errorMessage.correctList.length }}</div>
               </div>
             </div>
           </div>
@@ -177,8 +147,10 @@ const clearText = () => {
           <div class="text-areaText-revise">
             <div v-for="(item, index) in errorMessage.correctList" :key="index" class="result-list">
               <div class="red-round"></div>
-              <div style="padding-top: 4px">
-                <span style="color: red">{{ item.ori_frag }}</span> ->{{ item.correct_frag }}
+              <div style="padding-top: 0.37vh">
+                <span style="color: red">{{ item.ori_frag }}</span> &nbsp;&nbsp;-> &nbsp;&nbsp;{{
+                  item.correct_frag
+                }}
               </div>
             </div>
           </div>
@@ -250,7 +222,7 @@ const clearText = () => {
   }
 
   .text-error-content {
-    width: 100px;
+    width: 5.21vw;
     height: 80vh;
     flex-direction: column;
     -webkit-flex-wrap: wrap;
@@ -282,7 +254,9 @@ const clearText = () => {
           width: 6.77vw;
           height: 3.7vh;
           background-color: white;
-
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            width: 50vh;
+          }
           .text-logo-img {
             width: 1.72vw;
             height: 100%;
@@ -291,6 +265,9 @@ const clearText = () => {
               padding-top: 0.37vh;
               width: 1.56vw;
               height: 2.78vh;
+              @media screen and (min-width: 320px) and (max-width: 480px) {
+                width: 3vh;
+              }
             }
           }
 
@@ -301,6 +278,9 @@ const clearText = () => {
             text-align: left;
             font-family: SourceHanSansSC-bold, sans-serif;
             font-weight: bold;
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              padding-left: 4.5vw;
+            }
           }
         }
 
@@ -317,6 +297,9 @@ const clearText = () => {
           width: 7.14vw;
           height: 3.7vh;
           background-color: white;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            width: 45vh;
+          }
 
           .text-button-img {
             width: 1.72vw;
@@ -326,6 +309,9 @@ const clearText = () => {
               padding-top: 0.37vh;
               width: 1.56vw;
               height: 2.78vh;
+              @media screen and (min-width: 320px) and (max-width: 480px) {
+                width: 3vh;
+              }
             }
           }
 
@@ -337,6 +323,9 @@ const clearText = () => {
             color: #f9a765;
             font-family: Roboto, sans-serif;
             font-weight: bold;
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              padding-left: 4.5vw;
+            }
           }
         }
       }
@@ -345,6 +334,10 @@ const clearText = () => {
         width: 100%;
         height: calc(100% - 17.59vh);
         border: 1px solid rgba(10, 10, 10, 0.1);
+        :deep(.n) {
+          text-decoration: underline;
+          text-decoration-color: red;
+        }
       }
 
       .text-content-areaText {
@@ -402,7 +395,9 @@ const clearText = () => {
         width: 100%;
         height: calc(100% - 8.8vh);
         //background-color: rgba(14, 14, 14, 0.3);
-
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          margin-top: 30px;
+        }
         .text-areaText-result {
           margin: 10px;
           border-bottom: 1px solid;
@@ -413,26 +408,35 @@ const clearText = () => {
           width: 100%;
           height: 8.8vh;
           background-color: white;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            margin-left: 0;
+            margin-top: -1px;
+            display: none;
+          }
 
           .text-result-results {
             width: 30%;
             height: 80%;
             border-radius: 10px;
             margin: 10px;
-            background-color: orange;
+            background-color: #fff6ef;
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              display: none;
+            }
 
             .text-result-front {
               width: 100%;
               height: 100%;
               text-align: center;
-              padding-top: 13px;
-
+              padding-top: 1.2vh;
+              color: #ffd6b5;
               .text-result-total {
-                margin-left: 20px;
-                width: 45px;
+                //text-align: center;
+                margin-left: 0.88vw;
+                width: 2.34vw;
                 border-radius: 10px;
-                height: 20px;
-                background-color: red;
+                height: 1.85vh;
+                background-color: #ff9c4d;
               }
             }
           }
@@ -456,21 +460,25 @@ const clearText = () => {
             width: 100%;
             height: 50%;
             justify-content: space-around;
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              display: none;
+            }
             .text-typesetting-adoption {
-              padding-top: 10px;
+              padding-top: 0.93vh;
               color: #6a6f77;
               span {
-                padding-left: 3px;
-                color: dodgerblue;
+                padding-left: 0.16vw;
+                color: #329cf8;
               }
             }
 
             .text-typesetting-adoption-all {
-              margin-top: 10px;
-              background-color: #bbdbfa;
+              margin-top: 0.93vh;
+              background-color: #7ab8fb;
+              opacity: 0.5;
               border-radius: 10px;
-              height: 25px;
-              width: 80px;
+              height: 2.31vh;
+              width: 4.17vw;
               align-items: center;
               text-align: center;
             }
@@ -481,11 +489,16 @@ const clearText = () => {
           border-bottom: 1px solid;
           border-color: rgba(10, 10, 10, 0.1);
           border-radius: 10px;
-          display: flex;
+          //display: flex;
           flex-direction: row;
           width: 100%;
-          height: calc(100% - 17.6vh);
+          height: calc(100% - 19.6vh);
           background-color: #f2f6f7;
+          flex-wrap: wrap;
+          align-items: flex-start;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            height: 10vw;
+          }
           .result-list {
             border-radius: 10px;
             background-color: white;
@@ -494,9 +507,12 @@ const clearText = () => {
             height: 3vh;
             display: flex;
             flex-wrap: nowrap;
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              font-size: 1px;
+            }
             .red-round {
-              height: 15px;
-              width: 15px;
+              height: 1.39vh;
+              width: 0.78vw;
               margin: 8px;
               border-radius: 50%;
               background-color: red;
@@ -527,7 +543,10 @@ const clearText = () => {
         flex-direction: row;
         width: 100%;
         height: 8.8vh;
-
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+          height: 10vw;
+          width: 100vh;
+        }
         .text-logo-input {
           margin-top: 1.57vh;
           margin-left: 1.04vw;
@@ -535,19 +554,28 @@ const clearText = () => {
           width: 6.77vw;
           height: 3.7vh;
           background-color: white;
+          @media screen and (min-width: 320px) and (max-width: 480px) {
+            height: 10vh;
+            width: 14vw;
+            font-size: 2px;
+          }
 
           .text-logo-img {
-            width: 1.72vw;
+            width: 6.72vw;
             height: 100%;
 
             img {
               padding-top: 0.37vh;
               width: 1.56vw;
               height: 2.78vh;
+              @media screen and (min-width: 320px) and (max-width: 480px) {
+                width: 3vw;
+              }
             }
           }
 
           .text-span-text {
+            width: 100vw;
             height: 100%;
             padding-left: 0.16vw;
             color: rgba(28, 41, 79, 100);
@@ -555,6 +583,10 @@ const clearText = () => {
             text-align: left;
             font-family: SourceHanSansSC-bold, sans-serif;
             font-weight: bold;
+            @media screen and (min-width: 320px) and (max-width: 480px) {
+              display: flex;
+              width: 100%;
+            }
           }
         }
       }

@@ -76,7 +76,7 @@ const unCollection = async (row: any) => {
   }
 }
 // 地区下拉选项
-const changeArea = (value: number, event: any) => {
+const changeArea = (value: number) => {
   loading.value = true
   params.area = value
   selectUserCollectionList()
@@ -115,7 +115,7 @@ const resetCollection = async () => {
 const selectAllChangeEvent: VxeTableEvents.CheckboxAll = () => {
   // 置空数组
   accountArray.length = 0
-  const $table = xTable.value[0] as VxeTableInstance
+  const $table = xTable.value as VxeTableInstance
   const records = $table.getCheckboxRecords()
   records.forEach((item) => {
     accountArray.push(item.accountId)
@@ -126,7 +126,7 @@ const selectAllChangeEvent: VxeTableEvents.CheckboxAll = () => {
 const selectChangeEvent: VxeTableEvents.CheckboxChange = () => {
   // 置空数组
   accountArray.length = 0
-  const $table = xTable.value[0] as VxeTableInstance
+  const $table = xTable.value as VxeTableInstance
   const records = $table.getCheckboxRecords()
   records.forEach((item) => {
     accountArray.push(item.accountId)
@@ -135,11 +135,16 @@ const selectChangeEvent: VxeTableEvents.CheckboxChange = () => {
 
 // 批量取消收藏
 const cancelCollections = async () => {
+  if (accountArray.length === 0) {
+    await VXETable.modal.message({ content: '请勾选数据！', status: 'error' })
+    return
+  }
   loading.value = true
   await cancelCollectionsApi(accountArray, userId)
   await selectUserCollectionList()
   loading.value = false
   await VXETable.modal.message({ content: '取消成功！', status: 'success' })
+  accountArray.length = 0
 }
 // 点击前往账号详情页
 const goToAccountPage = async (row: any) => {
