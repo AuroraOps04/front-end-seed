@@ -1,7 +1,7 @@
 import request from '@service/_requests'
 
-export const insertTrafficCount = () => {
-  return request('/traffic/insert', {
+export const insertTrafficCountAPI = (visitorId: string): Promise<API.Response> => {
+  return request(`/traffic/insert/${visitorId}`, {
     method: 'POST'
   })
 }

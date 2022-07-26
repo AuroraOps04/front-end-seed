@@ -33,5 +33,6 @@ body,
 #app,
 .n-config-provider {
   height: 100%;
+  min-width: 1200px;
 }
 </style>

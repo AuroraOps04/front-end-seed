@@ -113,7 +113,7 @@ onMounted(() => {
     width: 280px;
     background-image: linear-gradient(to bottom, white, rgba(231, 233, 254, 0.3));
     border-top-right-radius: 30px;
-    box-shadow: #e6ecfc 0 0 20px;
+    box-shadow: 0 -8px 22px 0 rgba(98, 138, 250, 0.18);
     padding: 2vw 0 10vw 0;
     display: flex;
     flex-direction: column;
