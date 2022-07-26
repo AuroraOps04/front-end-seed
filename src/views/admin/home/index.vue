@@ -5,6 +5,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { getMonthTrafficAPI, getTrafficCountApi } from '@service/traffic'
 import { getUserCountApi } from '@service/user'
 import { getAccountCountApi, getMonthAccountAPI } from '@service/account'
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import userNum from '@/assets/userNum.png'
 import accountNum from '@/assets/accountNum.png'
 import visitsNum from '@/assets/visitsNum.png'
@@ -17,6 +18,16 @@ const underLinePng = underLine
 const accountNumPng = accountNum
 const visitsNumPng = visitsNum
 const verticalLinePng = verticalLine
+
+// Initialize an agent at application startup.
+
+const fpPromise = FingerprintJS.load()
+const fetchFingerprint = async () => {
+  console.log(123, fpPromise)
+  const fp = await fpPromise
+  const result = await fp.get()
+  console.log('这是id：', result.visitorId)
+}
 
 // 页面数据
 const TrafficData = reactive({
@@ -178,6 +189,7 @@ onMounted(() => {
   findAccount()
   findTrafficEcharts()
   findAccountEcharts()
+  fetchFingerprint()
 })
 </script>
 <template>

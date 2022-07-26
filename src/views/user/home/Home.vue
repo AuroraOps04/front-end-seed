@@ -2,9 +2,10 @@
 import { NAvatar, NInput, NIcon, NButton } from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { onMounted } from 'vue'
-import { insertTrafficCount } from '@service/traffic'
+import { onMounted, ref } from 'vue'
+import { insertTrafficCountAPI } from '@service/traffic'
 import { Search, BriefcaseOutline } from '@vicons/ionicons5'
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import rankingPng from '@/assets/ranking.png'
 import analysisPng from '@/assets/analysis.png'
 import rightPng from '@/assets/right.png'
@@ -20,6 +21,21 @@ import logoWhitePng from '@/assets/logo_white.png'
 import weiboPng from '@/assets/weibo.png'
 import wechatPng from '@/assets/wechat.png'
 
+// Initialize an agent at application startup.
+
+// 游客id
+const VisitorId = ref<string>('')
+
+const fpPromise = FingerprintJS.load()
+
+const fetchFingerprint = async () => {
+  const fp = await fpPromise
+  const result = await fp.get()
+  // 赋值游客id
+  VisitorId.value = result.visitorId
+  console.log('这是id：', VisitorId.value)
+}
+
 const router = useRouter()
 const store = useStore()
 const handleTo = (e: string) => {
@@ -27,7 +43,9 @@ const handleTo = (e: string) => {
   router.push(`/${e}`)
 }
 onMounted(() => {
-  insertTrafficCount()
+  fetchFingerprint().then(() => {
+    insertTrafficCountAPI(VisitorId.value)
+  })
 })
 </script>
 
@@ -382,7 +400,6 @@ onMounted(() => {
           width: 16vw;
           height: 8vw;
           line-height: 8vw;
-          font-style: 4vw;
         }
       }
 
