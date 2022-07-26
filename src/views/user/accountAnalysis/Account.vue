@@ -1105,7 +1105,7 @@ onMounted(() => {
   margin-top: 30px;
   padding: 30px;
   border-radius: 20px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 2px 22px 5px rgba(17, 54, 145, 0.12);
   @media screen and (min-width: 320px) and (max-width: 480px) {
     margin: 1vw;
     width: 96vw;
@@ -1415,7 +1415,7 @@ onMounted(() => {
   padding: 80px 50px 50px 50px;
   text-align: center;
   justify-content: center;
-  box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 0.4);
+  box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 0.27);
   border-radius: 20px;
   @media screen and (min-width: 320px) and (max-width: 480px) {
     margin: 10vw 0;
@@ -1473,7 +1473,7 @@ onMounted(() => {
     color: #f78b32;
     outline: none;
     background: white;
-    box-shadow: 10px 0 15px -8px rgba(244, 166, 105, 0.4);
+    box-shadow: -10px 0 15px -8px rgba(244, 166, 105, 0.4);
     margin-left: -10px;
   }
 
