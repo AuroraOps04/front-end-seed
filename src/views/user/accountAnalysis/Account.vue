@@ -63,6 +63,8 @@ import iconParkShare from '@/assets/iconPark-share.png'
 import iconParkThumbs from '@/assets/iconPark-thumbs.png'
 import accountLogo from '@/assets/account_logo.png'
 import '@/assets/font/SourceHanSansSC-Medium.otf'
+import btnCancel from '@/assets/btn- cancel.png'
+import btnAddSure from '@/assets/btn-add-sure.png'
 
 const store = useStore()
 
@@ -126,6 +128,14 @@ const ClickToUserSearch = () => {
   router.push({
     path: `/Leaderboard`
   })
+}
+
+// 是否显示自选框
+const isShow = ref<boolean>(false)
+
+// 处理添加请求
+function handelClickAdd() {
+  isShow.value = true
 }
 
 const accountId = ref<number>()
@@ -399,8 +409,10 @@ onMounted(() => {
         <Header />
         <div class="search">
           <img :src="accountLogo" alt="logo" />
-          <input placeholder="全网新媒体搜索引擎" @click="ClickToSearch" />
-          <button class="button_1" @click="ClickToSearch">全网搜</button>
+          <div>
+            <input placeholder="全网新媒体搜索引擎" @click="ClickToSearch" />
+            <button class="button_1" @click="ClickToSearch">全网搜</button>
+          </div>
           <button class="button_2" @click="ClickToUserSearch">搜账号</button>
         </div>
 
@@ -422,7 +434,12 @@ onMounted(() => {
                   </div>
 
                   <div>
-                    <img :src="buttonAdd" alt="加入自榜" style="height: 27px; width: 110px" />
+                    <img
+                      :src="buttonAdd"
+                      alt="加入自榜"
+                      style="height: 27px; width: 110px"
+                      @click="handelClickAdd"
+                    />
                   </div>
                 </div>
                 <div v-else class="box-collect">
@@ -436,7 +453,12 @@ onMounted(() => {
                   </div>
 
                   <div>
-                    <img :src="buttonAdd" alt="加入自榜" style="height: 27px; width: 110px" />
+                    <img
+                      :src="buttonAdd"
+                      alt="加入自榜"
+                      style="height: 27px; width: 110px"
+                      @click="handelClickAdd"
+                    />
                   </div>
                 </div>
               </div>
@@ -828,6 +850,36 @@ onMounted(() => {
           </NGrid>
         </div>
       </div>
+      <!--      加入自选弹出框-->
+      <vxe-modal
+        v-model="isShow"
+        destroy-on-close
+        height="230"
+        min-height="900"
+        min-width="900"
+        resize
+        title="我的榜单列表"
+        width="340"
+      >
+        <template #default>
+          <div>
+            <div>
+              <img
+                :src="btnCancel"
+                class="button_left"
+                @click="isShow = false"
+                style="height: 33px; width: 110px"
+              />
+              <img
+                :src="btnAddSure"
+                class="button_right"
+                @click="insertEvent()"
+                style="height: 45px; width: 125px; margin-bottom: -5px"
+              />
+            </div>
+          </div>
+        </template>
+      </vxe-modal>
     </div>
   </n-config-provider>
 </template>
@@ -1058,30 +1110,34 @@ onMounted(() => {
     margin-left: -250px;
   }
 
-  input {
-    border-color: #7896e1;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 10px;
-    height: 40px;
-    width: 600px;
+  div {
+    display: inline-block;
 
-    margin-left: 100px;
+    input {
+      border-color: #7896e1;
+      border-style: solid;
+      border-width: 1px;
+      border-radius: 10px;
+      height: 40px;
+      width: 600px;
+
+      margin-left: 100px;
+    }
+    .button_1 {
+      margin-left: -99px;
+      border-color: #7896e1;
+      border-width: 2px;
+      border-style: solid;
+      border-radius: 0 10px 10px 0;
+      height: 43px;
+      width: 100px;
+      color: white;
+      background: #7896e1;
+      outline: none;
+      font-weight: 500;
+    }
   }
-  .button_1 {
-    position: absolute;
-    left: 920px;
-    border-color: #7896e1;
-    border-width: 2px;
-    border-style: solid;
-    border-radius: 0 10px 10px 0;
-    height: 43px;
-    width: 100px;
-    color: white;
-    background: #7896e1;
-    outline: none;
-    font-weight: 500;
-  }
+
   .button_2 {
     border-color: #7896e1;
     border-width: 2px;
